@@ -9,6 +9,7 @@ const initState: DepositStateType = {
   loading: false,
   address: "",
   status: null,
+  errMsg: null | undefined,
 }
 
 export default function depositReducer(state = initState, action) {
@@ -17,7 +18,7 @@ export default function depositReducer(state = initState, action) {
       return {
         ...state,
         loading: true,
-        address: "",
+        address: state.address,
         status: null,
       };
       break;
@@ -33,8 +34,9 @@ export default function depositReducer(state = initState, action) {
       return {
         ...state,
         loading: false,
-        address: "",
-        status: "failed"
+        address: state.address,
+        status: "failed",
+        errCode: action.payload.errCode
       };
       break;
     default:

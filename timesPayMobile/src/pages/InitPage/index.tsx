@@ -16,14 +16,15 @@ import Modal from 'react-native-modal';
 import Col, { Row } from 'react-native-col';
 
 import { connect } from 'react-redux';
-import * as Keychain from 'react-native-keychain';
 import * as SecureStore from 'expo-secure-store';
 import { ethers } from 'ethers';
 // import keythereum from 'keythereum';
 
 import { getDepositState, getInitState } from '../../reducers/selectors';
-import { InitStateType } from '@/src/reducers/initReducer';
-import { DepositStateType } from '@/src/reducers/depositReducer';
+import { InitStateType } from '../../reducers/initReducer';
+import { DepositStateType } from '../../reducers/depositReducer';
+import { LOAD_WALLET } from '../../sagas/initSaga';
+
 import duckImg from '../../assets/duck.png';
 
 interface InitProps {
@@ -55,36 +56,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
   componentDidMount() {
     console.log(this.props.depositReducer.address.length);
     if (this.props.depositReducer.address.length < 1) {
-      try {
-        SecureStore.getItemAsync("wallet").then(res => {
-          console.log("wallet res", res);
-          if (res) {
-            SecureStore.getItemAsync("passPharse").then(passwd => {
-              console.log("passPharse", passwd)
-              if (passwd) {
-                let newWallet = new ethers.Wallet.fromEncryptedJson(res, passwd).then((wallet)=>{
-                  console.log(wallet);
-                  this.props.fetchSuccess({
-                    wallet: res,
-                    address: wallet.address
-                  });
-                  this.setState({
-                    loadingStatus: "Credentials successfully loaded for user"
-                  });
-                  console.log("Credentials successfully loaded for user");
-                });
-              }
-            })
-          } else {
-            this.setState({
-              loadingStatus: "No credentials stored",
-              createNewWalletModalVisble: true,
-            });
-          }
-        });
-      } catch (error) {
-        console.log('Keychain couldn\'t be accessed!', error);
-      }
+      this.props.loadWallet();
     }
   }
 
@@ -94,7 +66,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       return (
         <View
           style={styles.newWallectConfirmModal}
-          >
+        >
           <Modal isVisible={props.createNewWalletModalVisble}>
             <View>
               <Text>Do you want to create a new wallet?</Text>
@@ -126,7 +98,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                         wallet: res,
                         address: address
                       })
-                      SecureStore.setItemAsync("wallet",res).then((result) => {
+                      SecureStore.setItemAsync("wallet", res).then((result) => {
                         console.log(result);
                         this.setState({
                           createNewWalletModalVisble: false,
@@ -206,7 +178,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = dispatch => {
   return {
-    fetchStart: () => dispatch({ type: "fetchStart" }),
+    loadWallet: () => dispatch({ type: LOAD_WALLET }),
     fetchSuccess: (payload) => dispatch({ type: "fetchSuccess", payload: payload }),
   }
 }

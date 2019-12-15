@@ -1,11 +1,11 @@
-import { ethers, Wallet } from 'ethers'
 export interface InitStateType extends commonStateType {
   wallet: string | null,
 }
 const initState: InitStateType = {
   loading: false,
   status: null,
-  wallet: null
+  wallet: null,
+  errMsg: null | undefined,
 }
 
 export default function initReducer(state = initState, action) {
@@ -14,8 +14,8 @@ export default function initReducer(state = initState, action) {
       return {
         ...state,
         loading: true,
-        status: null,
-        wallet: null
+        status: state.status,
+        wallet: state.wallet
       }
       break;
     case "fetchSuccess":
@@ -31,10 +31,13 @@ export default function initReducer(state = initState, action) {
         ...state,
         loading: false,
         status: "failed",
-        wallet: null
+        wallet: state.wallet,
+        errCode: action.payload.errCode
       }
       break;
     default:
-      return initState;
+      return {
+        ...initState
+      };
   }
 }

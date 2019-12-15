@@ -4,8 +4,11 @@ import {
   View,
   Text
 } from 'react-native';
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import createSagaMiddleware from 'redux-saga';
 import {
+  I18nManager,
+  Platform,
   NativeRouter as Router,
   Switch,
   Route,
@@ -20,7 +23,8 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 // import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-
+import { setI18nConfig } from './src/utils/I18N';
+import * as RNLocalize from "react-native-localize";
 import InitPage from './src/pages/InitPage';
 import ExchangePage from './src/pages/ExchangePage';
 import DepositPage from './src/pages/DepositPage';
@@ -29,12 +33,20 @@ import initReducer from './src/reducers/initReducer';
 import exchangeReducer from './src/reducers/exchangeReducer';
 import depositReducer from './src/reducers/depositReducer';
 
+import rootSaga from "./src/sagas/entrySaga";
+
+const sagaMiddleware = createSagaMiddleware();
 let store = createStore(combineReducers({
   initReducer,
   exchangeReducer,
   depositReducer
-}));
+}), applyMiddleware(sagaMiddleware));
+sagaMiddleware.run(rootSaga);
 
+const I18n = {};
+I18n.defaultLocale = "en-US";
+I18n.locale = "en-US"
+I18n.missingTranslation = () => null;
 // const AppNavigator = createStackNavigator({
 //   Initial: {
 //     screen: InitPage,
@@ -51,7 +63,7 @@ const MaterialBottomTabNavigator = createMaterialBottomTabNavigator(
     Exchange: {
       screen: ExchangePage,
     },
-    Deposit:{
+    Deposit: {
       screen: DepositPage,
     }
   },
@@ -77,14 +89,29 @@ const uiTheme = {
 class App extends React.Component<{}, AppState> {
   constructor(props: any) {
     super(props);
+    setI18nConfig();
   }
+
+  componentDidMount() {
+    RNLocalize.addEventListener("change", this.handleLocalizationChange);
+  }
+
+  componentWillUnmount() {
+    RNLocalize.removeEventListener("change", this.handleLocalizationChange);
+  }
+
+  handleLocalizationChange = () => {
+    setI18nConfig();
+    this.forceUpdate();
+  };
+  
   render() {
     return (
       <Provider store={store}>
         <ThemeContext.Provider value={uiTheme}>
           <>
             {/* <BasicLayout> */}
-              <Navigation />
+            <Navigation />
             {/* </BasicLayout> */}
           </>
         </ThemeContext.Provider>
