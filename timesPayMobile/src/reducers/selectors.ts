@@ -12,3 +12,8 @@ export const getDepositState = store => {
   console.log("getDepositState", store);
   return store.depositReducer;
 };
+
+export const getPayState = store => {
+  console.log("getPayState", store);
+  return store.payReducer;
+};

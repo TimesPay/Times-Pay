@@ -1,5 +1,10 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import commonStateType from '@/src/utils/commonStateType';
+import commonStateType from '../utils/commonStateType';
+import {
+  FETCH_START_DEPOSIT,
+  FETCH_SUCCESS_DEPOSIT,
+  FETCH_FAILED_DEPOSIT,
+  SET_ADDRESS_DEPOSIT
+} from '../actions/actionTypes';
 
 export interface DepositStateType extends commonStateType {
   address: string;
@@ -13,8 +18,9 @@ const initState: DepositStateType = {
 }
 
 export default function depositReducer(state = initState, action) {
+  console.log("depositReducer", action);
   switch (action.type) {
-    case "fetchStart":
+    case FETCH_START_DEPOSIT:
       return {
         ...state,
         loading: true,
@@ -22,7 +28,7 @@ export default function depositReducer(state = initState, action) {
         status: null,
       };
       break;
-    case "fetchSuccess":
+    case SET_ADDRESS_DEPOSIT:
       return {
         ...state,
         loading: false,
@@ -30,7 +36,7 @@ export default function depositReducer(state = initState, action) {
         status: "success"
       };
       break;
-    case "fetchFailed":
+    case FETCH_FAILED_DEPOSIT:
       return {
         ...state,
         loading: false,
@@ -40,8 +46,6 @@ export default function depositReducer(state = initState, action) {
       };
       break;
     default:
-      return {
-        ...initState
-      };
+      return state;
   }
 }

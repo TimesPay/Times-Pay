@@ -1,53 +1,50 @@
 import {
-  LOAD_WALLET_INIT,
-  FETCH_START_INIT,
-  FETCH_SUCCESS_INIT,
-  FETCH_FAILED_INIT
+  FETCH_START_PAY,
+  FETCH_SUCCESS_PAY,
+  FETCH_FAILED_PAY
 } from '../actions/actionTypes';
 import { commonStateType } from '../utils/commonStateType';
 
-export interface InitStateType extends commonStateType {
-  wallet: string | null,
+export interface PayStateType extends commonStateType {
+  destAddress: string
 }
-const initState: InitStateType = {
+const initState: PayStateType = {
   loading: false,
   status: null,
-  wallet: null,
+  destAddress: "",
   errCode: null,
 }
 
-export default function initReducer(state = initState, action) {
+export default function payReducer(state = initState, action) {
   switch (action.type) {
-    case FETCH_START_INIT:
+    case FETCH_START_PAY:
       return {
         ...state,
         loading: true,
         status: state.status,
-        wallet: state.wallet,
+        destAddress: state.destAddress,
         errCode: state.errCode
       }
       break;
-    case FETCH_SUCCESS_INIT:
+    case FETCH_SUCCESS_PAY:
       return {
         ...state,
         loading: false,
         status: "success",
-        wallet: action.payload.wallet,
+        destAddress: action.payload.destAddress,
         errCode: state.errCode
       }
       break;
-    case FETCH_FAILED_INIT:
+    case FETCH_FAILED_PAY:
       return {
         ...state,
         loading: false,
         status: "failed",
-        wallet: state.wallet,
+        destAddress: state.destAddress,
         errCode: action.payload.errCode
       }
       break;
     default:
-      return {
-        ...state
-      };
+      return state;
   }
 }

@@ -1,20 +1,27 @@
-import * as ACTION_TYPES from './actionTypes';
+import {
+  LOAD_WALLET_INIT,
+  FETCH_START_INIT,
+  FETCH_SUCCESS_INIT,
+  FETCH_FAILED_INIT
+} from '../actions/actionTypes';
+
 export const fetchStart = () => {
   return {
-    type: ACTION_TYPES.FETCH_START
+    type: FETCH_START_INIT
   }
 }
 export const fetchSuccess = (payload) => {
   return {
-    type: ACTION_TYPES.FETCH_SUCCESS,
+    type: FETCH_SUCCESS_INIT,
     payload: {
       wallet: payload.wallet
     }
   }
 }
 export const fetchFailed = (payload) => {
+  console.log("fetchFailed", payload);
   return {
-    type: ACTION_TYPES.FETCH_FAILED,
+    type: FETCH_FAILED_INIT,
     payload: {
       errCode: payload.errCode
     }

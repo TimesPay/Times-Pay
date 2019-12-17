@@ -1,30 +1,36 @@
 import { call, put, takeEvery } from "redux-saga/effects";
-import * as ACTION_TYPES from '../actions/actionTypes';
-import { ethers } from 'ethers';
 
-import { fetchStart, fetchSuccess, fetchFailed } from '../actions/initAction';
+import {
+  LOAD_WALLET_INIT
+} from '../actions/actionTypes';
+
+import {
+  fetchStart,
+  fetchSuccess,
+  fetchFailed
+} from '../actions/initAction';
+
 import { getEncryptedWallet, getPassPharse, getDecryptedWallet } from '../api/wallet';
+import errCode from '../utils/errCode';
 
-export const LOAD_WALLET = "init/loadWallet";
-
-export function* watchInit() {
-  // yield takeEvery(ACTION_TYPES.FETCH_START, fetchStart)
-  yield takeEvery(LOAD_WALLET, loadWallet);
+export function* watchLoadWallet() {
+  yield takeEvery(LOAD_WALLET_INIT, loadWalletFlow);
 }
-export function* loadWallet() {
+function* loadWalletFlow() {
   try {
-    yield put({ type: ACTION_TYPES.FETCH_START });
+    yield put(fetchStart());
+    console.log("load wallet")
     let encryptedWallet = yield call(getEncryptedWallet);
-    console.log("wallet res", encryptedWallet);
+    let passwd = yield call(getPassPharse);
+    console.log("passwd", passwd);
+    console.log("encryptedWallet", encryptedWallet)
     if (encryptedWallet) {
-      let passwd = yield call(getPassPharse);
-      console.log("passPharse", passwd)
       if (passwd) {
-        let newWallet = yield call(getEncryptedWallet, {
-          encryptedWallet: encryptedWallet,
+        let newWallet = yield call(getDecryptedWallet, {
+          encryptedWallet: JSON.parse(encryptedWallet),
           passwd: passwd
         });
-        console.log(newWallet);
+        console.log("newWallet", newWallet);
         yield put(
           fetchSuccess({
             wallet: newWallet
@@ -33,21 +39,23 @@ export function* loadWallet() {
       } else {
         yield put(
           fetchFailed({
-            errCode: "loadWallet.missingPW"
+            errCode: errCode["loadWallet.missingPW"]
           })
         );
       }
     } else {
+      console.log("init saga", errCode);
       yield put(
         fetchFailed({
-          errCode: "loadWallet.noWallet"
+          errCode: errCode["loadWallet.noWallet"]
         })
       )
     }
   } catch (error) {
+    console.log("init saga", error);
     yield put(
       fetchFailed({
-        errCode: "loadWallet.noWallet"
+        errCode: errCode["loadWallet.noWallet"]
       })
     )
   }

@@ -14,17 +14,25 @@ import { COLOR, withTheme } from 'react-native-material-ui';
 import { Navigation } from 'react-native-navigation';
 import Modal from 'react-native-modal';
 import Col, { Row } from 'react-native-col';
+import { translate } from '../../utils/I18N';
+import deepEqual from 'deep-equal';
 
 import { connect } from 'react-redux';
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-community/async-storage';
 import { ethers } from 'ethers';
 // import keythereum from 'keythereum';
 
 import { getDepositState, getInitState } from '../../reducers/selectors';
 import { InitStateType } from '../../reducers/initReducer';
 import { DepositStateType } from '../../reducers/depositReducer';
-import { LOAD_WALLET } from '../../sagas/initSaga';
-
+import {
+  LOAD_WALLET_INIT,
+  SET_ADDRESS_DEPOSIT
+} from '../../actions/actionTypes';
+import errCode from '../../utils/errCode'
+import { deepCompare } from '../../utils/deepCompare';
+import { getDecryptedWallet } from '../../api/wallet';
 import duckImg from '../../assets/duck.png';
 
 interface InitProps {
@@ -35,6 +43,7 @@ interface InitPageState extends InitStateType {
   address: string;
   createNewWalletModalVisble: boolean;
   loadingStatus: string;
+  wallet: string;
 };
 
 class InitPage extends React.Component<InitProps, InitPageState> {
@@ -49,14 +58,66 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       loading: this.props.depositReducer.loading,
       status: this.props.depositReducer.status,
       address: this.props.depositReducer.address,
+      errCode: this.props.initReducer.errCode,
       createNewWalletModalVisble: false,
-      loadingStatus: ""
+      loadingStatus: "",
+      wallet: null
     }
   }
+
   componentDidMount() {
     console.log(this.props.depositReducer.address.length);
-    if (this.props.depositReducer.address.length < 1) {
-      this.props.loadWallet();
+    this.props.loadWallet();
+    this.setState({
+      loading: this.props.initReducer.loading,
+      status: this.props.initReducer.status,
+      address: this.props.depositReducer.address,
+      errCode: this.props.initReducer.errCode,
+      createNewWalletModalVisble: false,
+      loadingStatus: "",
+      wallet: null
+    })
+  }
+
+  componentDidUpdate() {
+    if (this.props.initReducer.wallet != null) {
+      console.log(
+        "componentDidUpdate",
+        deepCompare(this.props.initReducer.wallet, this.state.wallet));
+      if (!deepCompare(this.props.initReducer.wallet, this.state.wallet)) {
+        console.log("this.props.initReducer.wallet", this.props.initReducer.wallet, this.state.wallet);
+        this.setState({
+          wallet: this.props.initReducer.wallet,
+        })
+        this.props.setAddress({
+          address: this.props.initReducer.wallet.signingKey.address
+        });
+      }
+    }
+    if (this.props.initReducer.errCode == errCode["loadWallet.noWallet"]) {
+      if (this.state.errCode == null ||
+        this.state.errCode == undefined) {
+        console.log("initPage errCode state=null", this.props.initReducer.errCode);
+        this.setState({
+          createNewWalletModalVisble: true,
+          errCode: this.props.initReducer.errCode
+        });
+      } else {
+        if (this.props.initReducer.errCode.valueOf() != this.state.errCode.valueOf()) {
+          console.log("initPage errCode state!=null", this.props.initReducer.errCode);
+          this.setState({
+            createNewWalletModalVisble: true,
+            errCode: this.props.initReducer.errCode
+          });
+        }
+      }
+    } else {
+      console.log("default", this.props.initReducer.errCode)
+      if (this.props.initReducer.errCode != null) {
+        this.setState({
+          errCode: this.props.initReducer.errCode
+        })
+      }
     }
   }
 
@@ -94,17 +155,16 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                     newWallet = newWallet.encrypt(passPharse).then((res) => {
                       console.log("encrypted");
                       console.log(res);
-                      this.props.fetchSuccess({
-                        wallet: res,
-                        address: address
-                      })
-                      SecureStore.setItemAsync("wallet", res).then((result) => {
-                        console.log(result);
+                      SecureStore.setItemAsync("wallet", JSON.stringify(res)).then((res) => {
+                        console.log(res);
                         this.setState({
                           createNewWalletModalVisble: false,
                           loadingStatus: "new wallet created"
                         })
                       });
+                      this.props.setAddress({
+                        address: address
+                      })
                       SecureStore.setItemAsync("passPharse", passPharse);
                     });
                   }}
@@ -127,7 +187,6 @@ class InitPage extends React.Component<InitProps, InitPageState> {
         </View>
       )
     }
-    console.log("init state", this.state);
     return (
       <>
         <ScrollView
@@ -171,15 +230,13 @@ class InitPage extends React.Component<InitProps, InitPageState> {
 }
 const mapStateToProps = (state) => {
   const initReducer = getInitState(state);
-  console.log("init", initReducer);
   const depositReducer = getDepositState(state);
-  console.log("deposit", depositReducer);
   return { depositReducer, initReducer };
 }
 const mapDispatchToProps = dispatch => {
   return {
-    loadWallet: () => dispatch({ type: LOAD_WALLET }),
-    fetchSuccess: (payload) => dispatch({ type: "fetchSuccess", payload: payload }),
+    loadWallet: () => dispatch({ type: LOAD_WALLET_INIT }),
+    setAddress: (payload) => dispatch({ type: SET_ADDRESS_DEPOSIT, payload: payload }),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(InitPage);
@@ -239,4 +296,4 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginLeft: "10%"
   },
-});
+})

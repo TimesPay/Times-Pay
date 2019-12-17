@@ -28,10 +28,12 @@ import * as RNLocalize from "react-native-localize";
 import InitPage from './src/pages/InitPage';
 import ExchangePage from './src/pages/ExchangePage';
 import DepositPage from './src/pages/DepositPage';
+// import PayPage from './src/pages/PayPage';
 
 import initReducer from './src/reducers/initReducer';
 import exchangeReducer from './src/reducers/exchangeReducer';
 import depositReducer from './src/reducers/depositReducer';
+import payReducer from './src/reducers/payReducer';
 
 import rootSaga from "./src/sagas/entrySaga";
 
@@ -39,7 +41,8 @@ const sagaMiddleware = createSagaMiddleware();
 let store = createStore(combineReducers({
   initReducer,
   exchangeReducer,
-  depositReducer
+  depositReducer,
+  payReducer
 }), applyMiddleware(sagaMiddleware));
 sagaMiddleware.run(rootSaga);
 
@@ -65,7 +68,10 @@ const MaterialBottomTabNavigator = createMaterialBottomTabNavigator(
     },
     Deposit: {
       screen: DepositPage,
-    }
+    },
+    // Pay: {
+    //   screen: PayPage
+    // }
   },
   {
     initialRouteName: 'Initial',
@@ -104,7 +110,7 @@ class App extends React.Component<{}, AppState> {
     setI18nConfig();
     this.forceUpdate();
   };
-  
+
   render() {
     return (
       <Provider store={store}>
