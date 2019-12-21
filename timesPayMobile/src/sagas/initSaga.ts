@@ -10,7 +10,7 @@ import {
   fetchFailed
 } from '../actions/initAction';
 
-import { getEncryptedWallet, getPassPharse, getDecryptedWallet } from '../api/wallet';
+import { getEncryptedWallet, getPassPharse, getDecryptedWallet, connectWalletToProvider } from '../api/wallet';
 import errCode from '../utils/errCode';
 
 export function* watchLoadWallet() {
@@ -30,6 +30,9 @@ function* loadWalletFlow() {
           encryptedWallet: JSON.parse(encryptedWallet),
           passwd: passwd
         });
+        newWallet = yield call(connectWalletToProvider, {
+          wallet: newWallet
+        })
         console.log("newWallet", newWallet);
         yield put(
           fetchSuccess({

@@ -22,5 +22,18 @@ export const getPassPharse = () => {
 export const getDecryptedWallet = (payload) => {
   const { encryptedWallet, passwd } = payload;
   console.log("getDecryptedWallet", encryptedWallet, passwd);
-  return new ethers.Wallet.fromEncryptedJson(encryptedWallet, passwd)
+  return new ethers.Wallet.fromEncryptedJson(encryptedWallet, passwd);
+}
+
+export const connectWalletToProvider = (payload) => {
+  const { wallet } = payload;
+  let provider = new ethers.getDefaultProvider("ropsten");
+  return wallet.connect(provider)
+}
+export const sendTransaction = (payload) => {
+  const { wallet, destAddress, amount } = payload;
+  return wallet.sendTransaction({
+    to: destAddress,
+    value: ethers.utils.parseEther(amount)
+  })
 }

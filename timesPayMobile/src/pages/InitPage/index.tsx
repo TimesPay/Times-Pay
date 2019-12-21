@@ -157,7 +157,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                     console.log("clicked");
                     let newWallet = new ethers.Wallet.createRandom();
                     let address = newWallet.address;
-                    console.log("address", address);
+                    console.log("newWallet", newWallet);
                     newWallet = newWallet.encrypt(passPharse).then((res) => {
                       console.log("encrypted");
                       console.log(res);

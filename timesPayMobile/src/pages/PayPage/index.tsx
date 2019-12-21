@@ -22,13 +22,15 @@ import * as Permissions from 'expo-permissions';
 import {
   payStart,
   paySuccess,
-  payFailed
+  payFailed,
+  payStartRequest
 } from '../../actions/payAction';
 import { getDepositState, getInitState, getPayState } from '../../reducers/selectors';
 import { InitStateType } from '../../reducers/initReducer';
 import { DepositStateType } from '../../reducers/depositReducer';
 import { PayStateType } from '../../reducers/payReducer';
 import errCode from '../../utils/errCode';
+import { stateUpdater } from '../../utils/stateUpdater'
 
 interface PayProps {
   depositReducer: DepositStateType,
@@ -47,6 +49,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
       title: "Pay",
     };
   };
+  scanner: QRCodeScanner;
   constructor(props) {
     super(props);
     this.state = {
@@ -85,12 +88,34 @@ class PayPage extends React.Component<PayProps, PayPageState> {
     }
     getPermission();
   }
+  componentDidUpdate() {
+    // if(this.state.loading != this.props.payReducer.loading){
+    //   this.setState({
+    //     loading: this.props.payReducer.loading
+    //   })
+    // }
+    // if(this.state.errCode != this.props.payReducer.errCode) {
+    //   this.setState({
+    //     errCode: this.props.payReducer.errCode
+    //   })
+    // }
+    stateUpdater(this, "loading", "payReducer");
+    stateUpdater(this, "errCode", "payReducer");
+    stateUpdater(this, "destAddress", "payReducer");
+  }
   handleOnRead(e) {
     console.log("handleOnRead", e);
-    this.setState({
-      scanned: true
-    });
-    this.props.payStart(e.data);
+    if(! this.state.loading && ! this.props.payReducer.loading) {
+      this.setState({
+        scanned: true,
+        loading: true
+      });
+      console.log(e.data);
+      this.props.pay({
+        destAddress: e.data,
+        wallet: this.props.initReducer.wallet
+      });
+    }
   }
   render() {
     return (
@@ -109,23 +134,36 @@ class PayPage extends React.Component<PayProps, PayPageState> {
               maxWidth: 250
             }}>
             {
-              ! this.state.hasPermission
-              ? <Text>asking for permission</Text>
-              :<QRCodeScanner
-                onRead={(e)=>this.handleOnRead(e)}
-                topContent={
-                  <Text style={styles.centerText}>
-                    Please scan QR-Code to Pay
-                  </Text>
-                }
-                bottomContent={
-                  <TouchableOpacity style={styles.buttonTouchable}>
-                    <Text style={styles.buttonText}>OK. Got it!</Text>
-                  </TouchableOpacity>
-                }
-              />
+              this.state.hasPermission && ! this.state.scanned
+                ? <QRCodeScanner
+                  onRead={this.state.scanned
+                    ? undefined
+                    : (e) => this.handleOnRead(e)
+                  }
+                  topContent={
+                    <Text style={styles.centerText}>
+                      Please scan QR-Code to Pay
+                    </Text>
+                  }
+                  bottomContent={
+                    <TouchableOpacity style={styles.buttonTouchable}>
+                      <Text style={styles.buttonText}>OK. Got it!</Text>
+                    </TouchableOpacity>
+                  }
+                  ref={(node)=> {this.scanner = node}}
+                  reactivate={false}
+                  reactivateTimeout={10}
+                />
+                : <Text>{this.props.payReducer.destAddress}</Text>
             }
-            {this.state.scanned && <Button title={'Tap to Scan Again'} onPress={() => thi.setState({scanned: false})} />}
+            <View>
+              {this.state.scanned && <Button
+                title={'Tap to Scan Again'}
+                onPress={() => {
+                  this.setState({ scanned: false })
+                }} />
+              }
+            </View>
           </View>
         </ScrollView>
       </>
@@ -148,7 +186,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = dispatch => {
   return {
-    payStart: (payload) => dispatch(payStart(payload)),
+    pay: (payload) => dispatch(payStartRequest(payload)),
     paySuccess: (payload) => dispatch(paySuccess(payload)),
     payFailed: (payload) => dispatch(payFailed(payload)),
   }

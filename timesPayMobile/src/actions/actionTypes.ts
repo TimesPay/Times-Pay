@@ -16,3 +16,4 @@ export const FETCH_FAILED_EXCHANGE = "exchange/fetchFailed";
 export const PAY_START = "pay/payStart";
 export const PAY_SUCCESS = "pay/paySuccess";
 export const PAY_FAILED = "pay/payFailed";
+export const PAY_START_REQUEST = "pay/payStartRequest";
