@@ -1,0 +1,36 @@
+{
+    "name": "@types/lodash.memoize",
+    "version": "4.1.6",
+    "description": "TypeScript definitions for lodash.memoize",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Brian Zengel",
+            "url": "https://github.com/bczengel",
+            "githubUsername": "bczengel"
+        },
+        {
+            "name": "Ilya Mochalov",
+            "url": "https://github.com/chrootsu",
+            "githubUsername": "chrootsu"
+        },
+        {
+            "name": "Stepan Mikhaylyuk",
+            "url": "https://github.com/stepancar",
+            "githubUsername": "stepancar"
+        }
+    ],
+    "main": "",
+    "types": "index",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/lodash.memoize"
+    },
+    "scripts": {},
+    "dependencies": {
+        "@types/lodash": "*"
+    },
+    "typesPublisherContentHash": "a0da1be683614d1676f2d4859fbb535b52e70a414d4f26d2c27fc445c299fe90",
+    "typeScriptVersion": "2.8"
+}

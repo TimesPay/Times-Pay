@@ -75,12 +75,13 @@ import com.android.build.OutputFile
  * ]
  */
 
-project.ext.react = [
-    entryFile: "index.js",
-    enableHermes: false,  // clean and rebuild if changing
-]
+ project.ext.react = [
+   entryFile      : "index.js", // or index.android.js
+   bundleInRelease: true,
+   bundleInDebug: true,
+ ]
 
-apply from: "../../node_modules/react-native/react.gradle"
+ apply from: "../../node_modules/react-native/react.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -120,8 +121,8 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 def enableHermes = project.ext.react.get("enableHermes", false);
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -130,9 +131,10 @@ android {
 
     defaultConfig {
         applicationId "com.timespaymobile"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        minSdkVersion 21
+        targetSdkVersion 28
         missingDimensionStrategy "RNN.reactNativeVersion", "reactNative60" // See note below
+        missingDimensionStrategy 'react-native-camera', 'mlkit'
         versionCode 1
         versionName "1.0"
         ndk {
@@ -167,8 +169,10 @@ android {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
             signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
+            minifyEnabled false
+            matchingFallbacks = ['release', 'debug']
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+
         }
     }
     // applicationVariants are e.g. debug, release
@@ -193,7 +197,6 @@ dependencies {
     addUnimodulesDependencies()
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
-
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")

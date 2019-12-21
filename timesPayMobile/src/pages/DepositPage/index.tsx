@@ -89,7 +89,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(DepositPage);
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: COLOR.yellow50,
-    color: COLOR.blue50,
-    marginLeft: '10%'
+    color: COLOR.blue50
   },
 })

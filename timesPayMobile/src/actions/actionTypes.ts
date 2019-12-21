@@ -13,6 +13,6 @@ export const FETCH_START_EXCHANGE = "exchange/fetchStart";
 export const FETCH_SUCCESS_EXCHANGE = "exchange/fetchSuccess";
 export const FETCH_FAILED_EXCHANGE = "exchange/fetchFailed";
 //pay
-export const FETCH_START_PAY = "pay/fetchStart";
-export const FETCH_SUCCESS_PAY = "pay/fetchSuccess";
-export const FETCH_FAILED_PAY = "pay/fetchFailed";
+export const PAY_START = "pay/payStart";
+export const PAY_SUCCESS = "pay/paySuccess";
+export const PAY_FAILED = "pay/payFailed";

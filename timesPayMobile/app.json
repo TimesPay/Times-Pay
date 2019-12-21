@@ -1,4 +1,7 @@
 {
   "name": "timesPayMobile",
-  "displayName": "Times Pay Mobile"
+  "displayName": "Times Pay Mobile",
+  "permissions": [
+    "CAMERA"
+  ]
 }

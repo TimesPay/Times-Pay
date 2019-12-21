@@ -5,11 +5,5 @@ import {
   FETCH_FAILED_EXCHANGE
 } from '../actions/actionTypes';
 
-import {
-  fetchStart,
-  fetchSuccess,
-  fetchFailed
-} from '../actions/exchangeAction';
-
 export function* watchExchange() {
 }

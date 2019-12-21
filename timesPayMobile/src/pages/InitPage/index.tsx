@@ -7,10 +7,10 @@ import {
   StatusBar,
   Image,
   Button,
-  TextInput
+  TextInput,
+  TouchableOpacity
 } from 'react-native';
 import React, { useState } from 'react';
-import { COLOR, withTheme } from 'react-native-material-ui';
 import { Navigation } from 'react-native-navigation';
 import Modal from 'react-native-modal';
 import Col, { Row } from 'react-native-col';
@@ -21,7 +21,8 @@ import { connect } from 'react-redux';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-community/async-storage';
 import { ethers } from 'ethers';
-// import keythereum from 'keythereum';
+import { COLOR, ThemeContext, getTheme, withTheme } from 'react-native-material-ui';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import { getDepositState, getInitState } from '../../reducers/selectors';
 import { InitStateType } from '../../reducers/initReducer';
@@ -88,6 +89,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
         console.log("this.props.initReducer.wallet", this.props.initReducer.wallet, this.state.wallet);
         this.setState({
           wallet: this.props.initReducer.wallet,
+          createNewWalletModalVisble: false
         })
         this.props.setAddress({
           address: this.props.initReducer.wallet.signingKey.address
@@ -115,9 +117,13 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       console.log("default", this.props.initReducer.errCode)
       if (this.props.initReducer.errCode != null) {
         this.setState({
-          errCode: this.props.initReducer.errCode
+          errCode: this.props.initReducer.errCode,
+          createNewWalletModalVisble: false
         })
       }
+    }
+    if (this.state.loading != this.props.initReducer.loading) {
+      this.setState({ loading: this.props.initReducer.loading });
     }
   }
 
@@ -192,6 +198,10 @@ class InitPage extends React.Component<InitProps, InitPageState> {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}>
+          <Spinner
+            visible={this.state.loading}
+            textContent={'Loading...'}
+          />
           <View style={styles.body}>
             <Image source={duckImg} style={styles.mainIcon} />
           </View>
@@ -199,7 +209,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
             <Text>
               {this.state.loadingStatus}
             </Text>
-            <Button
+            <TouchableOpacity
               title="action"
               onPress={() => {
                 console.log("clicked");
@@ -207,11 +217,8 @@ class InitPage extends React.Component<InitProps, InitPageState> {
               }}
               style={styles.actionBtn}
             >
-            </Button>
+            </TouchableOpacity>
           </View>
-          <CreateWalletModal
-            createNewWalletModalVisble={this.state.createNewWalletModalVisble}
-          />
           <Button
             title="reset address"
             onPress={() => {
@@ -223,6 +230,9 @@ class InitPage extends React.Component<InitProps, InitPageState> {
             }}
           >
           </Button>
+          <CreateWalletModal
+            createNewWalletModalVisble={this.state.createNewWalletModalVisble}
+          />
         </ScrollView>
       </>
     );
@@ -239,13 +249,12 @@ const mapDispatchToProps = dispatch => {
     setAddress: (payload) => dispatch({ type: SET_ADDRESS_DEPOSIT, payload: payload }),
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(InitPage);
+export default connect(mapStateToProps, mapDispatchToProps)(withTheme(InitPage));
 
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: COLOR.yellow50,
     color: COLOR.blue50,
-    marginLeft: '10%'
   },
   engine: {
     position: 'absolute',
@@ -287,13 +296,17 @@ const styles = StyleSheet.create({
   },
 
   actionBtn: {
-    width: 200
+    width: 200,
+    marginLeft: 10,
+    marginRight: 10,
+    backgroundColor: COLOR.blue800
   },
 
   newWallectConfirmModal: {
-    backgroundColor: '#000000',
+    backgroundColor: 'rgba(100,100,0,1)',
     borderBottomColor: '#000000',
     borderBottomWidth: 1,
-    marginLeft: "10%"
+    marginLeft: "10%",
+    backfaceVisibility: "hidden"
   },
 })

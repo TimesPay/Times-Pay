@@ -1,47 +1,53 @@
 import {
-  FETCH_START_PAY,
-  FETCH_SUCCESS_PAY,
-  FETCH_FAILED_PAY
+  PAY_START,
+  PAY_SUCCESS,
+  PAY_FAILED,
 } from '../actions/actionTypes';
 import { commonStateType } from '../utils/commonStateType';
 
 export interface PayStateType extends commonStateType {
-  destAddress: string
+  destAddress: string,
+  info: string,
 }
 const initState: PayStateType = {
   loading: false,
   status: null,
   destAddress: "",
   errCode: null,
+  info: ""
 }
 
 export default function payReducer(state = initState, action) {
+  console.log("payReducer", action);
   switch (action.type) {
-    case FETCH_START_PAY:
+    case PAY_START:
       return {
         ...state,
         loading: true,
         status: state.status,
-        destAddress: state.destAddress,
-        errCode: state.errCode
+        destAddress: action.payload.destAddress,
+        errCode: state.errCode,
+        info: state.info
       }
       break;
-    case FETCH_SUCCESS_PAY:
+    case PAY_SUCCESS:
       return {
         ...state,
         loading: false,
         status: "success",
-        destAddress: action.payload.destAddress,
-        errCode: state.errCode
+        destAddress: "",
+        errCode: state.errCode,
+        info: action.payload.info
       }
       break;
-    case FETCH_FAILED_PAY:
+    case PAY_FAILED:
       return {
         ...state,
         loading: false,
         status: "failed",
         destAddress: state.destAddress,
-        errCode: action.payload.errCode
+        errCode: action.payload.errCode,
+        info: state.info
       }
       break;
     default:
