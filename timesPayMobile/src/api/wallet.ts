@@ -1,5 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 
+import { network } from '../config';
 import AsyncStorage from '@react-native-community/async-storage';
 import { ethers } from 'ethers';
 
@@ -27,7 +28,7 @@ export const getDecryptedWallet = (payload) => {
 
 export const connectWalletToProvider = (payload) => {
   const { wallet } = payload;
-  let provider = new ethers.getDefaultProvider("ropsten");
+  let provider = new ethers.getDefaultProvider(network);
   return wallet.connect(provider)
 }
 export const sendTransaction = (payload) => {

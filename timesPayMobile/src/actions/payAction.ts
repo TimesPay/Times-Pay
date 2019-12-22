@@ -11,7 +11,8 @@ export const payStartRequest = (payload) => {
     type: PAY_START_REQUEST,
     payload: {
       destAddress: payload.destAddress,
-      wallet: payload.wallet
+      wallet: payload.wallet,
+      amount: payload.amount
     }
   }
 }
