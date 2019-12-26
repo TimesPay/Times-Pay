@@ -17,6 +17,7 @@ const initState: InitStateType = {
 }
 
 export default function initReducer(state = initState, action) {
+  console.log("init reducer", action);
   switch (action.type) {
     case FETCH_START_INIT:
       return {
@@ -24,7 +25,7 @@ export default function initReducer(state = initState, action) {
         loading: true,
         status: state.status,
         wallet: state.wallet,
-        errCode: state.errCode
+        errCode: null
       }
       break;
     case FETCH_SUCCESS_INIT:
@@ -33,7 +34,7 @@ export default function initReducer(state = initState, action) {
         loading: false,
         status: "success",
         wallet: action.payload.wallet,
-        errCode: state.errCode
+        errCode: null
       }
       break;
     case FETCH_FAILED_INIT:
@@ -46,8 +47,6 @@ export default function initReducer(state = initState, action) {
       }
       break;
     default:
-      return {
-        ...state
-      };
+      return state;
   }
 }

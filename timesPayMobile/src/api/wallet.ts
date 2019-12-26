@@ -9,23 +9,25 @@ export const getEncryptedWallet = () => {
   return SecureStore.getItemAsync("wallet");
 }
 
+export const setEncryptedWallet = (payload) => {
+  return SecureStore.setItemAsync("wallet", payload.wallet);
+}
 export const getPassPharse = () => {
-  // let seiHaakGeng = AsyncStorage.setItemAsync("seihaakgeng","seihaakgeng").then(res=>{
-  //   console.log("set seiHaakGeng");
-  //   AsyncStorage.getItemAsync("seihaakgeng").then(seiHaakGeng=>{
-  //     console.log("get seiHaakGeng", seiHaakGeng);
-  //   })
-  // })
-  // console.log("passPharse", seiHaakGeng);
   return SecureStore.getItemAsync("passPharse");
 }
 
+export const setPassPharse = (payload) => {
+  return SecureStore.setItemAsync("passPharse", payload.passPharse);
+}
 export const getDecryptedWallet = (payload) => {
   const { encryptedWallet, passwd } = payload;
-  console.log("getDecryptedWallet", encryptedWallet, passwd);
   return new ethers.Wallet.fromEncryptedJson(encryptedWallet, passwd);
 }
 
+export const encryptWallet = (payload) => {
+    const { wallet, passPharse } = payload;
+    return wallet.encrypt(passPharse)
+}
 export const connectWalletToProvider = (payload) => {
   const { wallet } = payload;
   let provider = new ethers.getDefaultProvider(network);

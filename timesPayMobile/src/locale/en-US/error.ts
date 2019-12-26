@@ -1,4 +1,4 @@
-export const error = {
-  "loadWallet.noWallet": "No wallet found",
-  "loadWallet.missingPW": "Missing password"
+export default {
+  "loadWallet_noWallet": "No wallet found",
+  "loadWallet_missingPW": "Missing password"
 }

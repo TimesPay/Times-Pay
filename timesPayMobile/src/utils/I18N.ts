@@ -4,7 +4,7 @@ import memoize from "lodash.memoize";
 import { I18nManager } from 'react-native';
 export const translationGetters = {
   // lazy requires (metro bundler does not support symlinks)
-  "en-US": () => require("../locale/en-US"),
+  "en-US": () => require("../locale/en-US.ts"),
 };
 
 export const translate = memoize(
@@ -24,8 +24,9 @@ export const setI18nConfig = () => {
   translate.cache.clear();
   // update layout direction
   I18nManager.forceRTL(isRTL);
-
+  console.log("languageTag", languageTag);
   // set i18n-js config
-  i18n.translations = { [languageTag]: translationGetters[languageTag]() };
+  i18n.translations = { [languageTag]: translationGetters[languageTag]()["default"]};
+  console.log("i18n.translations", i18n.translations);
   i18n.locale = languageTag;
 };

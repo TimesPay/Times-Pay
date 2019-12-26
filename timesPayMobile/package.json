@@ -51,6 +51,7 @@
     "keythereum": "^1.0.4",
     "lodash": "^4.17.15",
     "lodash.memoize": "^4.1.2",
+    "native-base": "^2.13.8",
     "react": "16.9.0",
     "react-native": "0.61.5",
     "react-native-camera": "^3.15.0",

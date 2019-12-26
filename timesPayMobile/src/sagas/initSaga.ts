@@ -1,16 +1,26 @@
 import { call, put, takeEvery } from "redux-saga/effects";
 
 import {
-  LOAD_WALLET_INIT
+  LOAD_WALLET_INIT,
+  CREATE_WALLET_INIT
 } from '../actions/actionTypes';
 
 import {
   fetchStart,
   fetchSuccess,
-  fetchFailed
+  fetchFailed,
+  createWallet,
 } from '../actions/initAction';
 
-import { getEncryptedWallet, getPassPharse, getDecryptedWallet, connectWalletToProvider } from '../api/wallet';
+import {
+  getEncryptedWallet,
+  getPassPharse,
+  getDecryptedWallet,
+  connectWalletToProvider,
+  setPassPharse,
+  setEncryptedWallet,
+  encryptWallet
+} from '../api/wallet';
 import errCode from '../utils/errCode';
 
 export function* watchLoadWallet() {
@@ -54,6 +64,47 @@ function* loadWalletFlow() {
         })
       )
     }
+  } catch (error) {
+    console.log("init saga", error);
+    yield put(
+      fetchFailed({
+        errCode: errCode["loadWallet.noWallet"]
+      })
+    )
+  }
+}
+
+export function* watchCreateWallet() {
+  yield takeEvery(CREATE_WALLET_INIT, createWalletFlow);
+}
+
+function* createWalletFlow(action) {
+  try {
+    yield put(fetchStart());
+    const { passPharse, wallet } = action.payload;
+    console.log("createWalletFlow", action)
+    let encryptedWallet = yield call(encryptWallet,
+      {
+        wallet: wallet,
+        passPharse: passPharse
+      });
+    let passPharseStatus = yield call(setPassPharse,
+      {
+        passPharse: passPharse
+      });
+    let walletStatus = yield call(setEncryptedWallet,
+      {
+        wallet: JSON.stringify(encryptedWallet)
+      });
+    console.log("createWalletFlow", passPharse, wallet, encryptedWallet);
+    newWallet = yield call(connectWalletToProvider, {
+      wallet: wallet
+    });
+    yield put(
+      fetchSuccess({
+        wallet: newWallet
+      })
+    );
   } catch (error) {
     console.log("init saga", error);
     yield put(

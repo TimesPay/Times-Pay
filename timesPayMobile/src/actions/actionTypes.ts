@@ -1,5 +1,6 @@
 //init
 export const LOAD_WALLET_INIT = "init/loadWallet";
+export const CREATE_WALLET_INIT = "init/createWallet";
 export const FETCH_START_INIT = "init/fetchStart";
 export const FETCH_SUCCESS_INIT = "init/fetchSuccess";
 export const FETCH_FAILED_INIT = "init/fetchFailed";

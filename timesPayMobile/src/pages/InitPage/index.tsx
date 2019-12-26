@@ -6,13 +6,14 @@ import {
   Text,
   StatusBar,
   Image,
-  Button,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  Modal,
+  Clipboard
 } from 'react-native';
+// import Modal from 'react-native-modal';
 import React, { useState } from 'react';
 import { Navigation } from 'react-native-navigation';
-import Modal from 'react-native-modal';
 import Col, { Row } from 'react-native-col';
 import { translate } from '../../utils/I18N';
 import deepEqual from 'deep-equal';
@@ -21,7 +22,12 @@ import { connect } from 'react-redux';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-community/async-storage';
 import { ethers } from 'ethers';
-import { COLOR, ThemeContext, getTheme, withTheme } from 'react-native-material-ui';
+import { COLOR } from 'react-native-material-ui';
+import {
+  Card,
+  Button,
+  CardItem
+} from 'native-base'
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { getDepositState, getInitState } from '../../reducers/selectors';
@@ -33,7 +39,10 @@ import {
 } from '../../actions/actionTypes';
 import errCode from '../../utils/errCode'
 import { deepCompare } from '../../utils/deepCompare';
+import { setI18nConfig } from '../../utils/I18N';
 import { getDecryptedWallet } from '../../api/wallet';
+import { createWallet } from '../../actions/initAction';
+
 import duckImg from '../../assets/duck.png';
 
 interface InitProps {
@@ -45,6 +54,8 @@ interface InitPageState extends InitStateType {
   createNewWalletModalVisble: boolean;
   loadingStatus: string;
   wallet: string;
+  backupPassPharse: string;
+  recoverWalletModalVisible: boolean;
 };
 
 class InitPage extends React.Component<InitProps, InitPageState> {
@@ -61,12 +72,15 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       address: this.props.depositReducer.address,
       errCode: this.props.initReducer.errCode,
       createNewWalletModalVisble: false,
+      recoverWalletModalVisible: false,
       loadingStatus: "",
-      wallet: null
+      wallet: null,
+      backupPassPharse: ""
     }
   }
 
   componentDidMount() {
+    setI18nConfig();
     console.log(this.props.depositReducer.address.length);
     this.props.loadWallet();
     this.setState({
@@ -75,21 +89,21 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       address: this.props.depositReducer.address,
       errCode: this.props.initReducer.errCode,
       createNewWalletModalVisble: false,
+      recoverWalletModalVisible: false,
       loadingStatus: "",
-      wallet: null
+      wallet: null,
+      backupPassPharse: ""
     })
   }
 
   componentDidUpdate() {
+    console.log("componentDidUpdate", this.props, this.state);
     if (this.props.initReducer.wallet != null) {
-      console.log(
-        "componentDidUpdate",
-        deepCompare(this.props.initReducer.wallet, this.state.wallet));
       if (!deepCompare(this.props.initReducer.wallet, this.state.wallet)) {
-        console.log("this.props.initReducer.wallet", this.props.initReducer.wallet, this.state.wallet);
         this.setState({
           wallet: this.props.initReducer.wallet,
-          createNewWalletModalVisble: false
+          createNewWalletModalVisble: false,
+          recoverWalletModalVisible: false
         })
         this.props.setAddress({
           address: this.props.initReducer.wallet.signingKey.address
@@ -118,7 +132,8 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       if (this.props.initReducer.errCode != null) {
         this.setState({
           errCode: this.props.initReducer.errCode,
-          createNewWalletModalVisble: false
+          createNewWalletModalVisble: false,
+          recoverWalletModalVisible: false
         })
       }
     }
@@ -129,111 +144,269 @@ class InitPage extends React.Component<InitProps, InitPageState> {
 
   render() {
     const CreateWalletModal = (props) => {
-      const [passPharse, setPassPharse] = useState("")
+      const [passPharse, setPassPharse] = useState("");
+      console.log("props.createNewWalletModalVisble", props.createNewWalletModalVisble);
       return (
-        <View
-          style={styles.newWallectConfirmModal}
-        >
-          <Modal isVisible={props.createNewWalletModalVisble}>
-            <View>
-              <Text>Do you want to create a new wallet?</Text>
-            </View>
-            <View>
-              <TextInput
-                editable
-                maxLength={40}
-                onChangeText={(text) => {
-                  setPassPharse(text);
-                }}
-                value={passPharse}
-              />
-            </View>
-            <Row>
-              <Col.L>
-                <Button
-                  title="Yes"
-                  disabled={passPharse.length == 0}
-                  onPress={() => {
-                    console.log("clicked");
-                    let newWallet = new ethers.Wallet.createRandom();
-                    let address = newWallet.address;
-                    console.log("newWallet", newWallet);
-                    newWallet = newWallet.encrypt(passPharse).then((res) => {
-                      console.log("encrypted");
-                      console.log(res);
-                      SecureStore.setItemAsync("wallet", JSON.stringify(res)).then((res) => {
-                        console.log(res);
+        <View>
+          <Modal
+            visible={props.createNewWalletModalVisble}
+            transparent={true}
+          >
+            <Card
+              style={styles.newWallectConfirmModal}
+              visible={props.createNewWalletModalVisble}
+            >
+              <Col>
+                <CardItem header bordered>
+                  <Text>Do you want to create a new wallet?</Text>
+                </CardItem>
+                <Row>
+                  <CardItem cocardBody bordered>
+                    <TextInput
+                      editable
+                      maxLength={40}
+                      onChangeText={(text) => {
+                        setPassPharse(text);
+                      }}
+                      value={passPharse}
+                      placeholder="password"
+                      style={styles.passwordInputBox}
+                      clearButtonMode="unless-editing"
+                      secureTextEntry={true}
+                      textContentType="newPassword"
+                    />
+                  </CardItem>
+                </Row>
+                <Row
+                  type="flex"
+                  justifyContent="space-between"
+                >
+                  <Col.BL>
+                    <CardItem
+                      cardBody
+                      button
+                      Primary
+                      disabled={passPharse.length == 0}
+                      onPress={() => {
+                        console.log("clicked");
+                        let newWallet = new ethers.Wallet.createRandom();
+                        let address = newWallet.address;
+                        console.log("newWallet", newWallet);
+                        newWallet = newWallet.encrypt(passPharse).then((res) => {
+                          console.log("encrypted");
+                          console.log(res);
+                          SecureStore.setItemAsync("wallet", JSON.stringify(res)).then((res) => {
+                            console.log(res);
+                            this.setState({
+                              createNewWalletModalVisble: false,
+                              loadingStatus: "new wallet created"
+                            })
+                          });
+                          this.props.setAddress({
+                            address: address
+                          })
+                          SecureStore.setItemAsync("passPharse", passPharse);
+                        });
+                      }}
+                    >
+                      <Text>YES</Text>
+                    </CardItem>
+                  </Col.BL>
+                  <Col.BR>
+                    <CardItem
+                      Primary
+                      button
+                      cardBody
+                      onPress={() => {
                         this.setState({
-                          createNewWalletModalVisble: false,
-                          loadingStatus: "new wallet created"
+                          createNewWalletModalVisble: false
                         })
-                      });
-                      this.props.setAddress({
-                        address: address
+                      }}
+                    >
+                      <Text>No</Text>
+                    </CardItem>
+                  </Col.BR>
+                </Row>
+                <Row>
+                  <CardItem
+                    footer
+                    bordered
+                    button
+                    onPress={() => {
+                      this.setState({
+                        recoverWalletModalVisible: true,
+                        createNewWalletModalVisble: false
                       })
-                      SecureStore.setItemAsync("passPharse", passPharse);
-                    });
-                  }}
-                >
-                </Button>
-              </Col.L>
-              <Col.R>
-                <Button
-                  title="No"
-                  onPress={() => {
-                    this.setState({
-                      createNewWalletModalVisble: false
-                    })
-                  }}
-                >
-                </Button>
-              </Col.R>
-            </Row>
+                    }}
+                  >
+                    <Text>{translate("init_recover")}</Text>
+                  </CardItem>
+                </Row>
+              </Col>
+            </Card>
           </Modal>
         </View>
       )
     }
-    return (
-      <>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Spinner
-            visible={this.state.loading}
-            textContent={'Loading...'}
-          />
-          <View style={styles.body}>
-            <Image source={duckImg} style={styles.mainIcon} />
-          </View>
-          <View>
-            <Text>
-              {this.state.loadingStatus}
-            </Text>
-            <TouchableOpacity
-              title="action"
-              onPress={() => {
-                console.log("clicked");
-                this.props.navigation.navigate('Exchange');
-              }}
-              style={styles.actionBtn}
-            >
-            </TouchableOpacity>
-          </View>
-          <Button
-            title="reset address"
-            onPress={() => {
-              SecureStore.deleteItemAsync("wallet");
-              SecureStore.deleteItemAsync("passPharse");
-              this.setState({
-                loadingStatus: "address deleted"
-              })
-            }}
+    const RecoverWalletModal = (props) => {
+      const [recoverSecret, setRecoverSecret] = useState("");
+      const [passPharse, setPassPharse] = useState("");
+      return (
+        <View>
+          <Modal
+            visible={props.recoverWalletModalVisible}
+            transparent={true}
           >
-          </Button>
-          <CreateWalletModal
-            createNewWalletModalVisble={this.state.createNewWalletModalVisble}
-          />
-        </ScrollView>
+            <Card>
+              <CardItem header>
+                <Text>{translate("init_recover")}</Text>
+              </CardItem>
+              <CardItem cardBody bordered>
+                <Row>
+                  <Col.L>
+                    <Text>
+                      {`${translate("init_secret")}: `}
+                    </Text>
+                  </Col.L>
+                  <Col.R>
+                    <TextInput
+                      placeholder="secret"
+                      style={styles.passwordInputBox}
+                      clearButtonMode="unless-editing"
+                      onChangeText={(text: string) => {
+                        setRecoverSecret(text);
+                      }}
+                    >
+                    </TextInput>
+                  </Col.R>
+                </Row>
+              </CardItem>
+              <CardItem cardBody bordered>
+                <Row>
+                  <Col.L>
+                    <Text>
+                      {`${translate("init_password")}: `}
+                    </Text>
+                  </Col.L>
+                  <Col.R>
+                    <TextInput
+                      onChangeText={(text: string) => {
+                        setPassPharse(text);
+                      }}
+                      placeholder="password"
+                      style={styles.passwordInputBox}
+                      clearButtonMode="unless-editing"
+                      secureTextEntry={true}
+                      textContentType="newPassword"
+                    >
+                    </TextInput>
+                  </Col.R>
+                </Row>
+              </CardItem>
+              <CardItem
+                foorfooter
+                button
+                disabled={recoverSecret == ""}
+                onPress={() => {
+                  let newWallet = new ethers.Wallet.fromMnemonic(recoverSecret)
+                  console.log("wallet", newWallet);
+                  this.props.createWallet({
+                    wallet: newWallet,
+                    passPharse: passPharse
+                  })
+                }
+              }
+            >
+                <Text>{translate("init_startRecover")}</Text>
+              </CardItem>
+            </Card>
+          </Modal>
+        </View >
+      )
+  }
+  return(
+      <>
+  <ScrollView
+    contentInsetAdjustmentBehavior="automatic"
+    style={this.state.createNewWalletModalVisble ? styles.maskView : styles.scrollView}
+  >
+    <Spinner
+      visible={this.state.loading}
+      textContent={'Loading...'}
+    />
+    <Card>
+      <CardItem header bordered>
+        <Image source={duckImg} style={styles.mainIcon} />
+      </CardItem>
+      <CardItem cardBody bordered>
+        <Text
+          style={styles.statusText}
+        >
+          {`${translate("init_status")}: ${this.state.loadingStatus}`}
+        </Text>
+      </CardItem>
+      <CardItem cardBody bordered>
+        <Text>{translate("init_menu")}</Text>
+      </CardItem>
+      <CardItem
+        cardBody
+        bordered
+        button
+        onPress={() => {
+          SecureStore.deleteItemAsync("wallet");
+          SecureStore.deleteItemAsync("passPharse");
+          this.setState({
+            loadingStatus: translate("init_delete")
+          })
+        }}
+        style={styles.button}
+      >
+        <Text
+          adjustsFontSizeToFit
+          style={styles.buttonText}
+        >
+          {translate("init_reset")}
+        </Text>
+      </CardItem>
+      <CardItem
+        cardBody
+        bordered
+        button
+        onPress={() => {
+          this.setState({
+            backupPassPharse: this.state.wallet.signingKey.mnemonic
+          })
+        }}
+        style={styles.button}
+
+      >
+        <Text
+          adjustsFontSizeToFit
+          style={styles.buttonText}
+        >
+          {translate("init_backupWallet")}
+        </Text>
+      </CardItem>
+      <Text
+        visible={this.state.backupPassPharse != ""}
+        onPress={async () => {
+          await Clipboard.setString(this.state.backupPassPharse)
+          this.setState({
+            loadingStatus: translate("init_backuped")
+          })
+        }}
+        adjustsFontSizeToFit
+      >
+        {this.state.backupPassPharse}
+      </Text>
+    </Card>
+    <CreateWalletModal
+      createNewWalletModalVisble={this.state.createNewWalletModalVisble}
+    />
+    <RecoverWalletModal
+      recoverWalletModalVisible={this.state.recoverWalletModalVisible}
+    />
+  </ScrollView>
       </>
     );
   }
@@ -246,22 +419,31 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => {
   return {
     loadWallet: () => dispatch({ type: LOAD_WALLET_INIT }),
+    createWallet: (payload) => dispatch(createWallet(payload)),
     setAddress: (payload) => dispatch({ type: SET_ADDRESS_DEPOSIT, payload: payload }),
   }
 }
-export default connect(mapStateToProps, mapDispatchToProps)(withTheme(InitPage));
+export default connect(mapStateToProps, mapDispatchToProps)(InitPage);
 
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: COLOR.yellow50,
     color: COLOR.blue50,
+    position: "relative",
+    zIndex: 0,
+    minWidth: "100%",
+    minHeight: "100%"
+  },
+  maskView: {
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    zIndex: 0,
+    position: "relative",
+    minWidth: "100%",
+    minHeight: "100%"
   },
   engine: {
     position: 'absolute',
     right: 0,
-  },
-  body: {
-    backgroundColor: COLOR.white
   },
   sectionContainer: {
     marginTop: 32,
@@ -292,7 +474,10 @@ const styles = StyleSheet.create({
 
   mainIcon: {
     height: 200,
-    width: 200
+    width: 200,
+    backgroundColor: "rgba(0, 0, 0, 0)",
+    alignContent: "center",
+    marginLeft: "20%"
   },
 
   actionBtn: {
@@ -303,10 +488,31 @@ const styles = StyleSheet.create({
   },
 
   newWallectConfirmModal: {
-    backgroundColor: 'rgba(100,100,0,1)',
     borderBottomColor: '#000000',
     borderBottomWidth: 1,
     marginLeft: "10%",
-    backfaceVisibility: "hidden"
+    marginRight: "10%",
+    maxHeight: 200,
+    marginTop: "50%",
+    zIndex: 1,
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    flexWrap: "wrap"
+  },
+  passwordInputBox: {
+    borderWidth: 1,
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    marginTop: 10,
+    position: "relative"
+  },
+  button: {
+    backgroundColor: COLOR.blue800,
+    height: 48
+  },
+  buttonText: {
+    color: COLOR.white
   },
 })
