@@ -1,4 +1,5 @@
 export default {
-  "loadWallet.noWallet" : "loadWallet.noWallet",
-  "loadWallet.missingPW" : "loadWallet.missingPW",
+  "loadWallet.noWallet" : "loadWallet_noWallet",
+  "loadWallet.missingPW" : "loadWallet_missingPW",
+  "loadContract.failed": "loadContract_failed"
 }

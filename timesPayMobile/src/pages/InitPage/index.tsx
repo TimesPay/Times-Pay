@@ -16,7 +16,6 @@ import React, { useState } from 'react';
 import { Navigation } from 'react-native-navigation';
 import Col, { Row } from 'react-native-col';
 import { translate } from '../../utils/I18N';
-import deepEqual from 'deep-equal';
 
 import { connect } from 'react-redux';
 import * as SecureStore from 'expo-secure-store';
@@ -315,98 +314,98 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                     passPharse: passPharse
                   })
                 }
-              }
-            >
+                }
+              >
                 <Text>{translate("init_startRecover")}</Text>
               </CardItem>
             </Card>
           </Modal>
         </View >
       )
-  }
-  return(
+    }
+    return (
       <>
-  <ScrollView
-    contentInsetAdjustmentBehavior="automatic"
-    style={this.state.createNewWalletModalVisble ? styles.maskView : styles.scrollView}
-  >
-    <Spinner
-      visible={this.state.loading}
-      textContent={'Loading...'}
-    />
-    <Card>
-      <CardItem header bordered>
-        <Image source={duckImg} style={styles.mainIcon} />
-      </CardItem>
-      <CardItem cardBody bordered>
-        <Text
-          style={styles.statusText}
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          style={this.state.createNewWalletModalVisble ? styles.maskView : styles.scrollView}
         >
-          {`${translate("init_status")}: ${this.state.loadingStatus}`}
-        </Text>
-      </CardItem>
-      <CardItem cardBody bordered>
-        <Text>{translate("init_menu")}</Text>
-      </CardItem>
-      <CardItem
-        cardBody
-        bordered
-        button
-        onPress={() => {
-          SecureStore.deleteItemAsync("wallet");
-          SecureStore.deleteItemAsync("passPharse");
-          this.setState({
-            loadingStatus: translate("init_delete")
-          })
-        }}
-        style={styles.button}
-      >
-        <Text
-          adjustsFontSizeToFit
-          style={styles.buttonText}
-        >
-          {translate("init_reset")}
-        </Text>
-      </CardItem>
-      <CardItem
-        cardBody
-        bordered
-        button
-        onPress={() => {
-          this.setState({
-            backupPassPharse: this.state.wallet.signingKey.mnemonic
-          })
-        }}
-        style={styles.button}
+          <Spinner
+            visible={this.state.loading}
+            textContent={'Loading...'}
+          />
+          <Card>
+            <CardItem header bordered>
+              <Image source={duckImg} style={styles.mainIcon} />
+            </CardItem>
+            <CardItem cardBody bordered>
+              <Text
+                style={styles.statusText}
+              >
+                {`${translate("init_status")}: ${this.state.loadingStatus}`}
+              </Text>
+            </CardItem>
+            <CardItem cardBody bordered>
+              <Text>{translate("init_menu")}</Text>
+            </CardItem>
+            <CardItem
+              cardBody
+              bordered
+              button
+              onPress={() => {
+                SecureStore.deleteItemAsync("wallet");
+                SecureStore.deleteItemAsync("passPharse");
+                this.setState({
+                  loadingStatus: translate("init_delete")
+                })
+              }}
+              style={styles.button}
+            >
+              <Text
+                adjustsFontSizeToFit
+                style={styles.buttonText}
+              >
+                {translate("init_reset")}
+              </Text>
+            </CardItem>
+            <CardItem
+              cardBody
+              bordered
+              button
+              onPress={() => {
+                this.setState({
+                  backupPassPharse: this.state.wallet.signingKey.mnemonic
+                })
+              }}
+              style={styles.button}
 
-      >
-        <Text
-          adjustsFontSizeToFit
-          style={styles.buttonText}
-        >
-          {translate("init_backupWallet")}
-        </Text>
-      </CardItem>
-      <Text
-        visible={this.state.backupPassPharse != ""}
-        onPress={async () => {
-          await Clipboard.setString(this.state.backupPassPharse)
-          this.setState({
-            loadingStatus: translate("init_backuped")
-          })
-        }}
-        adjustsFontSizeToFit
-      >
-        {this.state.backupPassPharse}
-      </Text>
-    </Card>
-    <CreateWalletModal
-      createNewWalletModalVisble={this.state.createNewWalletModalVisble}
-    />
-    <RecoverWalletModal
-      recoverWalletModalVisible={this.state.recoverWalletModalVisible}
-    />
-  </ScrollView>
+            >
+              <Text
+                adjustsFontSizeToFit
+                style={styles.buttonText}
+              >
+                {translate("init_backupWallet")}
+              </Text>
+            </CardItem>
+            <Text
+              visible={this.state.backupPassPharse != ""}
+              onPress={async () => {
+                await Clipboard.setString(this.state.backupPassPharse)
+                this.setState({
+                  loadingStatus: translate("init_backuped")
+                })
+              }}
+              adjustsFontSizeToFit
+            >
+              {this.state.backupPassPharse}
+            </Text>
+          </Card>
+          <CreateWalletModal
+            createNewWalletModalVisble={this.state.createNewWalletModalVisble}
+          />
+          <RecoverWalletModal
+            recoverWalletModalVisible={this.state.recoverWalletModalVisible}
+          />
+        </ScrollView>
       </>
     );
   }

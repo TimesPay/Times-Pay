@@ -1,7 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 
 import { network } from '../config';
-import AsyncStorage from '@react-native-community/async-storage';
 import { ethers } from 'ethers';
 
 export const getEncryptedWallet = () => {

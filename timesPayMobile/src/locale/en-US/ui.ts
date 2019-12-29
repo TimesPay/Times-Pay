@@ -9,5 +9,8 @@ export default {
   "init_password": "Password",
   "init_recover": "Or recover from secret",
   "init_secret": "Secret",
-  "init_startRecover": "RECOVER"
+  "init_startRecover": "RECOVER",
+  "exchange_refresh": "Refresh",
+  "exchange_dataHeader": "Exchange Data",
+  "exchange_balance": "Balance",
 }
