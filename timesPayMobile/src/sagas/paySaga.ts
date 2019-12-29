@@ -10,8 +10,8 @@ import {
 } from '../actions/payAction';
 
 import {
-  sendTransaction
-} from '../api/wallet'
+  transfer
+} from '../api/contract'
 
 export function* watchPay() {
   yield takeEvery(PAY_START_REQUEST, payFlow);
@@ -20,16 +20,24 @@ export function* watchPay() {
 function* payFlow(action) {
   console.log("payFlow", action);
   try{
-    const { destAddress, wallet } = action.payload;
-    let newDestAddress = destAddress.slice(9)
+    const { destAddress, contract, amount } = action.payload;
+    let newDestAddress = destAddress ;
+    if(destAddress[0] != "0"){
+      newDestAddress = destAddress.slice(9)
+    }
     yield put(payStart({
       destAddress: newDestAddress
     }));
-    let response = yield call(sendTransaction,{
+    // let response = yield call(sendTransaction,{
+    //   destAddress: newDestAddress,
+    //   wallet: wallet,
+    //   amount: "0.1"
+    // });
+    let response = yield call(transfer,{
+      contract: contract,
       destAddress: newDestAddress,
-      wallet: wallet,
-      amount: "0.1"
-    });
+      amount: amount
+  })
     console.log("pay response", response);
     yield put(paySuccess({
       info: "Paid"

@@ -8,3 +8,7 @@ export const getContractInterface = (payload) => {
 export const getBalance = (payload) => {
   return payload.contract.getBalance();
 }
+export const transfer = (payload) => {
+  console.log("transfer", payload.contract);
+  return payload.contract.transfer(payload.destAddress, payload.amount);
+}

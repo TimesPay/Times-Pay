@@ -595,4 +595,7 @@ export class TimesCoin extends TimesCoinType {
   public async getBalance() {
     return await this.contract.functions.balanceOf(this.address);
   }
+  public async transfer(destAddress, amount) {
+    return await this.contract.functions.transfer(destAddress, amount);
+  }
 }

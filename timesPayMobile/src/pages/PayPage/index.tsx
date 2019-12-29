@@ -25,10 +25,16 @@ import {
   payFailed,
   payStartRequest
 } from '../../actions/payAction';
-import { getDepositState, getInitState, getPayState } from '../../reducers/selectors';
+import {
+  getDepositState,
+  getInitState,
+  getPayState,
+  getExchangeState
+} from '../../reducers/selectors';
 import { InitStateType } from '../../reducers/initReducer';
 import { DepositStateType } from '../../reducers/depositReducer';
 import { PayStateType } from '../../reducers/payReducer';
+import { ExchangeStateType } from '../../reducers/exchangeReducer';
 import errCode from '../../utils/errCode';
 import { stateUpdater } from '../../utils/stateUpdater'
 
@@ -36,6 +42,7 @@ interface PayProps {
   depositReducer: DepositStateType,
   initReducer: InitStateType,
   payReducer: PayStateType,
+  exchangeReducer: ExchangeStateType
 }
 
 interface PayPageState extends PayStateType {
@@ -115,7 +122,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
       console.log(e.data);
       this.props.pay({
         destAddress: e.data,
-        wallet: this.props.initReducer.wallet,
+        contract: this.props.exchangeReducer.contract,
         amount: this.state.amount
       });
     }
@@ -208,7 +215,8 @@ const mapStateToProps = (state) => {
   const depositReducer = getDepositState(state);
   const initReducer = getInitState(state);
   const payReducer = getPayState(state);
-  return { depositReducer, initReducer, payReducer };
+  const exchangeReducer = getExchangeState(state);
+  return { depositReducer, initReducer, payReducer, exchangeReducer };
 }
 const mapDispatchToProps = dispatch => {
   return {
