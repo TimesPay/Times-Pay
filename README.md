@@ -1,6 +1,6 @@
-Times-Pay 
+<h5>TimesPay lightning stablecoins project</h5>
 <hr>
-https://www.timespayhk.com
 
-<p>lighting payable wallet</p>
+<p>lighting payable Erc-20 Eth wallet</p>
 <p>Put stablecoins at the hearth of people's everyday lives</p>
+https://www.timespayhk.com
