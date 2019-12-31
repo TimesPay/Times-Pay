@@ -1,4 +1,3 @@
-Times-Pay
+Times-Pay Erc-20 lighting wallet
 <hr>
-P2P payment services
 https://www.timespayhk.com
