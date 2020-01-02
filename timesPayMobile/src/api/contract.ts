@@ -9,6 +9,8 @@ export const getBalance = (payload) => {
   return payload.contract.getBalance();
 }
 export const transfer = (payload) => {
-  console.log("transfer", payload.contract);
   return payload.contract.transfer(payload.destAddress, payload.amount);
+}
+export const estimateTransfer = (payload) => {
+  return payload.contract.payEstimate(payload.destAddress, payload.amount);
 }

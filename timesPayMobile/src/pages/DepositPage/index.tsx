@@ -60,13 +60,20 @@ class DepositPage extends React.Component<DepositProps, DepositState> {
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}>
-          <View>
+          <View
+            style={styles.QRCodeContainer}
+            >
             <QRCode
               value={this.state.address || "N/A"}
             />
           </View>
           <View>
-            <Text>{this.state.address || "N/A"}</Text>
+            <Text
+              style={styles.addressText}
+              ellipsizeMode="tail"
+            >
+              {this.state.address || "N/A"}
+            </Text>
           </View>
         </ScrollView>
       </>
@@ -91,4 +98,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.yellow50,
     color: COLOR.blue50
   },
+  QRCodeContainer: {
+    marginTop: 30,
+    marginLeft: "35%",
+    marginRight: "35%",
+    width: "30%"
+  },
+  addressText: {
+    marginTop: 20,
+    marginLeft: "10%",
+    marginRight: "10%",
+    width: "80%"
+  }
 })

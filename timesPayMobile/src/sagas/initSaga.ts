@@ -19,7 +19,9 @@ import {
   connectWalletToProvider,
   setPassPharse,
   setEncryptedWallet,
-  encryptWallet
+  encryptWallet,
+  generateKeyByPassPharse,
+  getWalletByMnemonic
 } from '../api/wallet';
 import errCode from '../utils/errCode';
 
@@ -36,10 +38,13 @@ function* loadWalletFlow() {
     console.log("encryptedWallet", encryptedWallet)
     if (encryptedWallet) {
       if (passwd) {
-        let newWallet = yield call(getDecryptedWallet, {
+        let mnemonic = yield call(getDecryptedWallet, {
           encryptedWallet: JSON.parse(encryptedWallet),
           passwd: passwd
         });
+        let newWallet = yield call(getWalletByMnemonic,{
+          mnemonic: mnemonic
+        })
         newWallet = yield call(connectWalletToProvider, {
           wallet: newWallet
         })
@@ -52,7 +57,7 @@ function* loadWalletFlow() {
       } else {
         yield put(
           fetchFailed({
-            errCode: errCode["loadWallet.missingPW"]
+            errCode: errCode["loadWallet.noWallet"]
           })
         );
       }
@@ -82,22 +87,27 @@ function* createWalletFlow(action) {
   try {
     yield put(fetchStart());
     const { passPharse, wallet } = action.payload;
-    console.log("createWalletFlow", action)
+
+    let key = yield call(generateKeyByPassPharse,{
+      passPharse:passPharse
+    })
     let encryptedWallet = yield call(encryptWallet,
       {
-        wallet: wallet,
-        passPharse: passPharse
+        wallet: wallet.mnemonic,
+        key: key
       });
+      console.log("createWalletFlow, key", action, key);
     let passPharseStatus = yield call(setPassPharse,
       {
-        passPharse: passPharse
+        key: key
       });
+      console.log("createWalletFlow, save PW", action, key, passPharse, encryptedWallet);
     let walletStatus = yield call(setEncryptedWallet,
       {
         wallet: JSON.stringify(encryptedWallet)
       });
-    console.log("createWalletFlow", passPharse, wallet, encryptedWallet);
-    newWallet = yield call(connectWalletToProvider, {
+    console.log("createWalletFlow", key, wallet, encryptedWallet);
+    let newWallet = yield call(connectWalletToProvider, {
       wallet: wallet
     });
     yield put(

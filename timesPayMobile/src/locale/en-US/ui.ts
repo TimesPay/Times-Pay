@@ -10,7 +10,10 @@ export default {
   "init_recover": "Or recover from secret",
   "init_secret": "Secret",
   "init_startRecover": "RECOVER",
+  "init_yes": "YES",
+  "init_no": "NO",
   "exchange_refresh": "Refresh",
   "exchange_dataHeader": "Exchange Data",
   "exchange_balance": "Balance",
+  "pay_confirm": "Confirme?",
 }

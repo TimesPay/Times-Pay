@@ -39,6 +39,7 @@ import {
 import errCode from '../../utils/errCode'
 import { deepCompare } from '../../utils/deepCompare';
 import { setI18nConfig } from '../../utils/I18N';
+import { generateKey, encrypt, decrypt } from '../../utils/cryptograohy';
 import { getDecryptedWallet } from '../../api/wallet';
 import { createWallet } from '../../actions/initAction';
 
@@ -96,7 +97,6 @@ class InitPage extends React.Component<InitProps, InitPageState> {
   }
 
   componentDidUpdate() {
-    console.log("componentDidUpdate", this.props, this.state);
     if (this.props.initReducer.wallet != null) {
       if (!deepCompare(this.props.initReducer.wallet, this.state.wallet)) {
         this.setState({
@@ -129,11 +129,11 @@ class InitPage extends React.Component<InitProps, InitPageState> {
     } else {
       console.log("default", this.props.initReducer.errCode)
       if (this.props.initReducer.errCode != null) {
-        this.setState({
-          errCode: this.props.initReducer.errCode,
-          createNewWalletModalVisble: false,
-          recoverWalletModalVisible: false
-        })
+        if (this.state.errCode != this.props.initReducer.errCode) {
+          this.setState({
+            errCode: this.props.initReducer.errCode
+          })
+        }
       }
     }
     if (this.state.loading != this.props.initReducer.loading) {
@@ -176,56 +176,53 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                     />
                   </CardItem>
                 </Row>
-                <Row
-                  type="flex"
-                  justifyContent="space-between"
+                <CardItem
+                  cardBody
+                  bordered
                 >
-                  <Col.BL>
-                    <CardItem
-                      cardBody
-                      button
-                      Primary
-                      disabled={passPharse.length == 0}
-                      onPress={() => {
-                        console.log("clicked");
-                        let newWallet = new ethers.Wallet.createRandom();
-                        let address = newWallet.address;
-                        console.log("newWallet", newWallet);
-                        newWallet = newWallet.encrypt(passPharse).then((res) => {
-                          console.log("encrypted");
-                          console.log(res);
-                          SecureStore.setItemAsync("wallet", JSON.stringify(res)).then((res) => {
-                            console.log(res);
-                            this.setState({
-                              createNewWalletModalVisble: false,
-                              loadingStatus: "new wallet created"
-                            })
+                  <Row
+                    type="flex"
+                    justifyContent="space-between"
+                  >
+                    <Col.BL>
+                      <CardItem
+                        cardBody
+                        button
+                        Primary
+                        disabled={passPharse.length == 0}
+                        onPress={() => {
+                          console.log("clicked");
+                          let newWallet = new ethers.Wallet.createRandom();
+                          console.log("wallet", newWallet);
+                          this.props.createWallet({
+                            wallet: newWallet,
+                            passPharse: passPharse
                           });
-                          this.props.setAddress({
-                            address: address
+                        }}
+                      >
+                        <Text>
+                          {translate("init_yes")}
+                        </Text>
+                      </CardItem>
+                    </Col.BL>
+                    <Col.BR>
+                      <CardItem
+                        Primary
+                        button
+                        cardBody
+                        onPress={() => {
+                          this.setState({
+                            createNewWalletModalVisble: false
                           })
-                          SecureStore.setItemAsync("passPharse", passPharse);
-                        });
-                      }}
-                    >
-                      <Text>YES</Text>
-                    </CardItem>
-                  </Col.BL>
-                  <Col.BR>
-                    <CardItem
-                      Primary
-                      button
-                      cardBody
-                      onPress={() => {
-                        this.setState({
-                          createNewWalletModalVisble: false
-                        })
-                      }}
-                    >
-                      <Text>No</Text>
-                    </CardItem>
-                  </Col.BR>
-                </Row>
+                        }}
+                      >
+                        <Text>
+                          {translate("init_no")}
+                        </Text>
+                      </CardItem>
+                    </Col.BR>
+                  </Row>
+                </CardItem>
                 <Row>
                   <CardItem
                     footer

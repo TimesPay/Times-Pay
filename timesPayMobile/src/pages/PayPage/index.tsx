@@ -12,7 +12,7 @@ import { Navigation } from 'react-native-navigation';
 import { COLOR } from 'react-native-material-ui';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 // import { RNCamera } from 'react-native-camera';
-
+import { Card, CardItem } from 'native-base';
 import { translate } from '../../utils/I18N';
 import { connect } from 'react-redux';
 import * as SecureStore from 'expo-secure-store';
@@ -23,7 +23,8 @@ import {
   payStart,
   paySuccess,
   payFailed,
-  payStartRequest
+  payStartRequest,
+  payEstimate
 } from '../../actions/payAction';
 import {
   getDepositState,
@@ -47,7 +48,8 @@ interface PayProps {
 
 interface PayPageState extends PayStateType {
   hasPermission: boolean,
-  scanned: boolean
+  scanned: boolean,
+  confirmedPay: boolean
 }
 
 class PayPage extends React.Component<PayProps, PayPageState> {
@@ -66,9 +68,11 @@ class PayPage extends React.Component<PayProps, PayPageState> {
       errCode: this.props.payReducer.errCode,
       wallet: this.props.initReducer.errCode,
       destAddress: this.props.payReducer.destAddress,
+      estimatedCost: this.props.payReducer.estimatedCost,
+      confirmedPay: false,
       hasPermission: null,
       scanned: false,
-      amount: "0"
+      amount: "0",
     }
   }
   componentDidMount() {
@@ -79,6 +83,8 @@ class PayPage extends React.Component<PayProps, PayPageState> {
       errCode: this.props.payReducer.errCode,
       wallet: this.props.initReducer.errCode,
       destAddress: this.props.payReducer.destAddress,
+      estimatedCost: this.props.payReducer.estimatedCost,
+      confirmedPay: false,
       hasPermission: null,
       scanned: false,
       amount: "0"
@@ -104,6 +110,8 @@ class PayPage extends React.Component<PayProps, PayPageState> {
     stateUpdater(this, "loading", "payReducer");
     stateUpdater(this, "errCode", "payReducer");
     stateUpdater(this, "destAddress", "payReducer");
+    stateUpdater(this, "estimatedCost", "payReducer");
+
   }
   onChangeText(text) {
     if (!isNaN(parseFloat(text)) && isFinite(text)) {
@@ -120,7 +128,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
         loading: true
       });
       console.log(e.data);
-      this.props.pay({
+      this.props.payEstimate({
         destAddress: e.data,
         contract: this.props.exchangeReducer.contract,
         amount: this.state.amount
@@ -134,51 +142,55 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}
         >
-          <View>
-            <Text>
-              Pay To:
-            </Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'column',
-              justifyContent: 'flex-end',
-            }}>
-            {
-              this.state.hasPermission && !this.state.scanned
-                ? <QRCodeScanner
+          <Card>
+            <CardItem cardBody bordered>
+              <Text>
+                Pay To:
+              </Text>
+            </CardItem>
+            <CardItem
+              cardBody
+              bordered
+              style={{
+                flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+              }}>
+              {
+                this.state.hasPermission && !this.state.scanned
+                  ? <QRCodeScanner
 
-                  onRead={this.state.scanned
-                    ? undefined
-                    : (e) => this.handleOnRead(e)
-                  }
-                  topContent={
-                    <Text style={styles.centerText}>
-                      Please scan QR-Code to Pay
+                    onRead={this.state.scanned
+                      ? undefined
+                      : (e) => this.handleOnRead(e)
+                    }
+                    topContent={
+                      <Text style={styles.centerText}>
+                        Please scan QR-Code to Pay
                     </Text>
-                  }
-                  bottomContent={
-                    <TouchableOpacity style={styles.buttonTouchable}>
-                      <Text style={styles.buttonText}>OK. Got it!</Text>
-                    </TouchableOpacity>
-                  }
-                  ref={(node) => { this.scanner = node }}
-                  reactivate={false}
-                  cameraProps={{
-                    ratio: "1:1"
-                  }}
-                />
-                : <Text>{this.props.payReducer.destAddress}</Text>
-            }
-            <View
+                    }
+                    bottomContent={
+                      <TouchableOpacity style={styles.buttonTouchable}>
+                        <Text style={styles.buttonText}>OK. Got it!</Text>
+                      </TouchableOpacity>
+                    }
+                    ref={(node) => { this.scanner = node }}
+                    reactivate={false}
+                    cameraProps={{
+                      ratio: "1:1"
+                    }}
+                  />
+                  : <Text>{this.props.payReducer.destAddress}</Text>
+              }
+            </CardItem>
+            <CardItem
               style={styles.payAmountInput}
             >
               <Text>
-                amount to pay
+                {`amount to pay: ${this.state.amount}`}
               </Text>
-            </View>
-            <View>
+            </CardItem>
+            <CardItem cardBody bordered>
               <TextInput
                 style={{ height: 40, borderColor: 'black', borderWidth: 1 }}
                 onChangeText={text => this.onChangeText(text)}
@@ -186,16 +198,49 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                 keyboardType={"decimal-pad"}
                 placeholder="amount"
               />
-            </View>
-            <View>
+            </CardItem>
+            {
+              this.state.estimatedCost == 0
+                ? <View></View>
+                : <CardItem
+                  cardBody
+                  bordered
+                >
+                  <Text>
+                    {`estimated cost: ${this.state.estimatedCost} wei`}
+                  </Text>
+                </CardItem>
+
+            }
+            <CardItem
+              cardBody
+              bordered
+              button
+              disabled={this.state.estimatedCost == 0}
+              onPress={() => {
+                this.props.pay({
+                  destAddress: this.state.destAddress,
+                  contract: this.props.exchangeReducer.contract,
+                  amount: this.state.amount
+                })
+              }}
+              style={styles.confirmButton}
+            >
+              <Text
+                style={styles.buttonText}
+              >
+                {translate("pay_confirm")}
+              </Text>
+            </CardItem>
+            <CardItem cardBody bordered>
               {this.state.scanned && <Button
                 title={'Tap to Scan Again'}
                 onPress={() => {
                   this.setState({ scanned: false })
                 }} />
               }
-            </View>
-          </View>
+            </CardItem>
+          </Card>
         </ScrollView>
       </>
     )
@@ -209,6 +254,13 @@ const styles = StyleSheet.create({
   },
   payAmountInput: {
     marginTop: 10
+  },
+  confirmButton: {
+    backgroundColor: COLOR.blue800,
+    height: 48
+  },
+  buttonText: {
+    color: COLOR.white
   }
 })
 const mapStateToProps = (state) => {
@@ -223,6 +275,7 @@ const mapDispatchToProps = dispatch => {
     pay: (payload) => dispatch(payStartRequest(payload)),
     paySuccess: (payload) => dispatch(paySuccess(payload)),
     payFailed: (payload) => dispatch(payFailed(payload)),
+    payEstimate: (payload) => dispatch(payEstimate(payload)),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(PayPage);
