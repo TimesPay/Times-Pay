@@ -25,7 +25,7 @@ import { COLOR } from 'react-native-material-ui';
 import {
   Card,
   Button,
-  CardItem
+  CardItem,
 } from 'native-base'
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -44,6 +44,8 @@ import { getDecryptedWallet } from '../../api/wallet';
 import { createWallet } from '../../actions/initAction';
 
 import duckImg from '../../assets/duck.png';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 interface InitProps {
   depositReducer: DepositStateType,
@@ -147,20 +149,16 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       console.log("props.createNewWalletModalVisble", props.createNewWalletModalVisble);
       return (
         <View>
-          <Modal
-            visible={props.createNewWalletModalVisble}
-            transparent={true}
-          >
-            <Card
-              style={styles.newWallectConfirmModal}
-              visible={props.createNewWalletModalVisble}
-            >
-              <Col>
-                <CardItem header bordered>
-                  <Text>Do you want to create a new wallet?</Text>
+          <Modal visible={props.createNewWalletModalVisble}
+                 animationType="slide"
+                 transparent={true}>
+
+            <Card style={styles.newWalletConfirmModal}>
+                <CardItem header>
+                  <Text style={{fontSize: 20, paddingVertical: 15}}>Do you want to create a new wallet?</Text>
                 </CardItem>
-                <Row>
-                  <CardItem cocardBody bordered>
+
+                <CardItem cardBody>
                     <TextInput
                       editable
                       maxLength={40}
@@ -168,153 +166,153 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                         setPassPharse(text);
                       }}
                       value={passPharse}
-                      placeholder="password"
+                      placeholder="Password"
                       style={styles.passwordInputBox}
                       clearButtonMode="unless-editing"
                       secureTextEntry={true}
                       textContentType="newPassword"
                     />
-                  </CardItem>
-                </Row>
-                <CardItem
-                  cardBody
-                  bordered
-                >
-                  <Row
-                    type="flex"
-                    justifyContent="space-between"
-                  >
-                    <Col.BL>
-                      <CardItem
-                        cardBody
-                        button
-                        Primary
-                        disabled={passPharse.length == 0}
-                        onPress={() => {
-                          console.log("clicked");
-                          let newWallet = new ethers.Wallet.createRandom();
-                          console.log("wallet", newWallet);
-                          this.props.createWallet({
-                            wallet: newWallet,
-                            passPharse: passPharse
-                          });
-                        }}
-                      >
-                        <Text>
-                          {translate("init_yes")}
-                        </Text>
-                      </CardItem>
-                    </Col.BL>
-                    <Col.BR>
-                      <CardItem
-                        Primary
-                        button
-                        cardBody
-                        onPress={() => {
-                          this.setState({
-                            createNewWalletModalVisble: false
-                          })
-                        }}
-                      >
-                        <Text>
-                          {translate("init_no")}
-                        </Text>
-                      </CardItem>
-                    </Col.BR>
-                  </Row>
                 </CardItem>
-                <Row>
-                  <CardItem
-                    footer
-                    bordered
-                    button
+
+                <View style={{flexDirection: "row"}}>
+                    <View style={{flex: 1}}>
+                        <TouchableHighlight
+                            style={styles.modalButton}
+                            underlayColor={COLOR.grey100}
+                            activeOpacity={0.3}
+                            disabled={passPharse.length == 0}
+                            onPress={() => {
+                              console.log("clicked");
+                              let newWallet = new ethers.Wallet.createRandom();
+                              console.log("wallet", newWallet);
+                              this.props.createWallet({
+                                wallet: newWallet,
+                                passPharse: passPharse
+                              });
+                            }}
+                        >
+                            <Text style={{...styles.modalButtonText, color: COLOR.lightGreen600}}>
+                              {translate("init_yes")}
+                            </Text>
+                        </TouchableHighlight>
+                    </View>
+
+                    <View style={{flex: 1}}>
+                        <TouchableHighlight
+                            style={styles.modalButton}
+                            underlayColor={COLOR.grey100}
+                            activeOpacity={0.3}
+                            onPress={() => {
+                              this.setState({
+                                createNewWalletModalVisble: false
+                              })
+                            }}
+                        >
+                            <Text style={{...styles.modalButtonText, color:COLOR.red600}}>
+                              {translate("init_no")}
+                            </Text>
+                        </TouchableHighlight>
+                    </View>
+                </View>
+
+                <TouchableHighlight
+                    style={{...styles.modalButton}}
+                    underlayColor={COLOR.grey100}
+                    activeOpacity={0.3}
                     onPress={() => {
                       this.setState({
                         recoverWalletModalVisible: true,
                         createNewWalletModalVisble: false
                       })
                     }}
-                  >
-                    <Text>{translate("init_recover")}</Text>
-                  </CardItem>
-                </Row>
-              </Col>
+                >
+                    <Text style={{...styles.modalButtonText, color: COLOR.blue600}}>{translate("init_recover")}</Text>
+                </TouchableHighlight>
             </Card>
           </Modal>
         </View>
       )
     }
+
     const RecoverWalletModal = (props) => {
       const [recoverSecret, setRecoverSecret] = useState("");
       const [passPharse, setPassPharse] = useState("");
+      console.log("props.recoverWalletModalVisible", props.recoverWalletModalVisible);
+
       return (
         <View>
-          <Modal
-            visible={props.recoverWalletModalVisible}
-            transparent={true}
+          <Modal visible={props.recoverWalletModalVisible}
+                 animationType="slide"
+                 transparent={true}
           >
-            <Card>
+            <Card style={styles.newWalletConfirmModal}>
               <CardItem header>
-                <Text>{translate("init_recover")}</Text>
+                <Text style={{fontSize: 20, paddingVertical: 15}}>{translate("init_recover")}</Text>
               </CardItem>
-              <CardItem cardBody bordered>
-                <Row>
-                  <Col.L>
-                    <Text>
+
+              <CardItem cardBody>
+                <View style={{flexDirection: "row", marginVertical: 10, marginHorizontal: 5}}>
+                  <View style={{flex: 1, justifyContent:"center"}}>
+                    <Text style={{fontSize: 16, textAlign: "right"}}>
                       {`${translate("init_secret")}: `}
                     </Text>
-                  </Col.L>
-                  <Col.R>
+                  </View>
+                  <View style={{flex: 4}}>
                     <TextInput
-                      placeholder="secret"
-                      style={styles.passwordInputBox}
+                      placeholder="Secret"
                       clearButtonMode="unless-editing"
+                      style={styles.recoverWalletModalInputBox}
                       onChangeText={(text: string) => {
                         setRecoverSecret(text);
                       }}
                     >
                     </TextInput>
-                  </Col.R>
-                </Row>
+                  </View>
+                </View>
               </CardItem>
-              <CardItem cardBody bordered>
-                <Row>
-                  <Col.L>
-                    <Text>
+
+              <CardItem cardBody>
+                <View style={{flexDirection: "row", marginVertical: 10, marginHorizontal: 5}}>
+                  <View style={{flex: 1, justifyContent: "center"}}>
+                    <Text style={{fontSize: 16, textAlign: "right"}}>
                       {`${translate("init_password")}: `}
                     </Text>
-                  </Col.L>
-                  <Col.R>
+                  </View>
+                  <View style={{flex: 4}}>
                     <TextInput
+                      editable
+                      maxLength={40}
+                      value={passPharse}
                       onChangeText={(text: string) => {
                         setPassPharse(text);
                       }}
-                      placeholder="password"
-                      style={styles.passwordInputBox}
+                      placeholder="Password"
+                      style={styles.recoverWalletModalInputBox}
                       clearButtonMode="unless-editing"
                       secureTextEntry={true}
                       textContentType="newPassword"
                     >
                     </TextInput>
-                  </Col.R>
-                </Row>
+                  </View>
+                </View>
               </CardItem>
-              <CardItem
-                foorfooter
-                button
-                disabled={recoverSecret == ""}
-                onPress={() => {
-                  let newWallet = new ethers.Wallet.fromMnemonic(recoverSecret)
-                  console.log("wallet", newWallet);
-                  this.props.createWallet({
-                    wallet: newWallet,
-                    passPharse: passPharse
-                  })
-                }
-                }
-              >
-                <Text>{translate("init_startRecover")}</Text>
-              </CardItem>
+
+              <TouchableHighlight
+                    style={{...styles.modalButton}}
+                    underlayColor={COLOR.grey100}
+                    activeOpacity={0.3}
+                    disabled={recoverSecret == ""}
+                    onPress={() => {
+                      let newWallet = new ethers.Wallet.fromMnemonic(recoverSecret)
+                      console.log("wallet", newWallet);
+                      this.props.createWallet({
+                        wallet: newWallet,
+                        passPharse: passPharse
+                      })
+                    }}
+                >
+                    <Text style={{...styles.modalButtonText, color: COLOR.blue600}}>{translate("init_startRecover")}</Text>
+                </TouchableHighlight>
             </Card>
           </Modal>
         </View >
@@ -324,12 +322,13 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       <>
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
-          style={this.state.createNewWalletModalVisble ? styles.maskView : styles.scrollView}
+          style={this.state.createNewWalletModalVisble? styles.maskView : styles.scrollView}
         >
           <Spinner
             visible={this.state.loading}
             textContent={'Loading...'}
           />
+
           <Card>
             <CardItem header bordered>
               <Image source={duckImg} style={styles.mainIcon} />
@@ -395,12 +394,13 @@ class InitPage extends React.Component<InitProps, InitPageState> {
             >
               {this.state.backupPassPharse}
             </Text>
-          </Card>
-          <CreateWalletModal
-            createNewWalletModalVisble={this.state.createNewWalletModalVisble}
-          />
+            </Card>
+
           <RecoverWalletModal
             recoverWalletModalVisible={this.state.recoverWalletModalVisible}
+          />
+          <CreateWalletModal
+            createNewWalletModalVisble={this.state.createNewWalletModalVisble}
           />
         </ScrollView>
       </>
@@ -437,36 +437,6 @@ const styles = StyleSheet.create({
     minWidth: "100%",
     minHeight: "100%"
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: COLOR.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: COLOR.black,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: COLOR.red600,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
 
   mainIcon: {
     height: 200,
@@ -476,34 +446,44 @@ const styles = StyleSheet.create({
     marginLeft: "20%"
   },
 
-  actionBtn: {
-    width: 200,
-    marginLeft: 10,
-    marginRight: 10,
-    backgroundColor: COLOR.blue800
+  newWalletConfirmModal: {
+    display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
+    flexDirection: "column",
+    height: "100%",
+    width: "100%",
+    flexWrap: "wrap",
+    zIndex: 1,
+    backgroundColor: COLOR.grey600,
   },
 
-  newWallectConfirmModal: {
-    borderBottomColor: '#000000',
-    borderBottomWidth: 1,
-    marginLeft: "10%",
-    marginRight: "10%",
-    maxHeight: 200,
-    marginTop: "50%",
-    zIndex: 1,
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    flexWrap: "wrap"
-  },
   passwordInputBox: {
     borderWidth: 1,
-    width: "100%",
     display: "flex",
-    flexDirection: "column",
-    marginTop: 10,
-    position: "relative"
+    flexDirection: "row",
+    flex: 1,
+    marginVertical: 15,
+    marginHorizontal: 10,
+    padding: 10,
+    borderRadius: 6,
+    fontSize: 16,
+    justifyContent: "center",
+    alignContent: "center",
+    borderColor: COLOR.grey300
   },
+
+  modalButton: {
+    backgroundColor: "white",
+    alignItems:"center"
+  },
+
+  modalButtonText: {
+    fontSize: 16,
+    padding: 10,
+    margin: 10
+  },
+
   button: {
     backgroundColor: COLOR.blue800,
     height: 48
@@ -511,4 +491,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: COLOR.white
   },
+
+  recoverWalletModalInputBox: {
+    borderWidth: 1,
+    borderRadius: 6,
+    fontSize: 16,
+    borderColor: COLOR.grey300,
+    padding: 10,
+    marginHorizontal: 10
+  }
 })
