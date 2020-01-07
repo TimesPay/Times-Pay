@@ -1,6 +1,7 @@
 export default {
   "init_menu": "MENU",
   "init_backupWallet": "BACKUP WALLET",
+  "init_unlockWallet": "UNLOCK WALLET",
   "init_reset": "Reset address",
   "init_delete": "address deleted",
   "init_status": "Status",
@@ -12,6 +13,7 @@ export default {
   "init_startRecover": "RECOVER",
   "init_yes": "YES",
   "init_no": "NO",
+  "init_passwordTitle": "Please input password to unlock the wallet",
   "exchange_refresh": "Refresh",
   "exchange_dataHeader": "Exchange Data",
   "exchange_balance": "Balance",

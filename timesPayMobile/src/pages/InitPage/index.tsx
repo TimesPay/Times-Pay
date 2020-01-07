@@ -41,7 +41,10 @@ import { deepCompare } from '../../utils/deepCompare';
 import { setI18nConfig } from '../../utils/I18N';
 import { generateKey, encrypt, decrypt } from '../../utils/cryptograohy';
 import { getDecryptedWallet } from '../../api/wallet';
-import { createWallet } from '../../actions/initAction';
+import {
+  createWallet,
+  loadWallet
+} from '../../actions/initAction';
 
 import duckImg from '../../assets/duck.png';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
@@ -53,11 +56,12 @@ interface InitProps {
 };
 interface InitPageState extends InitStateType {
   address: string;
-  createNewWalletModalVisble: boolean;
   loadingStatus: string;
   wallet: string;
   backupPassPharse: string;
+  createNewWalletModalVisble: boolean;
   recoverWalletModalVisible: boolean;
+  passwordPromptVisible: boolean;
 };
 
 class InitPage extends React.Component<InitProps, InitPageState> {
@@ -75,6 +79,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       errCode: this.props.initReducer.errCode,
       createNewWalletModalVisble: false,
       recoverWalletModalVisible: false,
+      passwordPromptVisible: false,
       loadingStatus: "",
       wallet: null,
       backupPassPharse: ""
@@ -84,7 +89,6 @@ class InitPage extends React.Component<InitProps, InitPageState> {
   componentDidMount() {
     setI18nConfig();
     console.log(this.props.depositReducer.address.length);
-    this.props.loadWallet();
     this.setState({
       loading: this.props.initReducer.loading,
       status: this.props.initReducer.status,
@@ -92,6 +96,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       errCode: this.props.initReducer.errCode,
       createNewWalletModalVisble: false,
       recoverWalletModalVisible: false,
+      passwordPromptVisible: true,
       loadingStatus: "",
       wallet: null,
       backupPassPharse: ""
@@ -104,7 +109,8 @@ class InitPage extends React.Component<InitProps, InitPageState> {
         this.setState({
           wallet: this.props.initReducer.wallet,
           createNewWalletModalVisble: false,
-          recoverWalletModalVisible: false
+          recoverWalletModalVisible: false,
+          passwordPromptVisible: false
         })
         this.props.setAddress({
           address: this.props.initReducer.wallet.signingKey.address
@@ -318,6 +324,56 @@ class InitPage extends React.Component<InitProps, InitPageState> {
         </View >
       )
     }
+
+    const PasswordInputModal = (props) => {
+      const [passPharse, setPassPharse] = useState("");
+      return (
+        <View>
+          <Modal
+            visible={props.passwordPromptVisible}
+            transparent={true}
+            >
+            <Card>
+              <CardItem header bordered>
+                <Text>
+                  {translate("init_passwordTitle")}
+                </Text>
+              </CardItem>
+              <CardItem cardBody bordered>
+                <TextInput
+                  onChangeText={(text: string) => {
+                    setPassPharse(text);
+                  }}
+                  placeholder="password"
+                  style={styles.passwordInputBox}
+                  clearButtonMode="unless-editing"
+                  secureTextEntry={true}
+                  textContentType="newPassword"
+                >
+                </TextInput>
+              </CardItem>
+              <CardItem
+                footer
+                button
+                bordered
+                onPress={() => {
+                  this.setState({passwordPromptVisible: false});
+                  this.props.loadWallet({passPharse: passPharse});
+                }}
+                style={styles.button}
+              >
+                <Text
+                  style={styles.buttonText}
+                >
+                  {translate("init_unlockWallet")}
+                </Text>
+              </CardItem>
+            </Card>
+          </Modal>
+        </View>
+      )
+
+    }
     return (
       <>
         <ScrollView
@@ -399,6 +455,9 @@ class InitPage extends React.Component<InitProps, InitPageState> {
           <RecoverWalletModal
             recoverWalletModalVisible={this.state.recoverWalletModalVisible}
           />
+          <PasswordInputModal
+            passwordPromptVisible={this.state.passwordPromptVisible}
+          />
           <CreateWalletModal
             createNewWalletModalVisble={this.state.createNewWalletModalVisble}
           />
@@ -414,7 +473,7 @@ const mapStateToProps = (state) => {
 }
 const mapDispatchToProps = dispatch => {
   return {
-    loadWallet: () => dispatch({ type: LOAD_WALLET_INIT }),
+    loadWallet: (payload) => dispatch(loadWallet(payload)),
     createWallet: (payload) => dispatch(createWallet(payload)),
     setAddress: (payload) => dispatch({ type: SET_ADDRESS_DEPOSIT, payload: payload }),
   }

@@ -14,26 +14,32 @@ import {
 
 import {
   getEncryptedWallet,
+  getKey,
+  setKey,
+  setPassPharse,
   getPassPharse,
   getDecryptedWallet,
   connectWalletToProvider,
-  setPassPharse,
   setEncryptedWallet,
   encryptWallet,
   generateKeyByPassPharse,
-  getWalletByMnemonic
+  getWalletByMnemonic,
+  hash
 } from '../api/wallet';
 import errCode from '../utils/errCode';
 
 export function* watchLoadWallet() {
   yield takeEvery(LOAD_WALLET_INIT, loadWalletFlow);
 }
-function* loadWalletFlow() {
+function* loadWalletFlow(action) {
   try {
     yield put(fetchStart());
-    console.log("load wallet")
+    let passwd = yield call(generateKeyByPassPharse,{
+      passPharse: action.payload.passPharse
+    })
+    console.log("load wallet", passwd);
     let encryptedWallet = yield call(getEncryptedWallet);
-    let passwd = yield call(getPassPharse);
+    // let passwd = yield call(getKey);
     console.log("passwd", passwd);
     console.log("encryptedWallet", encryptedWallet)
     if (encryptedWallet) {
@@ -42,7 +48,7 @@ function* loadWalletFlow() {
           encryptedWallet: JSON.parse(encryptedWallet),
           passwd: passwd
         });
-        let newWallet = yield call(getWalletByMnemonic,{
+        let newWallet = yield call(getWalletByMnemonic, {
           mnemonic: mnemonic
         })
         newWallet = yield call(connectWalletToProvider, {
@@ -70,13 +76,13 @@ function* loadWalletFlow() {
       )
     }
   } catch (error) {
-    console.log("init saga", error);
-    yield put(
-      fetchFailed({
-        errCode: errCode["loadWallet.noWallet"]
-      })
-    )
-  }
+  console.log("init saga", error);
+  yield put(
+    fetchFailed({
+      errCode: errCode["loadWallet.noWallet"]
+    })
+  )
+}
 }
 
 export function* watchCreateWallet() {
@@ -88,20 +94,23 @@ function* createWalletFlow(action) {
     yield put(fetchStart());
     const { passPharse, wallet } = action.payload;
 
-    let key = yield call(generateKeyByPassPharse,{
-      passPharse:passPharse
+    let key = yield call(generateKeyByPassPharse, {
+      passPharse: passPharse
     })
     let encryptedWallet = yield call(encryptWallet,
       {
         wallet: wallet.mnemonic,
         key: key
       });
-      console.log("createWalletFlow, key", action, key);
-    let passPharseStatus = yield call(setPassPharse,
-      {
-        key: key
-      });
-      console.log("createWalletFlow, save PW", action, key, passPharse, encryptedWallet);
+    console.log("createWalletFlow, key", action, key);
+    // yield call(setPassPharse, {
+    //   passPharse: passPharse
+    // })
+    // let passPharseStatus = yield call(setKey,
+    //   {
+    //     key: key
+    //   });
+    console.log("createWalletFlow, save PW", action, key, passPharse, encryptedWallet);
     let walletStatus = yield call(setEncryptedWallet,
       {
         wallet: JSON.stringify(encryptedWallet)

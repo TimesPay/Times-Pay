@@ -17,3 +17,6 @@ export const encrypt = (text, key) => {
   })
 }
 export const decrypt = (encryptedData, key) => AES.decrypt(encryptedData.cipher, key, encryptedData.iv)
+export const sha256 = (text) => {
+  return AES.sha256(text)
+}
