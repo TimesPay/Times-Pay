@@ -156,84 +156,91 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       return (
         <View>
           <Modal visible={props.createNewWalletModalVisble}
-                 animationType="slide"
-                 transparent={true}>
+            animationType="slide"
+            transparent={true}>
 
             <Card style={styles.newWalletConfirmModal}>
-                <CardItem header>
-                  <Text style={{fontSize: 20, paddingVertical: 15}}>Do you want to create a new wallet?</Text>
-                </CardItem>
+              <CardItem header>
+                <Text style={{ fontSize: 20, paddingVertical: 15 }}>Do you want to create a new wallet?</Text>
+              </CardItem>
 
-                <CardItem cardBody>
-                    <TextInput
-                      editable
-                      maxLength={40}
-                      onChangeText={(text) => {
-                        setPassPharse(text);
-                      }}
-                      value={passPharse}
-                      placeholder="Password"
-                      style={styles.passwordInputBox}
-                      clearButtonMode="unless-editing"
-                      secureTextEntry={true}
-                      textContentType="newPassword"
-                    />
-                </CardItem>
+              <CardItem cardBody>
+                <TextInput
+                  editable
+                  maxLength={40}
+                  onChangeText={(text) => {
+                    setPassPharse(text);
+                  }}
+                  value={passPharse}
+                  placeholder="Password"
+                  style={styles.passwordInputBox}
+                  clearButtonMode="unless-editing"
+                  secureTextEntry={true}
+                  textContentType="newPassword"
+                />
+              </CardItem>
 
-                <View style={{flexDirection: "row"}}>
-                    <View style={{flex: 1}}>
-                        <TouchableHighlight
-                            style={styles.modalButton}
-                            underlayColor={COLOR.grey100}
-                            activeOpacity={0.3}
-                            disabled={passPharse.length == 0}
-                            onPress={() => {
-                              console.log("clicked");
-                              let newWallet = new ethers.Wallet.createRandom();
-                              console.log("wallet", newWallet);
-                              this.props.createWallet({
-                                wallet: newWallet,
-                                passPharse: passPharse
-                              });
-                            }}
-                        >
-                            <Text style={{...styles.modalButtonText, color: COLOR.lightGreen600}}>
-                              {translate("init_yes")}
-                            </Text>
-                        </TouchableHighlight>
-                    </View>
-
-                    <View style={{flex: 1}}>
-                        <TouchableHighlight
-                            style={styles.modalButton}
-                            underlayColor={COLOR.grey100}
-                            activeOpacity={0.3}
-                            onPress={() => {
-                              this.setState({
-                                createNewWalletModalVisble: false
-                              })
-                            }}
-                        >
-                            <Text style={{...styles.modalButtonText, color:COLOR.red600}}>
-                              {translate("init_no")}
-                            </Text>
-                        </TouchableHighlight>
-                    </View>
-                </View>
-
-                <TouchableHighlight
-                    style={{...styles.modalButton}}
+              <View style={{ flexDirection: "row" }}>
+                <View style={{ flex: 1 }}>
+                  <TouchableHighlight
+                    style={styles.modalButton}
                     underlayColor={COLOR.grey100}
                     activeOpacity={0.3}
-                    onPress={() => {
-                      this.setState({
-                        recoverWalletModalVisible: true,
-                        createNewWalletModalVisble: false
-                      })
-                    }}
-                >
-                    <Text style={{...styles.modalButtonText, color: COLOR.blue600}}>{translate("init_recover")}</Text>
-                </TouchableHighlight>
+                    disabled={passPharse.length == 0}
+                  >
+                    <Text
+                      style={{ ...styles.modalButtonText, color: COLOR.lightGreen600 }}
+                      onPress={() => {
+                        console.log("clicked");
+                        let newWallet = new ethers.Wallet.createRandom();
+                        console.log("wallet", newWallet);
+                        this.props.createWallet({
+                          wallet: newWallet,
+                          passPharse: passPharse
+                        });
+                      }}
+                      >
+                      {translate("init_yes")}
+                    </Text>
+                  </TouchableHighlight>
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <TouchableHighlight
+                    style={styles.modalButton}
+                    underlayColor={COLOR.grey100}
+                    activeOpacity={0.3}
+                  >
+                    <Text
+                      style={{ ...styles.modalButtonText, color: COLOR.red600 }}
+                      onPress={() => {
+                        this.setState({
+                          createNewWalletModalVisble: false
+                        })
+                      }}
+                      >
+                      {translate("init_no")}
+                    </Text>
+                  </TouchableHighlight>
+                </View>
+              </View>
+
+              <TouchableHighlight
+                style={{ ...styles.modalButton }}
+                underlayColor={COLOR.grey100}
+                activeOpacity={0.3}
+              >
+                <Text
+                  style={{ ...styles.modalButtonText, color: COLOR.blue600 }}
+                  onPress={() => {
+                    console.log("onPress");
+                    this.setState({
+                      recoverWalletModalVisible: true,
+                      createNewWalletModalVisble: false
+                    })
+                  }}
+                  >{translate("init_recover")}</Text>
+              </TouchableHighlight>
             </Card>
           </Modal>
         </View>
@@ -248,22 +255,22 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       return (
         <View>
           <Modal visible={props.recoverWalletModalVisible}
-                 animationType="slide"
-                 transparent={true}
+            animationType="slide"
+            transparent={true}
           >
             <Card style={styles.newWalletConfirmModal}>
               <CardItem header>
-                <Text style={{fontSize: 20, paddingVertical: 15}}>{translate("init_recover")}</Text>
+                <Text style={{ fontSize: 20, paddingVertical: 15 }}>{translate("init_recover")}</Text>
               </CardItem>
 
               <CardItem cardBody>
-                <View style={{flexDirection: "row", marginVertical: 10, marginHorizontal: 5}}>
-                  <View style={{flex: 1, justifyContent:"center"}}>
-                    <Text style={{fontSize: 16, textAlign: "right"}}>
+                <View style={{ flexDirection: "row", marginVertical: 10, marginHorizontal: 5 }}>
+                  <View style={{ flex: 1, justifyContent: "center" }}>
+                    <Text style={{ fontSize: 16, textAlign: "right" }}>
                       {`${translate("init_secret")}: `}
                     </Text>
                   </View>
-                  <View style={{flex: 4}}>
+                  <View style={{ flex: 4 }}>
                     <TextInput
                       placeholder="Secret"
                       clearButtonMode="unless-editing"
@@ -278,13 +285,13 @@ class InitPage extends React.Component<InitProps, InitPageState> {
               </CardItem>
 
               <CardItem cardBody>
-                <View style={{flexDirection: "row", marginVertical: 10, marginHorizontal: 5}}>
-                  <View style={{flex: 1, justifyContent: "center"}}>
-                    <Text style={{fontSize: 16, textAlign: "right"}}>
+                <View style={{ flexDirection: "row", marginVertical: 10, marginHorizontal: 5 }}>
+                  <View style={{ flex: 1, justifyContent: "center" }}>
+                    <Text style={{ fontSize: 16, textAlign: "right" }}>
                       {`${translate("init_password")}: `}
                     </Text>
                   </View>
-                  <View style={{flex: 4}}>
+                  <View style={{ flex: 4 }}>
                     <TextInput
                       editable
                       maxLength={40}
@@ -304,21 +311,25 @@ class InitPage extends React.Component<InitProps, InitPageState> {
               </CardItem>
 
               <TouchableHighlight
-                    style={{...styles.modalButton}}
-                    underlayColor={COLOR.grey100}
-                    activeOpacity={0.3}
-                    disabled={recoverSecret == ""}
-                    onPress={() => {
-                      let newWallet = new ethers.Wallet.fromMnemonic(recoverSecret)
-                      console.log("wallet", newWallet);
-                      this.props.createWallet({
-                        wallet: newWallet,
-                        passPharse: passPharse
-                      })
-                    }}
-                >
-                    <Text style={{...styles.modalButtonText, color: COLOR.blue600}}>{translate("init_startRecover")}</Text>
-                </TouchableHighlight>
+                style={{ ...styles.modalButton }}
+                underlayColor={COLOR.grey100}
+                activeOpacity={0.3}
+                disabled={recoverSecret == ""}
+              >
+                <Text
+                  style={{ ...styles.modalButtonText, color: COLOR.blue600 }}
+                  onPress={() => {
+                    let newWallet = new ethers.Wallet.fromMnemonic(recoverSecret)
+                    console.log("wallet", newWallet);
+                    this.props.createWallet({
+                      wallet: newWallet,
+                      passPharse: passPharse
+                    })
+                  }}
+                  >
+                    {translate("init_startRecover")}
+                  </Text>
+              </TouchableHighlight>
             </Card>
           </Modal>
         </View >
@@ -332,7 +343,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
           <Modal
             visible={props.passwordPromptVisible}
             transparent={true}
-            >
+          >
             <Card>
               <CardItem header bordered>
                 <Text>
@@ -357,8 +368,8 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                 button
                 bordered
                 onPress={() => {
-                  this.setState({passwordPromptVisible: false});
-                  this.props.loadWallet({passPharse: passPharse});
+                  this.setState({ passwordPromptVisible: false });
+                  this.props.loadWallet({ passPharse: passPharse });
                 }}
                 style={styles.button}
               >
@@ -378,7 +389,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       <>
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
-          style={this.state.createNewWalletModalVisble? styles.maskView : styles.scrollView}
+          style={this.state.createNewWalletModalVisble ? styles.maskView : styles.scrollView}
         >
           <Spinner
             visible={this.state.loading}
@@ -450,7 +461,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
             >
               {this.state.backupPassPharse}
             </Text>
-            </Card>
+          </Card>
 
           <RecoverWalletModal
             recoverWalletModalVisible={this.state.recoverWalletModalVisible}
@@ -534,7 +545,7 @@ const styles = StyleSheet.create({
 
   modalButton: {
     backgroundColor: "white",
-    alignItems:"center"
+    alignItems: "center"
   },
 
   modalButtonText: {
