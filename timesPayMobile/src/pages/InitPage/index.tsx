@@ -14,7 +14,6 @@ import {
 // import Modal from 'react-native-modal';
 import React, { useState } from 'react';
 import { Navigation } from 'react-native-navigation';
-import Col, { Row } from 'react-native-col';
 import { translate } from '../../utils/I18N';
 
 import { connect } from 'react-redux';
@@ -46,6 +45,8 @@ import { createWallet } from '../../actions/initAction';
 import duckImg from '../../assets/duck.png';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import { WalletBalanceCounter } from '../../component/walletBalance'
+
 
 interface InitProps {
   depositReducer: DepositStateType,
