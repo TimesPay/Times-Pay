@@ -76,9 +76,10 @@ import com.android.build.OutputFile
  */
 
  project.ext.react = [
-   entryFile      : "index.js", // or index.android.js
-   bundleInRelease: true,
-   bundleInDebug: true,
+    root: "../../",
+    entryFile      : "index.js", // or index.android.js
+    bundleInRelease: true,
+    bundleInDebug: true,
  ]
 
  apply from: "../../node_modules/react-native/react.gradle"
@@ -197,6 +198,7 @@ dependencies {
     addUnimodulesDependencies()
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation project(':react-native-aes-crypto')
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")

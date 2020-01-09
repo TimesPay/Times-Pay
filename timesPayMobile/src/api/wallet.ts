@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { network } from '../config';
 import { ethers } from 'ethers';
 
-import { generateKey, encrypt, decrypt } from '../utils/cryptograohy';
+import { generateKey, encrypt, decrypt, sha256 } from '../utils/cryptograohy';
 
 export const getEncryptedWallet = () => {
   console.log("getEncryptedWallet");
@@ -13,12 +13,23 @@ export const getEncryptedWallet = () => {
 export const setEncryptedWallet = (payload) => {
   return SecureStore.setItemAsync("wallet", payload.wallet);
 }
-export const getPassPharse = () => {
+export const getKey = () => {
   return SecureStore.getItemAsync("key");
 }
 
-export const setPassPharse = (payload) => {
+export const setKey = (payload) => {
   return SecureStore.setItemAsync("key", payload.key);
+}
+export const setPassPharse = async (payload) => {
+  let pw = await sha256(payload.passPharse)
+  console.log("setPassPharse", pw)
+  return SecureStore.setItemAsync("passPharse", pw);
+}
+export const getPassPharse = (payload) => {
+  return SecureStore.getItemAsync("passPharse");
+}
+export const hash = (payload) => {
+  return sha256(payload)
 }
 export const getDecryptedWallet = (payload) => {
   const { encryptedWallet, passwd } = payload;
@@ -32,14 +43,6 @@ export const generateKeyByPassPharse = (payload) => {
 }
 export const encryptWallet = (payload) => {
     const { wallet, key } = payload;
-    //AES allows 128, 192 and 256 bit of key length. In other words 16, 24 or 32 byte.
-    //We will store the
-    // generateKey(passPharse, 'salt', 65536, 256).then(key=>{
-    //   encrypt(wallet, key).then(cipherText=>{
-    //     console.log("cipherText",cipherText);
-    //   })
-    // });
-    // return wallet.encrypt(passPharse)
     return encrypt(wallet, key);
 }
 export const getWalletByMnemonic = (payload) => {

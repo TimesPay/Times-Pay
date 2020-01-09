@@ -14,7 +14,8 @@
     "build:bundle:prd": "cross-env NODE_ENV=production npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
     "build:android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug",
     "release-build:android:prd": "cross-env NODE_ENV=production react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/ && rm -rf android/app/src/main/res/drawable-* && rm -rf android/app/src/main/res/raw/* && cd android && ./gradlew assembleRelease && cd ..",
-    "build:bundle": "cross-env NODE_ENV=development npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
+    "build:bundleAndroid": "cross-env NODE_ENV=development npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
+    "build:bundleIOS": "cross-env NODE_ENV=development npx react-native bundle --platform ios --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.ios.bundle --assets-dest android/app/src/main/res/",
     "release-build:android": "cross-env NODE_ENV=development react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/ && rm -rf android/app/src/main/res/drawable-* && rm -rf android/app/src/main/res/raw/* && cd android && ./gradlew assembleRelease && cd .."
   },
   "dependencies": {

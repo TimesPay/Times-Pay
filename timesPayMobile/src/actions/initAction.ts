@@ -29,6 +29,15 @@ export const fetchFailed = (payload) => {
   }
 }
 
+export const loadWallet = (payload) => {
+  return {
+    type: LOAD_WALLET_INIT,
+    payload: {
+      passPharse: payload.passPharse
+    }
+  }
+}
+
 export const createWallet = (payload) => {
   console.log("createWallet", payload);
   return {
