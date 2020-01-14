@@ -5,19 +5,26 @@ import {
   Text,
   Button,
   TouchableOpacity,
-  TextInput
+  TextInput,
+  Modal,
+  Platform,
+  Image
 } from 'react-native';
+import {
+  Card,
+  CardItem,
+} from 'native-base'
 import React from 'react';
 import { Navigation } from 'react-native-navigation';
 import { COLOR } from 'react-native-material-ui';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-// import { RNCamera } from 'react-native-camera';
-import { Card, CardItem } from 'native-base';
 import { translate } from '../../utils/I18N';
 import { connect } from 'react-redux';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Permissions from 'expo-permissions';
+import * as LocalAuthentication from 'expo-local-authentication';
+// import NfcManager, { NfcEvents } from 'react-native-nfc-manager';
 
 import {
   payStart,
@@ -37,7 +44,9 @@ import { DepositStateType } from '../../reducers/depositReducer';
 import { PayStateType } from '../../reducers/payReducer';
 import { ExchangeStateType } from '../../reducers/exchangeReducer';
 import errCode from '../../utils/errCode';
-import { stateUpdater } from '../../utils/stateUpdater'
+import { stateUpdater } from '../../utils/stateUpdater';
+import globalStyle from '../../utils/globalStyle';
+import fingerPrint from '../../assets/fingerPrint.png'
 
 interface PayProps {
   depositReducer: DepositStateType,
@@ -49,7 +58,12 @@ interface PayProps {
 interface PayPageState extends PayStateType {
   hasPermission: boolean,
   scanned: boolean,
-  confirmedPay: boolean
+  confirmedPay: boolean,
+  paymentWayModalVisible: boolean,
+  paymentMethod: "QRCode" | "NFC" | null,
+  destAddress: string,
+  status:string,
+  authcated: boolean
 }
 
 class PayPage extends React.Component<PayProps, PayPageState> {
@@ -59,6 +73,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
     };
   };
   scanner: QRCodeScanner;
+  NfcManager: any;
   constructor(props) {
     super(props);
     this.state = {
@@ -73,9 +88,16 @@ class PayPage extends React.Component<PayProps, PayPageState> {
       hasPermission: null,
       scanned: false,
       amount: "0",
+      paymentWayModalVisible: false,
+      paymentMethod: null,
+      destAddress: this.props.payReducer.destAddress,
+      status: "",
+      authcated: false
     }
+    // this.NfcManager = NfcManager;
   }
   componentDidMount() {
+    console.log("componentDidMount");
     this.setState({
       loading: this.props.payReducer.loading,
       status: this.props.payReducer.status,
@@ -87,7 +109,12 @@ class PayPage extends React.Component<PayProps, PayPageState> {
       confirmedPay: false,
       hasPermission: null,
       scanned: false,
-      amount: "0"
+      amount: "0",
+      paymentWayModalVisible: true,
+      paymentMethod: null,
+      destAddress: this.props.payReducer.destAddress,
+      status: "",
+      authcated: false
     })
     const getPermission = () => {
       Permissions.askAsync(Permissions.CAMERA).then(({ status }) => {
@@ -103,6 +130,22 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           })
         }
       });
+      LocalAuthentication.hasHardwareAsync().then(hasHardware=>{
+        console.log("hasHardware", hasHardware)
+        if(hasHardware) {
+          LocalAuthentication.supportedAuthenticationTypesAsync().then(supportedType=>{
+            console.log("supportedType", supportedType);
+            LocalAuthentication.authenticateAsync().then(res=>{
+              console.log("auth touch id", res);
+              this.setState({
+                status: "auth",
+                authcated: res.success ? true : false
+              })
+            })
+          })
+        }
+      })
+      Permissions.askAsync(Permissions)
     }
     getPermission();
   }
@@ -111,7 +154,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
     stateUpdater(this, "errCode", "payReducer");
     stateUpdater(this, "destAddress", "payReducer");
     stateUpdater(this, "estimatedCost", "payReducer");
-
+    stateUpdater(this, "destAddress", "payReducer");
   }
   onChangeText(text) {
     if (!isNaN(parseFloat(text)) && isFinite(text)) {
@@ -121,32 +164,85 @@ class PayPage extends React.Component<PayProps, PayPageState> {
     }
   }
   handleOnRead(e) {
-    console.log("handleOnRead", e);
     if (!this.state.loading && !this.props.payReducer.loading) {
       this.setState({
         scanned: true,
         loading: true
       });
-      console.log(e.data);
       this.props.payEstimate({
         destAddress: e.data,
         contract: this.props.exchangeReducer.contract,
-        amount: this.state.amount
+        amount: this.state.amount,
+        wallet: this.props.initReducer.wallet
       });
     }
   }
   render() {
+    const PaymentWayModal = (props) => {
+      return (
+        <Modal
+          visible={props.paymentWayModalVisible}
+        >
+          <Card>
+            <CardItem header>
+              <Text>{translate("pay_paymentModalHeader")}</Text>
+            </CardItem>
+            <CardItem cardBody button
+              onPress={() => this.setState({
+                paymentMethod: "QRCode",
+                paymentWayModalVisible: false
+              })}
+            >
+              <Text>{translate("pay_QRCode")}</Text>
+            </CardItem>
+            <CardItem cardBody button
+              onPress={() => {
+                this.setState({
+                  paymentMethod: "NFC",
+                  paymentWayModalVisible: false
+                });
+                if (Platform.OS == "android") {
+                  {/* if(this.NfcManager.isEnabled()){
+                    this.NfcManager.start().then((e) => {
+                      console.log("start", e);
+                      this.NfcManager.getLaunchTagEvent().then((tag)=>{
+                        console.log("tag", tag);
+                        if(tag != null) {
+                          this.NfcManager.setEventListener(NfcEvents.DiscoverTag, tag => {
+                            console.warn("tag set listener", tag);
+                            this.NfcManager.setAlertMessageIOS('I got your tag!');
+                            this.NfcManager.unregisterTagEvent().catch(() => 0);
+                          });
+                        }
+                      })
+                    })
+                  } else {
+                    console.log("NFC not enabled");
+                  }; */}
+                }
+              }}
+            >
+              <Text>{translate("pay_NFC")}</Text>
+            </CardItem>
+          </Card>
+        </Modal>
+      )
+
+    }
     return (
       <>
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}
         >
+          {/* <PaymentWayModal
+            paymentWayModalVisible={this.state.paymentWayModalVisible}
+          /> */}
           <Card>
             <CardItem cardBody bordered>
               <Text>
                 Pay To:
-              </Text>
+                </Text>
             </CardItem>
             <CardItem
               cardBody
@@ -157,9 +253,9 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                 justifyContent: 'flex-end',
               }}>
               {
-                this.state.hasPermission && !this.state.scanned
+                this.state.hasPermission
+                  && !this.state.scanned
                   ? <QRCodeScanner
-
                     onRead={this.state.scanned
                       ? undefined
                       : (e) => this.handleOnRead(e)
@@ -167,7 +263,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                     topContent={
                       <Text style={styles.centerText}>
                         Please scan QR-Code to Pay
-                    </Text>
+                      </Text>
                     }
                     bottomContent={
                       <TouchableOpacity style={styles.buttonTouchable}>
@@ -180,7 +276,9 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                       ratio: "1:1"
                     }}
                   />
-                  : <Text>{this.props.payReducer.destAddress}</Text>
+                  : this.state.paymentMethod == "NFC"
+                    ? <Text>{translate("pay_NFCDetail")}</Text>
+                    : <View></View>
               }
             </CardItem>
             <CardItem
@@ -210,28 +308,37 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                     {`estimated cost: ${this.state.estimatedCost} wei`}
                   </Text>
                 </CardItem>
-
             }
-            <CardItem
-              cardBody
-              bordered
-              button
-              disabled={this.state.estimatedCost == 0}
-              onPress={() => {
-                this.props.pay({
-                  destAddress: this.state.destAddress,
-                  contract: this.props.exchangeReducer.contract,
-                  amount: this.state.amount
-                })
-              }}
-              style={styles.confirmButton}
-            >
-              <Text
-                style={styles.buttonText}
-              >
-                {translate("pay_confirm")}
-              </Text>
-            </CardItem>
+            {
+              this.state.destAddress == null
+                ? <View></View>
+                : <Text>{this.state.destAddress}</Text>
+            }
+            {
+              this.state.estimatedCost == 0
+                ? <View></View>
+                : <CardItem
+                  cardBody
+                  bordered
+                  button
+                  disabled={this.state.estimatedCost == 0}
+                  onPress={() => {
+                    this.props.pay({
+                      destAddress: this.state.destAddress,
+                      contract: this.props.exchangeReducer.contract,
+                      amount: this.state.amount,
+                      wallet: this.props.initReducer.wallet
+                    })
+                  }}
+                  style={styles.confirmButton}
+                >
+                  <Text
+                    style={styles.buttonText}
+                  >
+                    {translate("pay_confirm")}
+                  </Text>
+                </CardItem>
+            }
             <CardItem cardBody bordered>
               {this.state.scanned && <Button
                 title={'Tap to Scan Again'}
@@ -240,7 +347,22 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                 }} />
               }
             </CardItem>
+            <CardItem
+              footer
+              >
+                <Text>{this.state.status}</Text>
+              </CardItem>
           </Card>
+          <Modal
+            visible={!this.state.authcated}
+            >
+              <Card>
+                <CardItem cardBody>
+                  <Image src={fingerPrint}/>
+                  <Text>TOUCH ID</Text>
+                </CardItem>
+              </Card>
+          </Modal>
         </ScrollView>
       </>
     )

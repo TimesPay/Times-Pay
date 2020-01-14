@@ -14,7 +14,8 @@ export const payStartRequest = (payload) => {
     payload: {
       destAddress: payload.destAddress,
       contract: payload.contract,
-      amount: payload.amount
+      amount: payload.amount,
+      wallet: payload.wallet
     }
   }
 }
@@ -52,7 +53,8 @@ export const payEstimate = (payload) => {
     payload: {
       destAddress: payload.destAddress,
       contract: payload.contract,
-      amount: payload.amount
+      amount: payload.amount,
+      wallet: payload.wallet
     }
   }
 }
