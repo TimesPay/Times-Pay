@@ -13,7 +13,8 @@ import {
 
 import {
   transfer,
-  estimateTransfer
+  estimateTransfer,
+  getContractInterface
 } from '../api/contract'
 
 export function* watchPay() {
@@ -26,8 +27,14 @@ export function* watchEstimate() {
 function* payFlow(action) {
   console.log("payFlow", action);
   try{
-    const { destAddress, contract, amount } = action.payload;
+    const { destAddress, wallet, amount } = action.payload;
+    let { contract } = action.payload;
     let newDestAddress = destAddress ;
+    if(contract == null) {
+      contract = yield call(getContractInterface, {
+        wallet: wallet
+      })
+    }
     if(destAddress[0] != "0"){
       newDestAddress = destAddress.slice(9)
     }
@@ -43,11 +50,13 @@ function* payFlow(action) {
       contract: contract,
       destAddress: newDestAddress,
       amount: amount
-  })
+    })
     console.log("pay response", response);
-    yield put(paySuccess({
-      info: "Paid"
-    }));
+    yield put(
+      paySuccess({
+        info: "Paid"
+      })
+  );
   } catch (e) {
     console.log(e);
     yield put(payFailed({
@@ -58,7 +67,14 @@ function* payFlow(action) {
 
 function* payEstimateFlow(action) {
   try{
-    const { destAddress, contract, amount } = action.payload;
+    const { destAddress, amount, wallet } = action.payload;
+    let { contract } = action.payload;
+    if(contract == null) {
+      console.log("payEstimationFlow", action.payload);
+      contract = yield call(getContractInterface, {
+        wallet: wallet
+      })
+    }
     let newDestAddress = destAddress ;
     if(destAddress[0] != "0"){
       newDestAddress = destAddress.slice(9)

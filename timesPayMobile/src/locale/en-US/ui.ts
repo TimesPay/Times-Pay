@@ -17,5 +17,9 @@ export default {
   "exchange_refresh": "Refresh",
   "exchange_dataHeader": "Exchange Data",
   "exchange_balance": "Balance",
-  "pay_confirm": "Confirme?",
+  "pay_confirm": "Confirm?",
+  "pay_paymentModalHeader": "How to pay?",
+  "pay_QRCode": "QR Code",
+  "pay_NFC": "NFC",
+  "pay_NFCDetail": "Please put the phone near receiver's phone"
 }
