@@ -9,3 +9,7 @@ https://www.timespayhk.com
 <p>After mainnet confirms, this wallet will automaticlly ask for convert amount of Eth to DAI stablecoin (trade with Kyber Network). 
 <p>After All mainnet confirms.
 <p>User can spend DAI Stablecoins with secure, cheap fees and fast. Enjoy!
+
+
+#Licenses
+1. [countUp.js](https://github.com/inorganik/countUp.js)
