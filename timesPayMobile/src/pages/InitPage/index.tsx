@@ -48,7 +48,6 @@ import {
 import globalStyle from '../../utils/globalStyle'
 import duckImg from '../../assets/duck.png';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 import WalletBalanceCounter from '../../component/WalletBalanceCounter';
 
 
@@ -403,11 +402,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
             visible={this.state.loading}
             textContent={'Loading...'}
           />
-<<<<<<< HEAD
-
           <WalletBalanceCounter endVal={123456.12345} decimalPlaces={8}></WalletBalanceCounter>
-=======
->>>>>>> upstream/master
           <Card>
             <CardItem header bordered>
               <Image source={duckImg} style={styles.mainIcon} />
