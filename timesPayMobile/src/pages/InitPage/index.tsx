@@ -26,6 +26,7 @@ import {
   Button,
   CardItem,
 } from 'native-base'
+import { TouchableHighlight } from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import { getDepositState, getInitState } from '../../reducers/selectors';
@@ -44,7 +45,7 @@ import {
   createWallet,
   loadWallet
 } from '../../actions/initAction';
-
+import globalStyle from '../../utils/globalStyle'
 import duckImg from '../../assets/duck.png';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -145,8 +146,8 @@ class InitPage extends React.Component<InitProps, InitPageState> {
         }
       }
     }
-    if (this.state.loading != this.props.initReducer.loading) {
-      this.setState({ loading: this.props.initReducer.loading });
+    if (this.state.loading != (this.props.initReducer.loading || this.props.depositReducer.loading)) {
+      this.setState({ loading: (this.props.initReducer.loading || this.props.depositReducer.loading) });
     }
   }
 
@@ -331,6 +332,10 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                     {translate("init_startRecover")}
                   </Text>
               </TouchableHighlight>
+              <Spinner
+                visible={this.state.loading}
+                textContent={'Loading...'}
+              />
             </Card>
           </Modal>
         </View >
@@ -345,7 +350,9 @@ class InitPage extends React.Component<InitProps, InitPageState> {
             visible={props.passwordPromptVisible}
             transparent={true}
           >
-            <Card>
+            <Card
+              style={styles.newWalletConfirmModal}
+              >
               <CardItem header bordered>
                 <Text>
                   {translate("init_passwordTitle")}
@@ -372,10 +379,10 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                   this.setState({ passwordPromptVisible: false });
                   this.props.loadWallet({ passPharse: passPharse });
                 }}
-                style={styles.button}
+                style={{ ...styles.modalButton }}
               >
                 <Text
-                  style={styles.buttonText}
+                  style={{ ...styles.modalButtonText, color: COLOR.blue600 }}
                 >
                   {translate("init_unlockWallet")}
                 </Text>
@@ -396,8 +403,11 @@ class InitPage extends React.Component<InitProps, InitPageState> {
             visible={this.state.loading}
             textContent={'Loading...'}
           />
+<<<<<<< HEAD
 
           <WalletBalanceCounter endVal={123456.12345} decimalPlaces={8}></WalletBalanceCounter>
+=======
+>>>>>>> upstream/master
           <Card>
             <CardItem header bordered>
               <Image source={duckImg} style={styles.mainIcon} />
@@ -494,6 +504,7 @@ const mapDispatchToProps = dispatch => {
 export default connect(mapStateToProps, mapDispatchToProps)(InitPage);
 
 const styles = StyleSheet.create({
+  ...globalStyle,
   scrollView: {
     backgroundColor: COLOR.yellow50,
     color: COLOR.blue50,
@@ -518,18 +529,6 @@ const styles = StyleSheet.create({
     marginLeft: "20%"
   },
 
-  newWalletConfirmModal: {
-    display: "flex",
-    justifyContent: "center",
-    alignContent: "center",
-    flexDirection: "column",
-    height: "100%",
-    width: "100%",
-    flexWrap: "wrap",
-    zIndex: 1,
-    backgroundColor: COLOR.grey600,
-  },
-
   passwordInputBox: {
     borderWidth: 1,
     display: "flex",
@@ -544,26 +543,6 @@ const styles = StyleSheet.create({
     alignContent: "center",
     borderColor: COLOR.grey300
   },
-
-  modalButton: {
-    backgroundColor: "white",
-    alignItems: "center"
-  },
-
-  modalButtonText: {
-    fontSize: 16,
-    padding: 10,
-    margin: 10
-  },
-
-  button: {
-    backgroundColor: COLOR.blue800,
-    height: 48
-  },
-  buttonText: {
-    color: COLOR.white
-  },
-
   recoverWalletModalInputBox: {
     borderWidth: 1,
     borderRadius: 6,
