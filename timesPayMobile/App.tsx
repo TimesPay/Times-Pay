@@ -37,9 +37,6 @@ import payReducer from './src/reducers/payReducer';
 
 import rootSaga from './src/sagas/entrySaga';
 
-import Icon from 'react-native-vector-icons/FontAwesome'
-Icon.loadFont();
-
 const sagaMiddleware = createSagaMiddleware();
 let store = createStore(combineReducers({
   initReducer,
