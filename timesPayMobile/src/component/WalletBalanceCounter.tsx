@@ -1,17 +1,13 @@
 import {
-  SafeAreaView,
   StyleSheet,
   View,
   Text,
-  Dimensions
+  TouchableOpacity
 } from 'react-native';
-
 import React, {Component} from 'react'
-import {translate} from '../utils/I18N'
-import {COLOR} from 'react-native-material-ui'
-import {Card} from 'native-base'
-import {TouchableOpacity} from 'react-native-gesture-handler'
-import Icon from 'react-native-vector-icons/FontAwesome'
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen'
+import { COLOR } from 'react-native-material-ui';
 
 
 export interface CountUpOptions { // (default)
@@ -60,7 +56,7 @@ export default class WalletBalanceCounter extends Component
   easingFn?: (t: number, b: number, c: number, d: number) => number;
   startVal = 0;
   duration: number;
-  paused = true;
+  enableRefresh = true;
   frameVal: number;
 
   constructor(props){
@@ -86,7 +82,7 @@ export default class WalletBalanceCounter extends Component
     }
 
     this.state = {
-      printVal: this.formattingFn(this.startVal)
+      printVal: this.formattingFn(this.startVal),
     }
   }
 
@@ -120,11 +116,21 @@ export default class WalletBalanceCounter extends Component
   start = () => {
     if (this.duration > 0) {
       this.determineDirectionAndSmartEasing();
-      this.paused = false;
+      this.enableRefresh = false;
       this.rAF = requestAnimationFrame(this.count);
     } else {
       this.printValue(this.endVal);
     }
+  }
+
+  refresh = () => {
+    console.log("refresh")
+    cancelAnimationFrame(this.rAF);
+    this.enableRefresh = true;
+    this.resetDuration();
+    this.startVal = this.validateValue(this.options.startVal);
+    this.frameVal = this.startVal;
+    this.start()
   }
 
   // pass a new endVal and start animation
@@ -136,6 +142,7 @@ export default class WalletBalanceCounter extends Component
       return;
     }
     this.startVal = this.frameVal;
+
     if (!this.finalEndVal) {
       this.resetDuration();
     }
@@ -183,6 +190,10 @@ export default class WalletBalanceCounter extends Component
     } else if (this.finalEndVal !== null) {
       // smart easing
       this.update(this.finalEndVal);
+    }
+
+    if(this.finalEndVal == null){
+      this.enableRefresh = true
     }
   }
 
@@ -242,28 +253,34 @@ export default class WalletBalanceCounter extends Component
 
   render() {
     return(
-      <Card style={styles.balanceCounter}>
+      <View style={styles.balanceCounter}>
         <Text style={styles.balanceText}>{this.state.printVal}</Text>
-        <TouchableOpacity onPress={this.start}>
-          <Icon name="refresh" size={30} color="white"/>
+        <TouchableOpacity onPress={this.refresh} style={styles.refreshBtn} disabled={!this.enableRefresh}>
+          <FontAwesomeIcon name="refresh" size={wp('3%')} color="black" style={{alignSelf: "center"}}/>
         </TouchableOpacity>
-      </Card>
+      </View>
     )
   }
 }
 
 const styles = StyleSheet.create({
   balanceCounter: {
-    backgroundColor: COLOR.grey800,
-    paddingTop: 80,
-    paddingBottom: 30,
-    paddingRight: 30
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
 
   balanceText: {
+    flex: 12,
     fontWeight: "bold",
-    fontSize: 30,
-    color: "white",
-    textAlign: "right"
+    fontSize: wp("4.5%"),
+    color: "black",
+    fontFamily: "Feather",
+    alignSelf: "center"
+  },
+
+  refreshBtn: {
+    flex: 1,
+    padding: wp('1.2%')
   }
 })
