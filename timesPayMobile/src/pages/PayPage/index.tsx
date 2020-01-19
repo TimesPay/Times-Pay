@@ -24,6 +24,7 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Permissions from 'expo-permissions';
 import * as LocalAuthentication from 'expo-local-authentication';
+import Spinner from 'react-native-loading-spinner-overlay';
 // import NfcManager, { NfcEvents } from 'react-native-nfc-manager';
 
 import {
@@ -62,7 +63,7 @@ interface PayPageState extends PayStateType {
   paymentWayModalVisible: boolean,
   paymentMethod: "QRCode" | "NFC" | null,
   destAddress: string,
-  status:string,
+  status: string,
   authcated: boolean
 }
 
@@ -130,12 +131,12 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           })
         }
       });
-      LocalAuthentication.hasHardwareAsync().then(hasHardware=>{
+      LocalAuthentication.hasHardwareAsync().then(hasHardware => {
         console.log("hasHardware", hasHardware)
-        if(hasHardware) {
-          LocalAuthentication.supportedAuthenticationTypesAsync().then(supportedType=>{
+        if (hasHardware) {
+          LocalAuthentication.supportedAuthenticationTypesAsync().then(supportedType => {
             console.log("supportedType", supportedType);
-            LocalAuthentication.authenticateAsync().then(res=>{
+            LocalAuthentication.authenticateAsync().then(res => {
               console.log("auth touch id", res);
               this.setState({
                 status: "auth",
@@ -164,6 +165,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
     }
   }
   handleOnRead(e) {
+    console.log("handleOnRead", e.data);
     if (!this.state.loading && !this.props.payReducer.loading) {
       this.setState({
         scanned: true,
@@ -235,6 +237,10 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}
         >
+          <Spinner
+            visible={this.state.loading}
+            textContent={'Pending'}
+          />
           {/* <PaymentWayModal
             paymentWayModalVisible={this.state.paymentWayModalVisible}
           /> */}
@@ -349,19 +355,29 @@ class PayPage extends React.Component<PayProps, PayPageState> {
             </CardItem>
             <CardItem
               footer
-              >
-                <Text>{this.state.status}</Text>
-              </CardItem>
+            >
+              <Text>{this.state.status}</Text>
+            </CardItem>
           </Card>
           <Modal
             visible={!this.state.authcated}
+          >
+            <Card
+              style={styles.newWalletConfirmModal}
             >
-              <Card>
-                <CardItem cardBody>
-                  <Image src={fingerPrint}/>
-                  <Text>TOUCH ID</Text>
-                </CardItem>
-              </Card>
+              <CardItem cardBody>
+                <Image
+                  source={fingerPrint}
+                  style={{
+                    minWidth: "100%",
+                    minHeight: "50%"
+                  }}
+                />
+              </CardItem>
+              <CardItem>
+                <Text>{translate("pay_auth")}</Text>
+              </CardItem>
+            </Card>
           </Modal>
         </ScrollView>
       </>
@@ -370,6 +386,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
 }
 
 const styles = StyleSheet.create({
+  ...globalStyle,
   scrollView: {
     backgroundColor: COLOR.yellow50,
     color: COLOR.blue50

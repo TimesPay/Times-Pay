@@ -13,7 +13,9 @@ export interface DataType {
 export interface ExchangeStateType extends commonStateType {
   ratio: number;
   contract: TimesCoinType | null;
-  data: DataType
+  data: DataType,
+  TD2USD:number,
+  USD2HKD: number
 }
 const initState: ExchangeStateType = {
   loading: false,
@@ -21,7 +23,9 @@ const initState: ExchangeStateType = {
   ratio: 0,
   errMsg: null | undefined,
   contract: null,
-  data: {}
+  data: {},
+  TD2USD: 1,
+  USD2HKD: 7.85
 }
 
 export default function exchangeReducer(state = initState, action) {

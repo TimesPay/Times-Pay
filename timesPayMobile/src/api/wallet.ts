@@ -60,3 +60,7 @@ export const sendTransaction = (payload) => {
     value: ethers.utils.parseEther(amount)
   })
 }
+export const getBalance = (payload) => {
+  const { wallet } = payload;
+  return wallet.getBalance();
+}
