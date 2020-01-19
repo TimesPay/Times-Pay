@@ -12,6 +12,7 @@ import React from 'react';
 import { COLOR } from 'react-native-material-ui';
 import { Card, CardItem } from 'native-base';
 import Spinner from 'react-native-loading-spinner-overlay';
+import SVGImage from 'react-native-svg-image';
 
 import { connect } from 'react-redux';
 
@@ -23,7 +24,7 @@ import { deepCompare } from '../../utils/deepCompare';
 import { translate } from '../../utils/I18N';
 import constants from '../../utils/constants';
 import BasicLayout from '../../component/BasicLayout';
-import duckImg from '../../assets/duck.png';
+import walletIcon from '../../assets/wallet.png';
 
 interface ExchangeProps {
   exchangeReducer: ExchangeStateType,
@@ -60,6 +61,8 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
       contract: this.props.exchangeReducer.contract,
       errCode: this.props.exchangeReducer.errCode,
       data: this.props.exchangeReducer.data,
+      TD2USD: this.props.exchangeReducer.TD2USD,
+      USD2HKD: this.props.exchangeReducer.USD2HKD
     }
   }
 
@@ -70,7 +73,9 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
       ratio: this.props.exchangeReducer.ratio,
       contract: this.props.exchangeReducer.contract,
       errCode: this.props.exchangeReducer.errCode,
-      data: this.props.exchangeReducer.data
+      data: this.props.exchangeReducer.data,
+      TD2USD: this.props.exchangeReducer.TD2USD,
+      USD2HKD: this.props.exchangeReducer.USD2HKD
     })
     this.props.loadContract({
       wallet: this.props.initReducer.wallet
@@ -88,7 +93,12 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
     if (!deepCompare(this.state.contract, this.props.exchangeReducer.contract)) {
       this.setState({
         contract: this.props.exchangeReducer.contract
-      })
+      }, () => this.props.getExchangeData({
+        contract: this.state.contract,
+        wallet: this.props.initReducer.wallet,
+        type: constants["balance"],
+        payload: {}
+      }))
     }
     if (!deepCompare(this.state.data, this.props.exchangeReducer.data)) {
       this.setState({
@@ -123,12 +133,15 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
               cardBody
               bordered
             >
-              <Text>
-                {`${translate("exchange_balance")}: ${
+              <Image source={walletIcon} style={{ width: "20%", height: 50, marginLeft: "10%" }} />
+              <Text
+                style={{  marginRight: "20%" }}
+                >
+                {`${
                   this.state.data.balance != null
-                    ? this.state.data.balance
+                    ? (this.state.data.balance / 1000000) * (this.state.TD2USD) * (this.state.USD2HKD)
                     : 0
-                  }`}</Text>
+                  } HKD`}</Text>
             </CardItem>
             <CardItem
               footer
@@ -144,8 +157,8 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
               style={styles.footerButton}
             >
               <Text
-                style={{color: COLOR.white}}
-                >
+                style={{ color: COLOR.white }}
+              >
                 {translate("exchange_refresh")}
               </Text>
             </CardItem>

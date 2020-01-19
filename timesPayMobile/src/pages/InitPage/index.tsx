@@ -317,7 +317,9 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                 disabled={recoverSecret == ""}
               >
                 <Text
-                  style={{ ...styles.modalButtonText, color: COLOR.blue600 }}
+                  style={{ ...styles.modalButtonText,
+                    color: COLOR.blue600,
+                    marginLeft: "40%"}}
                   onPress={() => {
                     let newWallet = new ethers.Wallet.fromMnemonic(recoverSecret)
                     console.log("wallet", newWallet);
@@ -351,12 +353,12 @@ class InitPage extends React.Component<InitProps, InitPageState> {
             <Card
               style={styles.newWalletConfirmModal}
               >
-              <CardItem header bordered>
+              <CardItem header>
                 <Text>
                   {translate("init_passwordTitle")}
                 </Text>
               </CardItem>
-              <CardItem cardBody bordered>
+              <CardItem cardBody>
                 <TextInput
                   onChangeText={(text: string) => {
                     setPassPharse(text);
@@ -372,7 +374,6 @@ class InitPage extends React.Component<InitProps, InitPageState> {
               <CardItem
                 footer
                 button
-                bordered
                 onPress={() => {
                   this.setState({ passwordPromptVisible: false });
                   this.props.loadWallet({ passPharse: passPharse });
