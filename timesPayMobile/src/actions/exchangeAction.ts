@@ -58,7 +58,8 @@ export const getExchangeData = (payload) => {
     payload: {
       contract: payload.contract,
       type: payload.type,
-      payload: payload.payload
+      payload: payload.payload,
+      wallet: payload.wallet
     }
   }
 }

@@ -21,5 +21,6 @@ export default {
   "pay_paymentModalHeader": "How to pay?",
   "pay_QRCode": "QR Code",
   "pay_NFC": "NFC",
-  "pay_NFCDetail": "Please put the phone near receiver's phone"
+  "pay_NFCDetail": "Please put the phone near receiver's phone",
+  "pay_auth": "Please authecate us to pay by finger print"
 }

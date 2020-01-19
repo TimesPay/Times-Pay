@@ -17,6 +17,9 @@ import {
   getContractInterface,
   getBalance
 } from '../api/contract';
+// import {
+//   getBalance
+// } from '../api/wallet';
 import errCode from '../utils/errCode';
 import constants from '../utils/constants';
 
@@ -58,8 +61,11 @@ function* getExchangeDataFlow(action) {
   switch (action.payload.type) {
     case constants["balance"]:
       let balance = yield call(getBalance, {
-        contract: action.payload.contract
+        contract: action.payload.contract,
       });
+      // let balance = yield call(getBalance, {
+      //   wallet: action.payload.wallet
+      // });
       yield put(
         getExchangeDataSuccess({
           type: constants["balance"],
