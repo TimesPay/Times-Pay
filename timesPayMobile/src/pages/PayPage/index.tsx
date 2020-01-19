@@ -23,7 +23,7 @@ import { connect } from 'react-redux';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Permissions from 'expo-permissions';
-// import * as LocalAuthentication from 'expo-local-authentication';
+import * as LocalAuthentication from 'expo-local-authentication';
 import Spinner from 'react-native-loading-spinner-overlay';
 // import NfcManager, { NfcEvents } from 'react-native-nfc-manager';
 
@@ -131,21 +131,21 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           })
         }
       });
-      // LocalAuthentication.hasHardwareAsync().then(hasHardware => {
-      //   console.log("hasHardware", hasHardware)
-      //   if (hasHardware) {
-      //     LocalAuthentication.supportedAuthenticationTypesAsync().then(supportedType => {
-      //       console.log("supportedType", supportedType);
-      //       LocalAuthentication.authenticateAsync().then(res => {
-      //         console.log("auth touch id", res);
-      //         this.setState({
-      //           status: "auth",
-      //           authcated: res.success ? true : false
-      //         })
-      //       })
-      //     })
-      //   }
-      // })
+      LocalAuthentication.hasHardwareAsync().then(hasHardware => {
+        console.log("hasHardware", hasHardware)
+        if (hasHardware) {
+          LocalAuthentication.supportedAuthenticationTypesAsync().then(supportedType => {
+            console.log("supportedType", supportedType);
+            LocalAuthentication.authenticateAsync().then(res => {
+              console.log("auth touch id", res);
+              this.setState({
+                status: "auth",
+                authcated: res.success ? true : false
+              })
+            })
+          })
+        }
+      })
       Permissions.askAsync(Permissions)
     }
     getPermission();
@@ -360,7 +360,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
               <Text>{this.state.info}</Text>
             </CardItem>
           </Card>
-          {/* <Modal
+          <Modal
             visible={!this.state.authcated}
           >
             <Card
@@ -379,7 +379,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                 <Text>{translate("pay_auth")}</Text>
               </CardItem>
             </Card>
-          </Modal> */}
+          </Modal>
         </ScrollView>
       </>
     )
