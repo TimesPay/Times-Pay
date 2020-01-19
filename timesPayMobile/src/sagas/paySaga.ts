@@ -17,6 +17,8 @@ import {
   getContractInterface
 } from '../api/contract'
 
+import { translate } from '../utils/I18N';
+
 export function* watchPay() {
   yield takeEvery(PAY_START_REQUEST, payFlow);
 }
@@ -25,7 +27,6 @@ export function* watchEstimate() {
   yield takeEvery(PAY_ESTIMATE, payEstimateFlow);
 }
 function* payFlow(action) {
-  console.log("payFlow", action);
   try{
     const { destAddress, wallet, amount } = action.payload;
     let { contract } = action.payload;
@@ -39,7 +40,8 @@ function* payFlow(action) {
       newDestAddress = destAddress.slice(9)
     }
     yield put(payStart({
-      destAddress: newDestAddress
+      destAddress: newDestAddress,
+      info: translate("startPay")
     }));
     // let response = yield call(sendTransaction,{
     //   destAddress: newDestAddress,
@@ -60,7 +62,7 @@ function* payFlow(action) {
   } catch (e) {
     console.log(e);
     yield put(payFailed({
-      errCode: "insufficient fund"
+      errCode: translate("pay_insufficientFund")
     }));
   }
 }
@@ -71,6 +73,10 @@ function* payEstimateFlow(action) {
     let { contract } = action.payload;
     if(contract == null) {
       console.log("payEstimationFlow", action.payload);
+      yield put(payStart({
+        destAddress: newDestAddress,
+        info: translate("estimateCost")
+      }));
       contract = yield call(getContractInterface, {
         wallet: wallet
       })
@@ -94,7 +100,7 @@ function* payEstimateFlow(action) {
   } catch (e) {
     console.log(e);
     yield put(payFailed({
-      errCode: "insufficient fund"
+      errCode: translate("pay_insufficientFund")
     }));
   }
 }
