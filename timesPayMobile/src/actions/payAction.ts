@@ -24,7 +24,8 @@ export const payStart = (payload) => {
   return {
     type: PAY_START,
     payload: {
-      destAddress: payload.destAddress
+      destAddress: payload.destAddress,
+      info: payload.info
     }
   }
 }

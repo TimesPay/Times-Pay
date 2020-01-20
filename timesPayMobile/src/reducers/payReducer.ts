@@ -30,7 +30,7 @@ export default function payReducer(state = initState, action) {
         status: state.status,
         destAddress: action.payload.destAddress,
         errCode: state.errCode,
-        info: state.info,
+        info: action.payload.info,
         estimatedCost: state.estimatedCost
       }
       break;
@@ -59,7 +59,7 @@ export default function payReducer(state = initState, action) {
     case PAY_ESTIMATE_SUCCESS:
     return {
       ...state,
-      loading: true,
+      loading: false,
       status: state.status,
       destAddress: state.destAddress,
       errCode: state.errCode,

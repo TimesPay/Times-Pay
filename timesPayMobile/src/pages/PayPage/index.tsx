@@ -156,6 +156,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
     stateUpdater(this, "destAddress", "payReducer");
     stateUpdater(this, "estimatedCost", "payReducer");
     stateUpdater(this, "destAddress", "payReducer");
+    stateUpdater(this, "info", "payReducer");
   }
   onChangeText(text) {
     if (!isNaN(parseFloat(text)) && isFinite(text)) {
@@ -229,8 +230,8 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           </Card>
         </Modal>
       )
-
     }
+    console.log("render pay", this.state);
     return (
       <>
         <ScrollView
@@ -356,7 +357,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
             <CardItem
               footer
             >
-              <Text>{this.state.status}</Text>
+              <Text>{this.state.info}</Text>
             </CardItem>
           </Card>
           <Modal
