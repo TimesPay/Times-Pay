@@ -231,7 +231,6 @@ class PayPage extends React.Component<PayProps, PayPageState> {
         </Modal>
       )
     }
-    console.log("render pay", this.state);
     return (
       <>
         <ScrollView
@@ -247,9 +246,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           /> */}
           <Card>
             <CardItem cardBody bordered>
-              <Text>
-                Pay To:
-                </Text>
+
             </CardItem>
             <CardItem
               cardBody
@@ -319,7 +316,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
             {
               this.state.destAddress == null
                 ? <View></View>
-                : <Text>{this.state.destAddress}</Text>
+                : <Text>Pay to :{this.state.destAddress}</Text>
             }
             {
               this.state.estimatedCost == 0
@@ -357,7 +354,10 @@ class PayPage extends React.Component<PayProps, PayPageState> {
             <CardItem
               footer
             >
-              <Text>{this.state.info}</Text>
+              {
+                this.state.info != "" &&
+                <Text>{translate(this.state.info)}</Text>
+              }
             </CardItem>
           </Card>
           <Modal

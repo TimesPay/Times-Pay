@@ -1,8 +1,9 @@
 export default {
   "init_menu": "MENU",
+  "init_registered": "Do you have a wallet?",
   "init_backupWallet": "BACKUP WALLET",
   "init_unlockWallet": "UNLOCK WALLET",
-  "init_reset": "Reset address",
+  "init_reset": "DELETE WALLET",
   "init_delete": "address deleted",
   "init_status": "Status",
   "init_backuped": "Backup passPharse is copied to clipboard",

@@ -6,7 +6,6 @@ import { ethers } from 'ethers';
 import { generateKey, encrypt, decrypt, sha256 } from '../utils/cryptograohy';
 
 export const getEncryptedWallet = () => {
-  console.log("getEncryptedWallet");
   return SecureStore.getItemAsync("wallet");
 }
 
@@ -22,7 +21,6 @@ export const setKey = (payload) => {
 }
 export const setPassPharse = async (payload) => {
   let pw = await sha256(payload.passPharse)
-  console.log("setPassPharse", pw)
   return SecureStore.setItemAsync("passPharse", pw);
 }
 export const getPassPharse = (payload) => {
@@ -34,11 +32,9 @@ export const hash = (payload) => {
 export const getDecryptedWallet = (payload) => {
   const { encryptedWallet, passwd } = payload;
   return decrypt(encryptedWallet, passwd);
-  // return new ethers.Wallet.fromEncryptedJson(encryptedWallet, passwd);
 
 }
 export const generateKeyByPassPharse = (payload) => {
-  console.log("generateKeyByPassPharse", payload);
   return generateKey(payload.passPharse, 'salt', 65536, 256)
 }
 export const encryptWallet = (payload) => {

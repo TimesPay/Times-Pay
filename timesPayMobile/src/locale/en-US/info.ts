@@ -1,4 +1,5 @@
 export default {
   "estimateCost": "Estimating cost",
-  "startPay": "Start pay"
+  "startPay": "Start pay",
+  "Paid": "Paid"
 }
