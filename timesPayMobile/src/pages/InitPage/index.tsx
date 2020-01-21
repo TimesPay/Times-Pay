@@ -62,6 +62,8 @@ interface InitPageState extends InitStateType {
   createNewWalletModalVisble: boolean;
   recoverWalletModalVisible: boolean;
   passwordPromptVisible: boolean;
+  registeredPromptVisible: boolean;
+  warningText: string;
 };
 
 class InitPage extends React.Component<InitProps, InitPageState> {
@@ -80,9 +82,11 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       createNewWalletModalVisble: false,
       recoverWalletModalVisible: false,
       passwordPromptVisible: false,
+      registeredPromptVisible: false,
       loadingStatus: "",
       wallet: null,
-      backupPassPharse: ""
+      backupPassPharse: "",
+      warningText: ""
     }
   }
 
@@ -96,7 +100,8 @@ class InitPage extends React.Component<InitProps, InitPageState> {
       errCode: this.props.initReducer.errCode,
       createNewWalletModalVisble: false,
       recoverWalletModalVisible: false,
-      passwordPromptVisible: true,
+      passwordPromptVisible: false,
+      registeredPromptVisible: true,
       loadingStatus: "",
       wallet: null,
       backupPassPharse: ""
@@ -117,25 +122,23 @@ class InitPage extends React.Component<InitProps, InitPageState> {
         });
       }
     }
+    console.log("componentDidMount", this.props.initReducer.errCode);
     if (this.props.initReducer.errCode == errCode["loadWallet.noWallet"]) {
       if (this.state.errCode == null ||
         this.state.errCode == undefined) {
-        console.log("initPage errCode state=null", this.props.initReducer.errCode);
         this.setState({
           createNewWalletModalVisble: true,
           errCode: this.props.initReducer.errCode
         });
-      } else {
-        if (this.props.initReducer.errCode.valueOf() != this.state.errCode.valueOf()) {
-          console.log("initPage errCode state!=null", this.props.initReducer.errCode);
-          this.setState({
-            createNewWalletModalVisble: true,
-            errCode: this.props.initReducer.errCode
-          });
-        }
+      }
+    } else if (this.props.initReducer.errCode == errCode["loadWallet.incorrectPW"]) {
+      if (this.state.errCode != this.props.initReducer.errCode) {
+        this.setState({
+          passwordPromptVisible: true,
+          errCode: this.props.initReducer.errCode
+        });
       }
     } else {
-      console.log("default", this.props.initReducer.errCode)
       if (this.props.initReducer.errCode != null) {
         if (this.state.errCode != this.props.initReducer.errCode) {
           this.setState({
@@ -152,14 +155,13 @@ class InitPage extends React.Component<InitProps, InitPageState> {
   render() {
     const CreateWalletModal = (props) => {
       const [passPharse, setPassPharse] = useState("");
-      console.log("props.createNewWalletModalVisble", props.createNewWalletModalVisble);
       return (
         <View>
           <Modal visible={props.createNewWalletModalVisble}
             animationType="slide"
             transparent={true}>
 
-            <Card style={styles.newWalletConfirmModal}>
+            <Card style={{...styles.newWalletConfirmModal, zIndex: 1}}>
               <CardItem header>
                 <Text style={{ fontSize: 20, paddingVertical: 15 }}>Do you want to create a new wallet?</Text>
               </CardItem>
@@ -199,7 +201,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                           passPharse: passPharse
                         });
                       }}
-                      >
+                    >
                       {translate("init_yes")}
                     </Text>
                   </TouchableHighlight>
@@ -218,7 +220,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                           createNewWalletModalVisble: false
                         })
                       }}
-                      >
+                    >
                       {translate("init_no")}
                     </Text>
                   </TouchableHighlight>
@@ -233,13 +235,12 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                 <Text
                   style={{ ...styles.modalButtonText, color: COLOR.blue600 }}
                   onPress={() => {
-                    console.log("onPress");
                     this.setState({
                       recoverWalletModalVisible: true,
                       createNewWalletModalVisble: false
                     })
                   }}
-                  >{translate("init_recover")}</Text>
+                >{translate("init_recover")}</Text>
               </TouchableHighlight>
             </Card>
           </Modal>
@@ -250,15 +251,13 @@ class InitPage extends React.Component<InitProps, InitPageState> {
     const RecoverWalletModal = (props) => {
       const [recoverSecret, setRecoverSecret] = useState("");
       const [passPharse, setPassPharse] = useState("");
-      console.log("props.recoverWalletModalVisible", props.recoverWalletModalVisible);
-
       return (
         <View>
           <Modal visible={props.recoverWalletModalVisible}
             animationType="slide"
             transparent={true}
           >
-            <Card style={styles.newWalletConfirmModal}>
+            <Card style={{...styles.newWalletConfirmModal, zIndex: 2}}>
               <CardItem header>
                 <Text style={{ fontSize: 20, paddingVertical: 15 }}>{translate("init_recover")}</Text>
               </CardItem>
@@ -309,7 +308,14 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                   </View>
                 </View>
               </CardItem>
-
+              {
+                this.state.warningText != "" &&
+                <Text
+                  style={{color: COLOR.red600 }}
+                >
+                  {translate(this.state.warningText)}
+                </Text>
+              }
               <TouchableHighlight
                 style={{ ...styles.modalButton }}
                 underlayColor={COLOR.grey100}
@@ -317,20 +323,30 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                 disabled={recoverSecret == ""}
               >
                 <Text
-                  style={{ ...styles.modalButtonText,
+                  style={{
+                    ...styles.modalButtonText,
                     color: COLOR.blue600,
-                    marginLeft: "40%"}}
-                  onPress={() => {
-                    let newWallet = new ethers.Wallet.fromMnemonic(recoverSecret)
-                    console.log("wallet", newWallet);
-                    this.props.createWallet({
-                      wallet: newWallet,
-                      passPharse: passPharse
-                    })
+                    marginLeft: "40%"
                   }}
-                  >
-                    {translate("init_startRecover")}
-                  </Text>
+                  onPress={() => {
+                    let newWallet = null;
+                    try{
+                      newWallet = new ethers.Wallet.fromMnemonic(recoverSecret.trim())
+                    } catch (e) {
+                      this.setState({
+                        warningText: "createWallet_invalidSecret"
+                      })
+                    }
+                    if(newWallet != null) {
+                      this.props.createWallet({
+                        wallet: newWallet,
+                        passPharse: passPharse
+                      })
+                    }
+                  }}
+                >
+                  {translate("init_startRecover")}
+                </Text>
               </TouchableHighlight>
               <Spinner
                 visible={this.state.loading}
@@ -351,8 +367,8 @@ class InitPage extends React.Component<InitProps, InitPageState> {
             transparent={true}
           >
             <Card
-              style={styles.newWalletConfirmModal}
-              >
+              style={{...styles.newWalletConfirmModal, zIndex: 3}}
+            >
               <CardItem header>
                 <Text>
                   {translate("init_passwordTitle")}
@@ -377,6 +393,7 @@ class InitPage extends React.Component<InitProps, InitPageState> {
                 onPress={() => {
                   this.setState({ passwordPromptVisible: false });
                   this.props.loadWallet({ passPharse: passPharse });
+                  setPassPharse("")
                 }}
                 style={{ ...styles.modalButton }}
               >
@@ -390,8 +407,62 @@ class InitPage extends React.Component<InitProps, InitPageState> {
           </Modal>
         </View>
       )
-
     }
+    const RegisteredModal = (props) => {
+      return (
+        <View>
+          <Modal
+            visible={props.registeredPromptVisible}
+            transparent={true}
+          >
+            <Card
+              style={{...styles.newWalletConfirmModal, zIndex: 4}}
+            >
+              <CardItem header>
+                <Text>
+                  {translate("init_registered")}
+                </Text>
+              </CardItem>
+              <CardItem
+                cardBody
+                button
+                onPress={() => {
+                  this.setState({
+                    passwordPromptVisible: true,
+                    registeredPromptVisible: false
+                  })
+                }}
+                style={{ ...styles.modalButton }}
+              >
+                <Text
+                  style={{ ...styles.modalButtonText, color: COLOR.green600, marginLeft: "40%" }}
+                  >
+                  {translate("init_yes")}
+                </Text>
+              </CardItem>
+              <CardItem
+                cardBody
+                button
+                onPress={() => {
+                  this.setState({
+                    createNewWalletModalVisble: true,
+                    registeredPromptVisible: false
+                  });
+                }}
+                style={{ ...styles.modalButton }}
+              >
+                <Text
+                  style={{ ...styles.modalButtonText, color: COLOR.blue600, marginLeft: "40%" }}
+                >
+                  {translate("init_no")}
+                </Text>
+              </CardItem>
+            </Card>
+          </Modal>
+        </View>
+      )
+    }
+
     return (
       <>
         <ScrollView
@@ -477,6 +548,9 @@ class InitPage extends React.Component<InitProps, InitPageState> {
           />
           <CreateWalletModal
             createNewWalletModalVisble={this.state.createNewWalletModalVisble}
+          />
+          <RegisteredModal
+            registeredPromptVisible={this.state.registeredPromptVisible}
           />
         </ScrollView>
       </>

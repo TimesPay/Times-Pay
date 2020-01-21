@@ -4,5 +4,5 @@ import info from './en-US/info';
 export default {
   ...error,
   ...ui,
-  info
+  ...info
 }
