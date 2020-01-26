@@ -30,6 +30,8 @@ import ExchangePage from './src/pages/ExchangePage';
 import DepositPage from './src/pages/DepositPage';
 import PayPage from './src/pages/PayPage';
 
+import InitPageContainer from './src/pages/InitPage/InitPageContainer'
+
 import initReducer from './src/reducers/initReducer';
 import exchangeReducer from './src/reducers/exchangeReducer';
 import depositReducer from './src/reducers/depositReducer';
@@ -92,6 +94,8 @@ const uiTheme = {
   }
 }
 
+const NOWALLET = true
+
 class App extends React.Component<{}, AppState> {
   constructor(props: any) {
     super(props);
@@ -117,7 +121,7 @@ class App extends React.Component<{}, AppState> {
         <ThemeContext.Provider value={getTheme(uiTheme)}>
           <>
             {/* <BasicLayout> */}
-              <Navigation />
+            {  NOWALLET ? <InitPageContainer /> : <Navigation />}
             {/* </BasicLayout> */}
           </>
         </ThemeContext.Provider>
