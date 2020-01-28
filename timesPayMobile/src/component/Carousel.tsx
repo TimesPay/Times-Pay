@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   whiteCircle: {
     width: wp('2%'),
     height: wp('2%'),
-    borderRadius: 3,
+    borderRadius: wp('4%'),
     margin: wp('1%'),
     backgroundColor: "#694FAD"
   }
