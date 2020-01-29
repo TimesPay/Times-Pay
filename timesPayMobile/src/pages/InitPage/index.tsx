@@ -19,7 +19,6 @@ import { getInitState } from '../../reducers/selectors'
 import { loadWallet } from '../../actions/initAction'
 import WalletBox from './walletBox'
 
-
 class InitPage extends Component {
   static navigationOptions = ({ navigation }) => {
     return {

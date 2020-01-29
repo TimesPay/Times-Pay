@@ -41,7 +41,7 @@ function* payFlow(action) {
     }
     yield put(payStart({
       destAddress: newDestAddress,
-      info: translate("startPay")
+      info: "startPay"
     }));
     // let response = yield call(sendTransaction,{
     //   destAddress: newDestAddress,
@@ -62,7 +62,7 @@ function* payFlow(action) {
   } catch (e) {
     console.log(e);
     yield put(payFailed({
-      errCode: translate("pay_insufficientFund")
+      errCode: "pay_insufficientFund"
     }));
   }
 }
@@ -75,7 +75,7 @@ function* payEstimateFlow(action) {
       console.log("payEstimationFlow", action.payload);
       yield put(payStart({
         destAddress: newDestAddress,
-        info: translate("estimateCost")
+        info: "estimateCost"
       }));
       contract = yield call(getContractInterface, {
         wallet: wallet
@@ -86,7 +86,8 @@ function* payEstimateFlow(action) {
       newDestAddress = destAddress.slice(9)
     }
     yield put(payStart({
-      destAddress: newDestAddress
+      destAddress: newDestAddress,
+      info: "estimateCost"
     }));
     let response = yield call(estimateTransfer,{
       contract: contract,
@@ -100,7 +101,7 @@ function* payEstimateFlow(action) {
   } catch (e) {
     console.log(e);
     yield put(payFailed({
-      errCode: translate("pay_insufficientFund")
+      errCode: "pay_insufficientFund"
     }));
   }
 }

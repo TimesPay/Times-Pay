@@ -21,10 +21,9 @@ export default {
     flexWrap: "wrap",
     zIndex: 1,
     backgroundColor: COLOR.grey600,
+    position: "absolute"
   },
   modalButtonText: {
     fontSize: 16,
-    padding: 10,
-    margin: 10
   },
 }

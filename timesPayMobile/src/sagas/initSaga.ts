@@ -37,24 +37,29 @@ function* loadWalletFlow(action) {
     let passwd = yield call(generateKeyByPassPharse,{
       passPharse: action.payload.passPharse
     })
-    console.log("load wallet", passwd);
     let encryptedWallet = yield call(getEncryptedWallet);
-    // let passwd = yield call(getKey);
-    console.log("passwd", passwd);
-    console.log("encryptedWallet", encryptedWallet)
     if (encryptedWallet) {
       if (passwd) {
-        let mnemonic = yield call(getDecryptedWallet, {
-          encryptedWallet: JSON.parse(encryptedWallet),
-          passwd: passwd
-        });
+        let mnemonic = null;
+        try{
+          mnemonic = yield call(getDecryptedWallet, {
+            encryptedWallet: JSON.parse(encryptedWallet),
+            passwd: passwd
+          });
+        } catch (e) {
+          yield put(
+            fetchFailed({
+              errCode: errCode["loadWallet.incorrectPW"]
+            })
+          );
+          return;
+        }
         let newWallet = yield call(getWalletByMnemonic, {
           mnemonic: mnemonic
         })
         newWallet = yield call(connectWalletToProvider, {
           wallet: newWallet
         })
-        console.log("newWallet", newWallet);
         yield put(
           fetchSuccess({
             wallet: newWallet
@@ -102,15 +107,6 @@ function* createWalletFlow(action) {
         wallet: wallet.mnemonic,
         key: key
       });
-    console.log("createWalletFlow, key", action, key);
-    // yield call(setPassPharse, {
-    //   passPharse: passPharse
-    // })
-    // let passPharseStatus = yield call(setKey,
-    //   {
-    //     key: key
-    //   });
-    console.log("createWalletFlow, save PW", action, key, passPharse, encryptedWallet);
     let walletStatus = yield call(setEncryptedWallet,
       {
         wallet: JSON.stringify(encryptedWallet)
