@@ -116,6 +116,7 @@ function* createWalletFlow(action) {
         wallet: JSON.stringify(encryptedWallet)
       });
     console.log("createWalletFlow", key, wallet, encryptedWallet);
+
     let newWallet = yield call(connectWalletToProvider, {
       wallet: wallet
     });

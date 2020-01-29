@@ -21,7 +21,7 @@ const images = [
   "https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
 ];
 
-export default class Init extends Component {
+export default class RegisterPage extends Component {
 	constructor(props){
 		super(props)
 	}
@@ -31,7 +31,7 @@ export default class Init extends Component {
 			<SafeAreaView style={styles.container}>
 				<Carousel images={images} />
 				<TouchableOpacity
-				    onPress = {() => {this.props.navigation.navigate('CreateWalletPassword')}}
+				    onPress = {() => {this.props.navigation.navigate('WalletPassword')}}
 				    style={styles.newWalletBtn}>
 					<Text style={styles.newWalletBtnText}>Create a new wallet</Text>
 				</TouchableOpacity>

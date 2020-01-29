@@ -4,28 +4,65 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native'
 import React, {Component} from 'react'
 import { COLOR } from 'react-native-material-ui'
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen'
 import { ethers } from 'ethers'
 import { connect } from 'react-redux'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 import { getInitState } from '../../reducers/selectors'
 import { createWallet } from '../../actions/initAction'
+import {RESET_STORE} from '../../actions/actionTypes'
+import { setI18nConfig } from '../../utils/I18N'
+import pageStyle from './style'
 
 
-class CreateWalletPasswordPage extends Component {
+class WalletPasswordPage extends Component {
   constructor(props) {
     super(props)
     this.state = {
       password: "",
       confirmPassword: "",
       isPasswordInputBoxFocus: false,
-      isConfirmPasswordInputBoxFocus: false
+      isConfirmPasswordInputBoxFocus: false,
+      loading: false
     }
     this.wallet = this.props.navigation.getParam('wallet', {})
+    setI18nConfig()
+    this.props.reset()
+    this.timer = null
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.initReducer.wallet != null) {
+      this.setState({loading: false})
+      this.props.navigation.navigate('RecoveryPhrase', {mnemonic_str: this.props.initReducer.wallet.signingKey.mnemonic})
+    }
+
+    if(!this.state.loading && this.props.initReducer.loading) {
+      this.setState({ loading: true })
+    }else if(this.state.loading && !this.props.initReducer.loading){
+      if(this.timer != null)clearTimeout(this.timer)
+      this.timer = setTimeout(() => {this.setState({ loading: false })}, 1000)
+    }
+
+    if(this.props.initReducer.errCode != null){ // error handling
+      Alert.alert("Error", "Sorry, unknown error occured.", [
+        {text: "OK", onPress: () => {
+          this.props.navigation.navigate('Loading')
+        }}
+      ])
+      this.props.reset()
+    }
+  }
+
+  componentWillUnmount() {
+    if(this.timer != null)clearTimeout(this.timer)
+    this.props.reset()
   }
 
 	setPassword = (text) => {
@@ -46,8 +83,13 @@ class CreateWalletPasswordPage extends Component {
     }
     this.props.createWallet({
       wallet: this.wallet,
-      passPharse: this.password
+      passPharse: this.state.password
     })
+
+    this.timer = setTimeout(() => {
+      this.setState({ loading: false})
+      Alert.alert("Error", "Connection Timeout", {text: "OK", onPress: () => {this.props.navigation.navigate('Loading')}})
+    }, 30000) // avoid loading screen not disappear
   }
 
   isInvalid = () => {
@@ -62,6 +104,8 @@ class CreateWalletPasswordPage extends Component {
   render() {
     return (
       <SafeAreaView style={styles.container}>
+        <Spinner visible={this.state.loading} textContent={'Loading...'} animatioon="fade" color="#694FAD" 
+                 textStyle={{color: "#694FAD", fontSize: wp('5%')}}/>
         <View style={{flex: 1}}></View>
         <View style={{flex: 4}}>
           <Text style={styles.header}>
@@ -125,65 +169,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    createWallet: (payload) => dispatch(createWallet(payload))
+    createWallet: (payload) => dispatch(createWallet(payload)),
+    reset: () => dispatch({type: RESET_STORE})
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps) (CreateWalletPasswordPage)
+export default connect(mapStateToProps, mapDispatchToProps) (WalletPasswordPage)
 
-const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignContent: "center",
-    width: "100%",
-    height: "100%"
-  },
-  header: {
-    fontSize: wp('8%'),
-    paddingHorizontal: wp('5%'),
-    marginVertical: wp('5%'),
-    fontWeight: "bold",
-    color: COLOR.amber700
-  },
-  passwordInputBox: {
-    borderWidth: 1,
-    marginVertical: wp('3%'),
-    marginHorizontal: wp('5%'),
-    padding: wp('2%'),
-    borderRadius: wp('1%'),
-    fontSize: wp('4%'),
-    borderColor: COLOR.grey300
-  },
-  passwordInputBoxFocus: {
-    borderColor: COLOR.blue200,
-    shadowColor: COLOR.blue200,
-    shadowOpacity: 0.6,
-    shadowRadius: wp('1%'),
-    shadowOffset: {width: wp('0.5%'), height: wp('0.5%')}
-  },
-  hintText: {
-    marginHorizontal: wp('5%'),
-    color: COLOR.grey600,
-    fontSize: wp('3.5%'),
-    marginVertical: wp('1%')
-  },
-  confirmBtn: {
-		width: "90%",
-		marginHorizontal: "5%",
-		backgroundColor: "#694FAD",
-		shadowColor: COLOR.grey300,
-		shadowOpacity: 0.8,
-		shadowOffset: {width: wp('0.5%'), height: wp('0.5%')},
-		paddingHorizontal: wp('3%'),
-		paddingVertical: wp('2%'),
-    marginVertical: wp('2%')
-  },
-	confirmBtnText:{
-		color: "white",
-		fontSize: wp('4.2%'),
-		fontFamily: "FontAwesome",
-		textAlign: "center",
-		fontWeight: "bold"
-	}
-})
+const styles = StyleSheet.create(pageStyle)

@@ -3,7 +3,7 @@ import {
   FETCH_START_INIT,
   FETCH_SUCCESS_INIT,
   FETCH_FAILED_INIT,
-  CREATE_WALLET_INIT
+  CREATE_WALLET_INIT,
 } from '../actions/actionTypes';
 
 export const fetchStart = () => {

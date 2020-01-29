@@ -256,6 +256,8 @@ PODS:
     - React
   - RNPermissions (2.0.8):
     - React
+  - RNReanimated (1.7.0):
+    - React
   - RNSVG (9.13.6):
     - React
   - RNVectorIcons (6.6.0):
@@ -320,6 +322,7 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNLocalize (from `../node_modules/react-native-localize`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - UMBarCodeScannerInterface (from `../node_modules/unimodules-barcode-scanner-interface/ios`)
@@ -425,6 +428,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-localize"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
@@ -509,6 +514,7 @@ SPEC CHECKSUMS:
   RNKeychain: 840f8e6f13be0576202aefcdffd26a4f54bfe7b5
   RNLocalize: c117094a6c5a955c94e65520ad4c726e3a0f4ed6
   RNPermissions: 409e55ed060f7e35d4a3dfc3a336f94a5811dec1
+  RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   UMBarCodeScannerInterface: 550e7ffd7a789289260bde3d547be29407e75437
