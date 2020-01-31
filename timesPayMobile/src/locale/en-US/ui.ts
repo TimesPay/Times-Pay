@@ -7,7 +7,6 @@ export default {
   "init_delete": "address deleted",
   "init_status": "Status",
   "init_backuped": "Backup passPharse is copied to clipboard",
-  "init_recover": "Please input the 12 word secret obtained from BACKUP WALLET function to recover the wallet",
   "init_password": "Password",
   "init_recover": "Or recover from secret",
   "init_secret": "Secret",
@@ -23,5 +22,11 @@ export default {
   "pay_QRCode": "QR Code",
   "pay_NFC": "NFC",
   "pay_NFCDetail": "Please put the phone near receiver's phone",
-  "pay_auth": "Please authecate us to pay by finger print"
+  "pay_auth": "Please authecate us to pay by finger print",
+
+  "modal_createWallet": "Do you want to create a new wallet?",
+  "modal_recoverWallet": "Please input the 12 word secret obtained from BACKUP WALLET function to recover the wallet",
+
+  "str_pay": "Pay",
+  "str_receive": "Receive"
 }

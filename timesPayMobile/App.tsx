@@ -1,41 +1,22 @@
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text
-} from 'react-native';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import createSagaMiddleware from 'redux-saga';
-// import {
-//   I18nManager,
-//   Platform,
-//   NativeRouter as Router,
-//   Switch,
-//   Route,
-//   Link,
-//   routerReducer
-// } from "react-router-native";
-import { Provider } from 'react-redux';
-import { createMemoryHistory } from 'history';
-import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui';
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
-// import { createBottomTabNavigator } from 'react-navigation-tabs';
-import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-import { setI18nConfig } from './src/utils/I18N';
-import * as RNLocalize from 'react-native-localize';
+import React from 'react'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import createSagaMiddleware from 'redux-saga'
 
-import InitPage from './src/pages/InitPage';
-import ExchangePage from './src/pages/ExchangePage';
-import DepositPage from './src/pages/DepositPage';
-import PayPage from './src/pages/PayPage';
+import { Provider } from 'react-redux'
+import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui'
 
-import initReducer from './src/reducers/initReducer';
-import exchangeReducer from './src/reducers/exchangeReducer';
-import depositReducer from './src/reducers/depositReducer';
-import payReducer from './src/reducers/payReducer';
+import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs'
+import { setI18nConfig } from './src/utils/I18N'
+import * as RNLocalize from 'react-native-localize'
 
-import rootSaga from './src/sagas/entrySaga';
+import AppContainer from './src/pages/navigation'
+
+import initReducer from './src/reducers/initReducer'
+import exchangeReducer from './src/reducers/exchangeReducer'
+import depositReducer from './src/reducers/depositReducer'
+import payReducer from './src/reducers/payReducer'
+
+import rootSaga from './src/sagas/entrySaga'
 
 const sagaMiddleware = createSagaMiddleware();
 let store = createStore(combineReducers({
@@ -49,45 +30,15 @@ sagaMiddleware.run(rootSaga);
 const I18n = {};
 I18n.defaultLocale = "en-US";
 I18n.locale = "en-US"
-I18n.missingTranslation = () => null;
-// const AppNavigator = createStackNavigator({
-//   Initial: {
-//     screen: InitPage,
-//   },
-//   Exchange: {
-//     screen: ExchangePage,
-//   }
-// })
-const MaterialBottomTabNavigator = createMaterialBottomTabNavigator(
-  {
-    Initial: {
-      screen: InitPage,
-    },
-    Exchange: {
-      screen: ExchangePage,
-    },
-    Deposit: {
-      screen: DepositPage,
-    },
-    Pay: {
-      screen: PayPage
-    }
-  },
-  {
-    initialRouteName: 'Initial',
-    activeColor: '#f0edf6',
-    inactiveColor: 'white',
-    barStyle: { backgroundColor: '#694fad' },
-  }
-)
-let Navigation = createAppContainer(MaterialBottomTabNavigator);
+I18n.missingTranslation = () => null
+
 const uiTheme = {
   palette: {
     primaryColor: COLOR.yellow50,
   },
   toolbar: {
     container: {
-      height: 50
+      height: "10%"
     }
   }
 }
@@ -117,7 +68,7 @@ class App extends React.Component<{}, AppState> {
         <ThemeContext.Provider value={getTheme(uiTheme)}>
           <>
             {/* <BasicLayout> */}
-              <Navigation />
+            <AppContainer />
             {/* </BasicLayout> */}
           </>
         </ThemeContext.Provider>

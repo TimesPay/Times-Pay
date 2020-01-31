@@ -2,7 +2,8 @@ import {
   LOAD_WALLET_INIT,
   FETCH_START_INIT,
   FETCH_SUCCESS_INIT,
-  FETCH_FAILED_INIT
+  FETCH_FAILED_INIT,
+  RESET_STORE
 } from '../actions/actionTypes';
 import { commonStateType } from '../utils/commonStateType';
 
@@ -46,6 +47,8 @@ export default function initReducer(state = initState, action) {
         errCode: action.payload.errCode
       }
       break;
+    case RESET_STORE:
+      return initState
     default:
       return state;
   }
