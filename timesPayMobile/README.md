@@ -6,3 +6,8 @@
 5. sudo xcode-select --switch /Applications/Xcode.app (maynot need this step if succeeds in step 4)
 6. brew install watchman
 7. switch back to ```timesPayMobile/```, npm run run-ios
+
+
+## Reference
+1. https://github.com/cmcaboy/imageCarouselExample
+2. https://github.com/inorganik/countUp.js/

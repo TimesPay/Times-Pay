@@ -5,8 +5,9 @@ import { ethers } from 'ethers';
 
 import { generateKey, encrypt, decrypt, sha256 } from '../utils/cryptograohy';
 
-export const getEncryptedWallet = () => {
-  return SecureStore.getItemAsync("wallet");
+export const getEncryptedWallet = async () => {
+  console.log("getEncryptedWallet")
+  return await SecureStore.getItemAsync("wallet")
 }
 
 export const setEncryptedWallet = (payload) => {
