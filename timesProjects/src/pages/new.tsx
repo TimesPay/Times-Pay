@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NextPage } from 'next';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
 import { Formik, Form, Field, FieldProps } from 'formik';
 import * as Yup from 'yup';
@@ -72,6 +73,10 @@ const Page: NextPage<Props> = (props: Props) => {
       "projectId": projectPayload["content"]["_id"]
     })
   }));
+  if ( data || projectPayload ) {
+    let router = useRouter();
+    router.push(`/${projectPayload["content"]["_id"]}`);
+  }
   const handleSubmit = (value: any, action: any) => {
     // e.preventDefault();
     console.log(value);
@@ -87,7 +92,7 @@ const Page: NextPage<Props> = (props: Props) => {
     	"projectName": value.projectName,
     	"projectDescciption": value.projectDescciption,
     	"projectImageURL": "",
-    	"whitePaperURL": "",
+    	"projectWhitePaperURL": "",
     	"targetAmount": value.targetAmount,
     	"raisedAmount": "0",
     	"createdDate":""
@@ -125,8 +130,8 @@ const Page: NextPage<Props> = (props: Props) => {
           onReset={formikProps.handleReset}
           onSubmit={formikProps.handleSubmit}
           >
-          <Grid alignContent="center" container>
-            <Grid item xs={12}>
+          <Grid container>
+            <Grid item xs={12} style={{...globalStyle.centerContent}}>
               <FilePond
                 files={projectImage}
                 oninit={() => handleInit() }
@@ -134,7 +139,7 @@ const Page: NextPage<Props> = (props: Props) => {
                   setProjectImage(fileItems);
                   console.log("fileItems", fileItems);
                 }}
-                style={{width:"50% !important", height: 20}}
+                style={{height: 20}}
                 allowFileSizeValidation
                 allowFileTypeValidation
                 maxFileSize="10MB"
@@ -144,27 +149,27 @@ const Page: NextPage<Props> = (props: Props) => {
                 >
               </FilePond>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{...globalStyle.centerContent}}>
               <TextInputField
                 name="receiverWalletAddress" />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{...globalStyle.centerContent}}>
               <TextInputField
                 name="receiverName" />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{...globalStyle.centerContent}}>
               <TextInputField
                 name="projectName" />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{...globalStyle.centerContent}}>
             <TextInputField
               name="projectDescciption" />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{...globalStyle.centerContent}}>
               <TextInputField
                 name="targetAmount" />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{...globalStyle.centerContent}}>
               <FilePond
                 files={projectWhitePaper}
                 oninit={() => handleInit() }
@@ -178,11 +183,11 @@ const Page: NextPage<Props> = (props: Props) => {
                 labelMaxFileSizeExceeded="The max size of PDF is 10MB"
                 acceptedFileTypes={["application/pdf"]}
                 labelFileTypeNotAllowed="Input must be a PDF"
-                style={{width:"50% !important", height: 20}}
+                style={{ ...globalStyle.centerContent, height: 20}}
                 >
               </FilePond>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{...globalStyle.centerContent}}>
               <button type="submit" style={{marginLeft: "35%", marginTop: 10}}>
               Submit
               </button>

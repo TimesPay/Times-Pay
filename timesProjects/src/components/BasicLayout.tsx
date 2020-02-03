@@ -29,18 +29,18 @@ class BasicLayout extends React.Component<BasicLayoutProps, BasicLayoutState> {
           <Grid
             container
           >
-          <Grid item xs={1}>
+          <Grid item xs={3}>
             <List>
               {["home", "list", "create"].map((value: string)=>(
                 <ListItem>
-                  <Link href={router[value]}>
-                    <ListItemText primary={router[value]}/>
+                  <Link href={router[value].url}>
+                    <ListItemText primary={router[value].name}/>
                   </Link>
                 </ListItem>
               ))}
             </List>
           </Grid>
-          <Grid item xs={11}>
+          <Grid item xs={9}>
             {this.props.children}
           </Grid>
         </Grid>

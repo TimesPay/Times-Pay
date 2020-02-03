@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { getModelForClass } from '@typegoose/typegoose';
 import Project, { ProjectType } from '../models/project';
 import config from '../utils/APIConfig';
+import moment from 'moment';
 
 class ProjectRepository {
   public getProjects = (payload: ProjectType | undefined) => {
@@ -23,7 +24,7 @@ class ProjectRepository {
       return projectModel.find({_id:id}).exec();
     })
   }
-  
+
   public createProject = (payload: ProjectType) => {
     return mongoose.connect(config.DBConnectionString, {
       useNewUrlParser: true,
@@ -33,9 +34,25 @@ class ProjectRepository {
       let projectModel = getModelForClass(Project);
       return projectModel.create({
         ...payload,
-        createdDate: new Date(),
+        createdAt: moment().toISOString(),
         expiredAt: "2200-12-31"
       } as Project)
+    });
+  }
+  public EditProject = (id: string, payload: any) => {
+    return mongoose.connect(config.DBConnectionString, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    }).then(()=>{
+      let projectModel = getModelForClass(Project);
+      return projectModel.findOneAndUpdate({
+        _id:id
+      },{
+        ...payload
+      },{
+        omitUndefined: true,
+        strict: true
+      });
     })
   }
 }

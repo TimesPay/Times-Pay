@@ -18,7 +18,7 @@ class Project extends Typegoose {
   public projectImageURL?: string;
 
   @prop()
-  public whitePaperURL?: string;
+  public projectWhitePaperURL?: string;
 
   @prop({ required: true})
   public targetAmount?: number;
@@ -39,7 +39,7 @@ export interface ProjectType {
   projectName?: string;
   projectDescciption?: string;
   projectImageURL?: string;
-  whitePaperURL?: string;
+  projectWhitePaperURL?: string;
   targetAmount?: number;
   raisedAmount?: number;
   createdAt?: Date,
