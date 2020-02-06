@@ -5,10 +5,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Link from '@material-ui/core/Link';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+
 
 import Header from './Header';
 import globalStyle from '../styles/globalStyle';
 import router from '../utils/router';
+import { Card, CardContent, Divider, CardHeader, Drawer, Button } from '@material-ui/core';
 
 interface BasicLayoutProps {
   key: string;
@@ -16,35 +19,52 @@ interface BasicLayoutProps {
 }
 interface BasicLayoutState {
   loading: boolean;
+  sideMenuVisible: boolean
 }
 class BasicLayout extends React.Component<BasicLayoutProps, BasicLayoutState> {
   constructor(props: BasicLayoutProps) {
     super(props);
+    this.state = {
+      loading: false,
+      sideMenuVisible: false
+    }
+  }
+  componentDidMount() {
+    this.setState({
+      sideMenuVisible: false
+    })
   }
   render() {
     return (
       <main>
         <body>
-          <Header />
-          <Grid
-            container
+          <Header
+            sideMenuVisible={this.state.sideMenuVisible}
+            openSideMenu={() => this.setState({ sideMenuVisible: !this.state.sideMenuVisible })}
+          />
+          <Drawer
+            open={this.state.sideMenuVisible}
           >
-          <Grid item xs={3}>
-            <List>
-              {["home", "list", "create"].map((value: string)=>(
+            <List component={Card}>
+              <CardHeader
+                title="menu"
+                avatar={<ArrowBackIosIcon />}
+                onClick={() => this.setState({ sideMenuVisible: !this.state.sideMenuVisible })}
+              />
+              {["home", "list", "create"].map((value: string) => (
                 <ListItem>
-                  <Link href={router[value].url}>
-                    <ListItemText primary={router[value].name}/>
-                  </Link>
+                  <CardContent>
+                    <Link href={router[value].url}>
+                      <ListItemText primary={router[value].name} />
+                    </Link>
+                    <Divider />
+                  </CardContent>
                 </ListItem>
               ))}
             </List>
-          </Grid>
-          <Grid item xs={9}>
-            {this.props.children}
-          </Grid>
-        </Grid>
-      </body>
+          </Drawer>
+          {this.props.children}
+        </body>
       </main>
     )
   }

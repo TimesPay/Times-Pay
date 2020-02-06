@@ -13,7 +13,7 @@ export default {
     color: "rgba(255, 0, 0, 1)"
   },
   centerContent: {
-    marginLeft: "5%",
+    marginLeft: "15%",
     marginRight: "30%"
   }
 }
