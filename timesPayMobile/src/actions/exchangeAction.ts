@@ -14,7 +14,7 @@ export const fetchStart = () => {
     type: FETCH_START_EXCHANGE
   }
 }
-export const fetchSuccess = (payload) => {
+export const fetchSuccess = (payload:any) => {
   return {
     type: FETCH_SUCCESS_EXCHANGE,
     payload: {
@@ -22,7 +22,7 @@ export const fetchSuccess = (payload) => {
     }
   }
 }
-export const fetchFailed = (payload) => {
+export const fetchFailed = (payload:any) => {
     console.log("fetchFailed", payload);
   return {
     type: FETCH_FAILED_EXCHANGE,
@@ -32,7 +32,7 @@ export const fetchFailed = (payload) => {
   }
 }
 
-export const loadContract = (payload) => {
+export const loadContract = (payload:any) => {
   console.log("loadContract", payload);
   return {
     type: LOAD_CONTRACT_EXCHANGE,
@@ -42,7 +42,7 @@ export const loadContract = (payload) => {
   }
 }
 
-export const loadContractSuccess = (payload) => {
+export const loadContractSuccess = (payload:any) => {
   console.log("loadContractSuccess", payload);
   return {
     type: LOAD_CONTRACT_SUCCESS_EXCHANGE,
@@ -52,7 +52,7 @@ export const loadContractSuccess = (payload) => {
   }
 }
 
-export const getExchangeData = (payload) => {
+export const getExchangeData = (payload:any) => {
   return {
     type: GET_DATA_EXCHANGE,
     payload: {
@@ -64,7 +64,7 @@ export const getExchangeData = (payload) => {
   }
 }
 
-export const getExchangeDataSuccess = (payload) => {
+export const getExchangeDataSuccess = (payload:any) => {
   return {
     type: GET_DATA_SUCCESS_EXCHANGE,
     payload: {

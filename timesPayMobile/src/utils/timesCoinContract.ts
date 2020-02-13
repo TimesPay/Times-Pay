@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 export abstract class TimesCoinType {
   protected wallet: ethers.Signer;
   public address: string;
-  protected abi: string[];
+  protected abi: any[];
   protected contract: ethers.Contract;
   abstract initialize(): void;
   abstract getBalance(): string;

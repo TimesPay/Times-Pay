@@ -25,19 +25,27 @@ import { translate } from '../../utils/I18N';
 import constants from '../../utils/constants';
 import BasicLayout from '../../component/BasicLayout';
 import walletIcon from '../../assets/wallet.png';
+import { Dispatch } from 'redux';
 
 interface ExchangeProps {
   exchangeReducer: ExchangeStateType,
   initReducer: InitStateType,
+  getExchangeData: (payload: any) => void,
+  loadContract: (payload: any) => void
 };
 
 interface ExchangeState extends ExchangeStateType {
   loading: boolean;
   ratio: number;
+  contract: any;
+  errCode: string;
+  data: any;
+  TD2USD: number;
+  USD2HKD: number;
 };
 
 class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
-  static navigationOptions = (props) => {
+  static navigationOptions = (props:any) => {
     return {
       headTitle: () => <Text>Exchange</Text>,
       headerRight: () => (
@@ -52,7 +60,7 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
       ),
     }
   };
-  constructor(props) {
+  constructor(props: ExchangeProps) {
     super(props);
     console.log(this.props);
     this.state = {
@@ -150,6 +158,7 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
               onPress={() => {
                 this.props.getExchangeData({
                   contract: this.state.contract,
+                  wallet: this.props.initReducer.wallet,
                   type: constants["balance"],
                   payload: {}
                 })
@@ -168,16 +177,16 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
     );
   }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
   const exchangeReducer = getExchangeState(state);
   const initReducer = getInitState(state);
   console.log("exchange", exchangeReducer, initReducer);
   return { exchangeReducer, initReducer };
 }
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch:Dispatch) => {
   return {
-    loadContract: (payload) => dispatch(loadContract(payload)),
-    getExchangeData: (payload) => dispatch(getExchangeData(payload)),
+    loadContract: (payload:any) => dispatch(loadContract(payload)),
+    getExchangeData: (payload:any) => dispatch(getExchangeData(payload)),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ExchangePage);

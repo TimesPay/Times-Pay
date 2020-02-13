@@ -18,6 +18,10 @@ import {
 } from '../api/contract'
 
 import { translate } from '../utils/I18N';
+import { ethers } from 'ethers';
+import { getGasBalance } from '../api/wallet';
+import { getBalance } from '../api/contract';
+import { swap, getDEXInterface } from '../api/dex';
 
 export function* watchPay() {
   yield takeEvery(PAY_START_REQUEST, payFlow);
@@ -27,16 +31,16 @@ export function* watchEstimate() {
   yield takeEvery(PAY_ESTIMATE, payEstimateFlow);
 }
 function* payFlow(action) {
-  try{
+  try {
     const { destAddress, wallet, amount } = action.payload;
     let { contract } = action.payload;
-    let newDestAddress = destAddress ;
-    if(contract == null) {
+    let newDestAddress = destAddress;
+    if (contract == null) {
       contract = yield call(getContractInterface, {
         wallet: wallet
       })
     }
-    if(destAddress[0] != "0"){
+    if (destAddress[0] != "0") {
       newDestAddress = destAddress.slice(9)
     }
     yield put(payStart({
@@ -48,7 +52,7 @@ function* payFlow(action) {
     //   wallet: wallet,
     //   amount: "0.1"
     // });
-    let response = yield call(transfer,{
+    let response = yield call(transfer, {
       contract: contract,
       destAddress: newDestAddress,
       amount: amount
@@ -58,7 +62,7 @@ function* payFlow(action) {
       paySuccess({
         info: "Paid"
       })
-  );
+    );
   } catch (e) {
     console.log(e);
     yield put(payFailed({
@@ -68,10 +72,10 @@ function* payFlow(action) {
 }
 
 function* payEstimateFlow(action) {
-  try{
+  try {
     const { destAddress, amount, wallet } = action.payload;
     let { contract } = action.payload;
-    if(contract == null) {
+    if (contract == null) {
       console.log("payEstimationFlow", action.payload);
       yield put(payStart({
         destAddress: newDestAddress,
@@ -81,23 +85,45 @@ function* payEstimateFlow(action) {
         wallet: wallet
       })
     }
-    let newDestAddress = destAddress ;
-    if(destAddress[0] != "0"){
+    let newDestAddress = destAddress;
+    if (destAddress[0] != "0") {
       newDestAddress = destAddress.slice(9)
-    }
+    };
     yield put(payStart({
       destAddress: newDestAddress,
       info: "estimateCost"
     }));
-    let response = yield call(estimateTransfer,{
+    let response = yield call(estimateTransfer, {
       contract: contract,
       destAddress: newDestAddress,
       amount: amount
-  })
-    console.log("payEstimate response", response);
-    yield put(payEstimateSuccess({
-      estimatedCost: parseInt(response._hex.slice(2), 16)
-    }));
+    })
+    let walletBalance: ethers.utils.BigNumber = yield call(getGasBalance, {
+      wallet: wallet
+    });
+    if (walletBalance.gt(parseInt(response._hex.slice(2), 16))) {
+      console.log("payEstimate response", response);
+      yield put(payEstimateSuccess({
+        estimatedCost: parseInt(response._hex.slice(2), 16)
+      }));
+    } else {
+      let dex = yield call(getDEXInterface,{
+        wallet:wallet
+      })
+      let swapRes = yield call(swap, {
+        DEXInterface: dex,
+        amount: parseInt(response._hex.slice(2), 16)*1.01
+      });
+      if(swapRes) {
+        yield put(
+          payEstimateSuccess({
+            estimatedCost: parseInt(response._hex.slice(2), 16),
+            status: "gas_insufficient_refill"
+          })
+        )
+      }
+    };
+
   } catch (e) {
     console.log(e);
     yield put(payFailed({

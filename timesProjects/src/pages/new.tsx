@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { NextPage } from 'next';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import { Formik, Form, Field, FieldProps } from 'formik';
 import * as Yup from 'yup';
-import { Input, InputLabel } from '@material-ui/core';
+import { Input, InputLabel, makeStyles, Button } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
@@ -16,55 +15,58 @@ import { fetcher, defaultOption } from '../utils/fetcher';
 import BasicLayout from '../components/BasicLayout';
 import globalStyle from '../styles/globalStyle';
 
+const useStyles = makeStyles({
+  ...globalStyle
+})
 registerPlugin(FilePondPluginImagePreview);
 registerPlugin(FilePondPluginFileEncode);
 registerPlugin(FilePondPluginFileValidateType);
 
-interface Props {
-}
 interface TextInputProps {
   name: string,
+  classes: any
 }
 
-const TextInputField = (props:TextInputProps) => {
+const TextInputField = (props: TextInputProps) => {
+  const { name } = props;
   return (
     <Field
-      name={props.name}
+      name={name}
     >
-    {({
-      field, // { name, value, onChange, onBlur }
-      form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
-      meta,
-    }:FieldProps) => (
-      <div style={{marginLeft: "40%", marginTop: 20}}>
-        <InputLabel>{props.name}</InputLabel>
-        <Input type="text" placeholder={typeof field.value == "string" ? field.value : field.value.toString()} {...field} required/>
-        {meta.touched && meta.error && (
-          <div style={globalStyle.error}>{meta.error}</div>
+      {({
+        field, // { name, value, onChange, onBlur }
+        meta,
+      }: FieldProps) => (
+          <div style={{ marginLeft: "40%", marginTop: 20 }}>
+            <InputLabel>{name}</InputLabel>
+            <Input type="text" placeholder={typeof field.value == "string" ? field.value : field.value.toString()} {...field} required />
+            {meta.touched && meta.error && (
+              <div style={globalStyle.error}>{meta.error}</div>
+            )}
+          </div>
         )}
-      </div>
-    )}
     </Field>
   )
 }
-const Page: NextPage<Props> = (props: Props) => {
+const Page: NextPage<{}> = () => {
   // const { data, error } = useSWR('/api/projects', url=>fetcher(url,{
   //   ...defaultOption
   // }));
   // console.log("data", data);
+  const classes = useStyles()
   const [projectImage, setProjectImage] = useState([]);
   const [projectWhitePaper, setProjectWhitePaper] = useState([]);
   const [projectImageDataURL, setProjectImageDataURL] = useState("");
   const [projectWhitePaperDataURL, setProjectWhitePaperDataURL] = useState("");
   const [payload, setPayload] = useState({});
-  const { data: projectPayload, error } = useSWR(Object.keys(payload).length > 0 && "/api/projects", url=>fetcher(url,{
+  const { data: projectPayload } = useSWR(Object.keys(payload).length > 0 && "/api/projects", url => fetcher(url, {
     ...defaultOption,
     method: "POST",
     body: JSON.stringify({
       ...payload
     })
   }))
-  const { data } = useSWR(projectPayload && "/api/updateFile", url=>fetcher(url,{
+  const { data } = useSWR(projectPayload && "/api/updateFile", url => fetcher(url, {
     ...defaultOption,
     method: "POST",
     body: JSON.stringify({
@@ -73,29 +75,29 @@ const Page: NextPage<Props> = (props: Props) => {
       "projectId": projectPayload["content"]["_id"]
     })
   }));
-  if ( data || projectPayload ) {
+  if (data || projectPayload) {
     let router = useRouter();
     router.push(`/${projectPayload["content"]["_id"]}`);
   }
   const handleSubmit = (value: any, action: any) => {
     // e.preventDefault();
-    console.log(value);
+    console.log(value, action);
     setProjectImageDataURL(projectImage[0].getFileEncodeDataURL());
     setProjectWhitePaperDataURL(projectWhitePaper[0].getFileEncodeDataURL());
     setPayload({
-  	"receiverWallet":
-    	{
-    		"address": value.receiverWalletAddress,
-    		"balance": "0"
-    	},
-    	"receiverName": value.receiverName,
-    	"projectName": value.projectName,
-    	"projectDescciption": value.projectDescciption,
-    	"projectImageURL": "",
-    	"projectWhitePaperURL": "",
-    	"targetAmount": value.targetAmount,
-    	"raisedAmount": "0",
-    	"createdDate":""
+      "receiverWallet":
+      {
+        "address": value.receiverWalletAddress,
+        "balance": "0"
+      },
+      "receiverName": value.receiverName,
+      "projectName": value.projectName,
+      "projectDescciption": value.projectDescciption,
+      "projectImageURL": "",
+      "projectWhitePaperURL": "",
+      "targetAmount": value.targetAmount,
+      "raisedAmount": "0",
+      "createdDate": ""
     })
   }
   const handleInit = () => {
@@ -104,8 +106,8 @@ const Page: NextPage<Props> = (props: Props) => {
 
   return (
     <BasicLayout key="list">
-    <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet"/>
-    <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet"/>
+      <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet" />
+      <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet" />
 
       <Formik
         initialValues={{
@@ -124,83 +126,103 @@ const Page: NextPage<Props> = (props: Props) => {
         })}
         onSubmit={handleSubmit}
       >
-      {
-        formikProps =>(
-          <Form
-          onReset={formikProps.handleReset}
-          onSubmit={formikProps.handleSubmit}
-          >
-          <Grid container>
-            <Grid item xs={12} style={{...globalStyle.centerContent}}>
-              <FilePond
-                files={projectImage}
-                oninit={() => handleInit() }
-                onupdatefiles={fileItems => {
-                  setProjectImage(fileItems);
-                  console.log("fileItems", fileItems);
-                }}
-                style={{height: 20}}
-                allowFileSizeValidation
-                allowFileTypeValidation
-                maxFileSize="10MB"
-                labelMaxFileSizeExceeded="The max size of image is 10MB"
-                acceptedFileTypes={["image/png", "image/jpg", "image/jpeg"]}
-                labelFileTypeNotAllowed="Input must be a image file"
-                >
-              </FilePond>
-            </Grid>
-            <Grid item xs={12} style={{...globalStyle.centerContent}}>
-              <TextInputField
-                name="receiverWalletAddress" />
-            </Grid>
-            <Grid item xs={12} style={{...globalStyle.centerContent}}>
-              <TextInputField
-                name="receiverName" />
-            </Grid>
-            <Grid item xs={12} style={{...globalStyle.centerContent}}>
-              <TextInputField
-                name="projectName" />
-            </Grid>
-            <Grid item xs={12} style={{...globalStyle.centerContent}}>
-            <TextInputField
-              name="projectDescciption" />
-            </Grid>
-            <Grid item xs={12} style={{...globalStyle.centerContent}}>
-              <TextInputField
-                name="targetAmount" />
-            </Grid>
-            <Grid item xs={12} style={{...globalStyle.centerContent}}>
-              <FilePond
-                files={projectWhitePaper}
-                oninit={() => handleInit() }
-                onupdatefiles={fileItems => {
-                  setProjectWhitePaper(fileItems);
-                  console.log("fileItems", fileItems);
-                }}
-                allowFileSizeValidation
-                allowFileTypeValidation
-                maxFileSize="10MB"
-                labelMaxFileSizeExceeded="The max size of PDF is 10MB"
-                acceptedFileTypes={["application/pdf"]}
-                labelFileTypeNotAllowed="Input must be a PDF"
-                style={{ ...globalStyle.centerContent, height: 20}}
-                >
-              </FilePond>
-            </Grid>
-            <Grid item xs={12} style={{...globalStyle.centerContent}}>
-              <button type="submit" style={{marginLeft: "35%", marginTop: 10}}>
-              Submit
-              </button>
-              <button type="reset" style={{marginLeft: "10%", marginTop: 10}}>
-                reset
-              </button>
-            </Grid>
-          </Grid>
-          </Form>
-        )
-      }
+        {
+          formikProps => (
+            <Form
+              onReset={formikProps.handleReset}
+              onSubmit={formikProps.handleSubmit}
+            >
+              <Grid container>
+                <Grid item xs={12} className={classes.centerContent}>
+                  <FilePond
+                    files={projectImage}
+                    oninit={() => handleInit()}
+                    onupdatefiles={fileItems => {
+                      setProjectImage(fileItems);
+                    }}
+                    style={{ height: 20 }}
+                    allowFileSizeValidation
+                    allowFileTypeValidation
+                    maxFileSize="10MB"
+                    labelMaxFileSizeExceeded="The max size of image is 10MB"
+                    acceptedFileTypes={["image/png", "image/jpg", "image/jpeg"]}
+                    labelFileTypeNotAllowed="Input must be a image file"
+                    labelIdle={"<p>PROJECT IMAGE UPLOADER (Only jpeg, jpg or png is allowed)</p>"}
+                  >
+                  </FilePond>
+                </Grid>
+                <Grid item xs={12} className={classes.centerContent}>
+                  <TextInputField
+                    name="receiverWalletAddress"
+                    classes={classes}
+                  />
+                </Grid>
+                <Grid item xs={12} className={classes.centerContent}>
+                  <TextInputField
+                    name="receiverName"
+                    classes={classes}
+                  />
+                </Grid>
+                <Grid item xs={12} className={classes.centerContent}>
+                  <TextInputField
+                    name="projectName"
+                    classes={classes}
+                  />
+                </Grid>
+                <Grid item xs={12} className={classes.centerContent}>
+                  <TextInputField
+                    name="projectDescciption"
+                    classes={classes}
+                  />
+                </Grid>
+                <Grid item xs={12} className={classes.centerContent}>
+                  <TextInputField
+                    name="targetAmount"
+                    classes={classes}
+                  />
+                </Grid>
+                <Grid item xs={12} className={classes.centerContent}>
+                  <FilePond
+                    files={projectWhitePaper}
+                    oninit={() => handleInit()}
+                    onupdatefiles={fileItems => {
+                      setProjectWhitePaper(fileItems);
+                      console.log("fileItems", fileItems);
+                    }}
+                    allowFileSizeValidation
+                    allowFileTypeValidation
+                    maxFileSize="10MB"
+                    labelMaxFileSizeExceeded="The max size of PDF is 10MB"
+                    acceptedFileTypes={["application/pdf"]}
+                    labelFileTypeNotAllowed="Input must be a PDF"
+                    style={{ ...globalStyle.centerContent, height: 20 }}
+                    labelIdle={"<p>PROJECT WHITEPAPER UPLOADER (Only pdf is allowed)</p>"}
+                  >
+                  </FilePond>
+                </Grid>
+                <Grid item xs={12} className={classes.centerContent}>
+                  <Button type="submit" style={{ marginLeft: "39%", marginTop: 10 }}>
+                    Submit
+              </Button>
+                  <Button type="reset" style={{ marginLeft: "10%", marginTop: 10 }}>
+                    reset
+              </Button>
+                </Grid>
+              </Grid>
+            </Form>
+          )
+        }
       </Formik>
     </BasicLayout>
   )
 }
+
+Page.getInitialProps = async ({ req }) => {
+  const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
+  return {
+    userAgent,
+    namespacesRequired: ['common']
+  }
+}
+
 export default Page;

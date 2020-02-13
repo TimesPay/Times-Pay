@@ -7,6 +7,7 @@ import {
   LOAD_CONTRACT_SUCCESS_EXCHANGE,
   GET_DATA_SUCCESS_EXCHANGE
 } from '../actions/actionTypes';
+import { TimesCoinType } from 'src/utils/timesCoinContract';
 export interface DataType {
   balance: number
 }

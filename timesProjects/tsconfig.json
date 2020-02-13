@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "esnext",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+      "es2015",
+      "es2016"
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -14,12 +16,22 @@
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
     "noEmit": true,
+    "noUnusedLocals": true,
+    "preserveConstEnums": true,
+    "noUnusedParameters": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "removeComments": false,
+    "sourceMap": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
   },
   "exclude": [
     "node_modules"

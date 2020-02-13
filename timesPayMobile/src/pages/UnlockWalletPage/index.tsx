@@ -21,7 +21,7 @@ import { setI18nConfig } from '../../utils/I18N'
 import pageStyle from './style'
 
 
-export default class UnlockWalletPage extends Component {
+class UnlockWalletPage extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -58,7 +58,7 @@ export default class UnlockWalletPage extends Component {
 
   componentWillUnmount() {
     if(this.timer != null)clearTimeout(this.timer)
-    this.props.reset()
+    // this.props.reset()
   }
 
   handleUnlock = () => {
@@ -77,7 +77,7 @@ export default class UnlockWalletPage extends Component {
 
   handleResetWallet = () => {
     Alert.alert("WARNING", "You may lose your account and funds forever. Don't reset if you didn't make a backup.", [
-      {text: "CONTINUE", onPress: () => { 
+      {text: "CONTINUE", onPress: () => {
         SecureStore.deleteItemAsync("wallet")
         this.props.navigation.navigate('Loading')
       }},
@@ -92,7 +92,7 @@ export default class UnlockWalletPage extends Component {
   render() {
     return(
       <SafeAreaView style={styles.container}>
-        <Spinner visible={this.state.loading} textContent={'Loading...'} animatioon="fade" color="#694FAD" 
+        <Spinner visible={this.state.loading} textContent={'Loading...'} animatioon="fade" color="#694FAD"
                  textStyle={{color: "#694FAD", fontSize: wp('5%')}}/>
         <View style={{flex: 1}}></View>
         <View style={{flex: 4}}>

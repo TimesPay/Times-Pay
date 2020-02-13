@@ -7,7 +7,7 @@ import {
   PAY_ESTIMATE_SUCCESS
 } from '../actions/actionTypes';
 
-export const payStartRequest = (payload) => {
+export const payStartRequest = (payload:any) => {
   console.log("payAction payStartRequest", payload)
   return {
     type: PAY_START_REQUEST,
@@ -19,7 +19,7 @@ export const payStartRequest = (payload) => {
     }
   }
 }
-export const payStart = (payload) => {
+export const payStart = (payload:any) => {
   console.log("payAction start", payload)
   return {
     type: PAY_START,
@@ -30,7 +30,7 @@ export const payStart = (payload) => {
   }
 }
 
-export const paySuccess = (payload) => {
+export const paySuccess = (payload:any) => {
   return {
     type: PAY_SUCCESS,
     payload: {
@@ -39,7 +39,7 @@ export const paySuccess = (payload) => {
   }
 }
 
-export const payFailed = (payload) => {
+export const payFailed = (payload:any) => {
   return {
     type: PAY_FAILED,
     payload: {
@@ -48,7 +48,7 @@ export const payFailed = (payload) => {
   }
 }
 
-export const payEstimate = (payload) => {
+export const payEstimate = (payload:any) => {
   return {
     type: PAY_ESTIMATE,
     payload: {
@@ -59,11 +59,12 @@ export const payEstimate = (payload) => {
     }
   }
 }
-export const payEstimateSuccess = (payload) => {
+export const payEstimateSuccess = (payload:any) => {
   return {
     type: PAY_ESTIMATE_SUCCESS,
     payload: {
-      estimatedCost: payload.estimatedCost
+      estimatedCost: payload.estimatedCost,
+      status: payload.status || "success"
     }
   }
 }

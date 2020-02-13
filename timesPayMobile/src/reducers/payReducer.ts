@@ -20,7 +20,7 @@ const initState: PayStateType = {
   estimatedCost: 0
 }
 
-export default function payReducer(state = initState, action) {
+export default function payReducer(state = initState, action:any) {
   console.log("payReducer", action);
   switch (action.type) {
     case PAY_START:
@@ -60,7 +60,7 @@ export default function payReducer(state = initState, action) {
     return {
       ...state,
       loading: false,
-      status: state.status,
+      status: action.payload.status,
       destAddress: state.destAddress,
       errCode: state.errCode,
       info: state.info,

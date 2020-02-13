@@ -15,13 +15,10 @@ import {
   CardItem,
 } from 'native-base'
 import React from 'react';
-import { Navigation } from 'react-native-navigation';
 import { COLOR } from 'react-native-material-ui';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { translate } from '../../utils/I18N';
 import { connect } from 'react-redux';
-import * as SecureStore from 'expo-secure-store';
-import AsyncStorage from '@react-native-community/async-storage';
 import * as Permissions from 'expo-permissions';
 import * as LocalAuthentication from 'expo-local-authentication';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -53,7 +50,8 @@ interface PayProps {
   depositReducer: DepositStateType,
   initReducer: InitStateType,
   payReducer: PayStateType,
-  exchangeReducer: ExchangeStateType
+  exchangeReducer: ExchangeStateType,
+  payEstimate: (payload: any) => void
 }
 
 interface PayPageState extends PayStateType {
@@ -67,15 +65,16 @@ interface PayPageState extends PayStateType {
   authcated: boolean
 }
 
+const DEBUG = true;
 class PayPage extends React.Component<PayProps, PayPageState> {
-  static navigationOptions = ({ navigation }) => {
+  static navigationOptions = ({ navigation }: any) => {
     return {
       title: "Pay",
     };
   };
-  scanner: QRCodeScanner;
+  scanner: QRCodeScanner | null = null;
   NfcManager: any;
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.state = {
       loading: this.props.payReducer.loading,
@@ -131,21 +130,23 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           })
         }
       });
-      LocalAuthentication.hasHardwareAsync().then(hasHardware => {
-        console.log("hasHardware", hasHardware)
-        if (hasHardware) {
-          LocalAuthentication.supportedAuthenticationTypesAsync().then(supportedType => {
-            console.log("supportedType", supportedType);
-            LocalAuthentication.authenticateAsync().then(res => {
-              console.log("auth touch id", res);
-              this.setState({
-                status: "auth",
-                authcated: res.success ? true : false
+      if (!DEBUG) {
+        LocalAuthentication.hasHardwareAsync().then(hasHardware => {
+          console.log("hasHardware", hasHardware)
+          if (hasHardware) {
+            LocalAuthentication.supportedAuthenticationTypesAsync().then(supportedType => {
+              console.log("supportedType", supportedType);
+              LocalAuthentication.authenticateAsync().then(res => {
+                console.log("auth touch id", res);
+                this.setState({
+                  status: "auth",
+                  authcated: res.success ? true : false
+                })
               })
             })
-          })
-        }
-      })
+          }
+        })
+      }
       Permissions.askAsync(Permissions)
     }
     getPermission();
@@ -175,62 +176,12 @@ class PayPage extends React.Component<PayProps, PayPageState> {
       this.props.payEstimate({
         destAddress: e.data,
         contract: this.props.exchangeReducer.contract,
-        amount: this.state.amount,
+        amount: (parseFloat(this.state.amount) * 1000000).toString(),
         wallet: this.props.initReducer.wallet
       });
     }
   }
   render() {
-    const PaymentWayModal = (props) => {
-      return (
-        <Modal
-          visible={props.paymentWayModalVisible}
-        >
-          <Card>
-            <CardItem header>
-              <Text>{translate("pay_paymentModalHeader")}</Text>
-            </CardItem>
-            <CardItem cardBody button
-              onPress={() => this.setState({
-                paymentMethod: "QRCode",
-                paymentWayModalVisible: false
-              })}
-            >
-              <Text>{translate("pay_QRCode")}</Text>
-            </CardItem>
-            <CardItem cardBody button
-              onPress={() => {
-                this.setState({
-                  paymentMethod: "NFC",
-                  paymentWayModalVisible: false
-                });
-                if (Platform.OS == "android") {
-                  {/* if(this.NfcManager.isEnabled()){
-                    this.NfcManager.start().then((e) => {
-                      console.log("start", e);
-                      this.NfcManager.getLaunchTagEvent().then((tag)=>{
-                        console.log("tag", tag);
-                        if(tag != null) {
-                          this.NfcManager.setEventListener(NfcEvents.DiscoverTag, tag => {
-                            console.warn("tag set listener", tag);
-                            this.NfcManager.setAlertMessageIOS('I got your tag!');
-                            this.NfcManager.unregisterTagEvent().catch(() => 0);
-                          });
-                        }
-                      })
-                    })
-                  } else {
-                    console.log("NFC not enabled");
-                  }; */}
-                }
-              }}
-            >
-              <Text>{translate("pay_NFC")}</Text>
-            </CardItem>
-          </Card>
-        </Modal>
-      )
-    }
     return (
       <>
         <ScrollView
@@ -241,9 +192,6 @@ class PayPage extends React.Component<PayProps, PayPageState> {
             visible={this.state.loading}
             textContent={'Pending'}
           />
-          {/* <PaymentWayModal
-            paymentWayModalVisible={this.state.paymentWayModalVisible}
-          /> */}
           <Card>
             <CardItem cardBody bordered>
 
@@ -257,7 +205,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                 justifyContent: 'flex-end',
               }}>
               {
-                this.state.hasPermission
+                (this.state.hasPermission || DEBUG)
                   && !this.state.scanned
                   ? <QRCodeScanner
                     onRead={this.state.scanned
@@ -292,15 +240,16 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                 {`amount to pay: ${this.state.amount}`}
               </Text>
             </CardItem>
-            <CardItem cardBody bordered>
-              <TextInput
-                style={{ height: 40, borderColor: 'black', borderWidth: 1 }}
-                onChangeText={text => this.onChangeText(text)}
-                value={this.state.amount}
-                keyboardType={"decimal-pad"}
-                placeholder="amount"
-              />
-            </CardItem>
+            {this.state.estimatedCost == 0 &&
+              <CardItem cardBody bordered>
+                <TextInput
+                  style={{ height: 40, borderColor: 'black', borderWidth: 1 }}
+                  onChangeText={text => this.onChangeText(text)}
+                  value={this.state.amount}
+                  keyboardType={"decimal-pad"}
+                  placeholder="amount"
+                />
+              </CardItem>}
             {
               this.state.estimatedCost == 0
                 ? <View></View>
@@ -309,7 +258,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                   bordered
                 >
                   <Text>
-                    {`estimated cost: ${this.state.estimatedCost} wei`}
+                    {`estimated cost: ${parseFloat(this.state.estimatedCost) / 1000000} USD`}
                   </Text>
                 </CardItem>
             }
@@ -330,7 +279,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                     this.props.pay({
                       destAddress: this.state.destAddress,
                       contract: this.props.exchangeReducer.contract,
-                      amount: this.state.amount,
+                      amount: (parseFloat(this.state.amount) * 1000000).toString(),
                       wallet: this.props.initReducer.wallet
                     })
                   }}
@@ -361,7 +310,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
             </CardItem>
           </Card>
           <Modal
-            visible={!this.state.authcated}
+            visible={!this.state.authcated && !DEBUG}
           >
             <Card
               style={styles.newWalletConfirmModal}
@@ -403,7 +352,7 @@ const styles = StyleSheet.create({
     color: COLOR.white
   }
 })
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: any) => {
   const depositReducer = getDepositState(state);
   const initReducer = getInitState(state);
   const payReducer = getPayState(state);

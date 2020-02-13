@@ -145,7 +145,10 @@ const Page: NextPage<DetailProps> = ({ userAgent, err }) => {
 
 Page.getInitialProps = async ({ req }) => {
   const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
-  return { userAgent }
+  return {
+    userAgent,
+    namespacesRequired: ['common']
+  }
 }
 
 export default Page

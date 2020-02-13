@@ -1,37 +1,49 @@
-import Link from 'next/link';
+import Link from '@material-ui/core/Link';
 import globalStyle from '../styles/globalStyle';
-import { NavType } from '../utils/types';
-import { Button } from '@material-ui/core';
+import { Button, makeStyles, Grid, Typography } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
+const useStyles = makeStyles({
+  ...globalStyle,
+  colorPrimary: {
+    color: "rgba(255, 255, 255, 1)"
+  },
+  headerText: {
+    color: "rgba(255, 255, 255, 1)",
+    marginTop: 4,
+    marginLeft: 10
+  }
+})
 interface HeaderProps {
   sideMenuVisible: boolean,
   openSideMenu: () => void,
 }
 const Header = (props: HeaderProps) => {
-  const NavBtn = (props: NavType) => (
-    <Link href={props.url}>
-      <a
-        style={globalStyle.link}
-        title={props.title}
-      >
-        {props.title}
-    </a>
-    </Link>
-  )
+  const classes = useStyles();
   return (
     <div
-      style={globalStyle.header}
-      >
-      <Button onClick={props.openSideMenu}>
-        { props.sideMenuVisible
-          ? <ArrowBackIosIcon />
-          : <ArrowForwardIosIcon/>
-        }
-      </Button>
+      className={classes.header}
+    >
+      <Grid container>
+        <Grid item>
+          <Link href="/" underline="none">
+            <Typography color="primary" className={classes.headerText} >
+              Let's Get Funds
+          </Typography>
+          </Link>
+        </Grid>
+        <Grid item>
+          <Button onClick={props.openSideMenu}>
+            {props.sideMenuVisible
+              ? <ArrowBackIosIcon color="primary" classes={classes} />
+              : <ArrowForwardIosIcon color="primary" classes={classes} />
+            }
+          </Button>
+        </Grid>
+      </Grid>
     </div>
-      )
+  )
 }
 
 export default Header;

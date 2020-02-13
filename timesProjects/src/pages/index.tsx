@@ -1,24 +1,25 @@
 import { NextPage } from 'next';
-import Link from 'next/link';
-import globalStyle from '../styles/globalStyle';
 import BasicLayout from '../components/BasicLayout';
+import NextI18Next, { withTranslation } from '../i18n' // We replace next/link with the one provide by next-i18next, this helps with locale subpaths
 
-interface IndexProps {
-  userAgent?: string;
-  err?: string
-}
-
-const Page: NextPage<IndexProps> = ({ userAgent, err }) => {
+const Page: NextPage<any> = ({t}) => {
+  console.log(NextI18Next);
   return (
     <BasicLayout key="home">
-      <p>Homepage</p>
+      <p>{t(["welcome"],{
+        defaultValue: "diu zai"
+      })}</p>
     </BasicLayout>
   )
 }
 
 Page.getInitialProps = async ({ req }) => {
   const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
-  return { userAgent }
+  NextI18Next.i18n.changeLanguage("en");
+  return {
+    userAgent,
+    namespacesRequired: ['common']
+  }
 }
 
-export default Page
+export default withTranslation('common')(Page)

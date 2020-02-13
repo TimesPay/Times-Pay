@@ -62,7 +62,7 @@ class WalletPasswordPage extends Component {
 
   componentWillUnmount() {
     if(this.timer != null)clearTimeout(this.timer)
-    this.props.reset()
+    // this.props.reset()
   }
 
 	setPassword = (text) => {
@@ -104,7 +104,7 @@ class WalletPasswordPage extends Component {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <Spinner visible={this.state.loading} textContent={'Loading...'} animatioon="fade" color="#694FAD" 
+        <Spinner visible={this.state.loading} textContent={'Loading...'} animatioon="fade" color="#694FAD"
                  textStyle={{color: "#694FAD", fontSize: wp('5%')}}/>
         <View style={{flex: 1}}></View>
         <View style={{flex: 4}}>
@@ -129,7 +129,7 @@ class WalletPasswordPage extends Component {
               textContentType="newPassword" />
           <TextInput
               editable
-              keyboardType="default"              
+              keyboardType="default"
               maxLength={40}
               onChangeText={(text) => this.setConfirmPassword(text)}
               onFocus={() => {this.setState({isConfirmPasswordInputBoxFocus: true})} }

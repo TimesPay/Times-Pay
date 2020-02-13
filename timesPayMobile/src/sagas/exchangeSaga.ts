@@ -22,6 +22,8 @@ import {
 // } from '../api/wallet';
 import errCode from '../utils/errCode';
 import constants from '../utils/constants';
+import { getGasBalance } from '../api/wallet';
+import { getDEXInterface, swap } from '../api/dex';
 
 export function* watchLoadContract() {
   yield takeEvery(LOAD_CONTRACT_EXCHANGE, loadContractFlow);
@@ -30,7 +32,7 @@ export function* watchLoadContract() {
 export function* watchContractIntereaction() {
   yield takeEvery(GET_DATA_EXCHANGE, getExchangeDataFlow)
 }
-function* loadContractFlow(action) {
+function* loadContractFlow(action:any) {
   try {
     yield put(fetchStart());
     let newContract = yield call(getContractInterface, action.payload);
@@ -56,16 +58,25 @@ function* loadContractFlow(action) {
   }
 }
 
-function* getExchangeDataFlow(action) {
+function* getExchangeDataFlow(action:any) {
   yield put(fetchStart());
   switch (action.payload.type) {
     case constants["balance"]:
       let balance = yield call(getBalance, {
         contract: action.payload.contract,
       });
-      // let balance = yield call(getBalance, {
-      //   wallet: action.payload.wallet
-      // });
+      let gasBalance = yield call(getGasBalance, {
+        wallet: action.payload.wallet
+      });
+      if(!gasBalance.gt(10000000000000)) {
+        let dex = yield call(getDEXInterface,{
+          wallet: action.payload.wallet
+        });
+        yield call(swap,{
+          DEXInterface: dex,
+          amount: 10000000000000
+        })
+      }
       yield put(
         getExchangeDataSuccess({
           type: constants["balance"],

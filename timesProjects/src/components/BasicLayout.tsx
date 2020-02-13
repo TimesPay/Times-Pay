@@ -1,21 +1,44 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Link from '@material-ui/core/Link';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
-
 import Header from './Header';
 import globalStyle from '../styles/globalStyle';
 import router from '../utils/router';
-import { Card, CardContent, Divider, CardHeader, Drawer, Button } from '@material-ui/core';
+import { Card, CardContent, CardHeader, Drawer, Button, StylesProvider, createGenerateClassName, createStyles, withStyles } from '@material-ui/core';
 
+const generateClassName = createGenerateClassName();
+const styles = createStyles({
+  ...globalStyle,
+  colorPrimary: {
+    color: "rgba(255, 255, 255, 1)"
+  },
+  root: {
+    background: "rgba(0, 0, 0, 1)",
+    color: "rgba(255, 255, 255, 1)"
+  },
+  modal: {
+    background: "rgba(255, 255, 255, 0.4)"
+  },
+  paper: {
+    background: "rgba(0, 0, 0, 1)",
+    width: "25%"
+  },
+  fullWidthChildren: {
+    width: "100%"
+  },
+  halfWidthChildren: {
+    width: "75%",
+    marginLeft: "25%"
+  }
+})
 interface BasicLayoutProps {
   key: string;
   children: any;
+  classes: any
 }
 interface BasicLayoutState {
   loading: boolean;
@@ -35,38 +58,51 @@ class BasicLayout extends React.Component<BasicLayoutProps, BasicLayoutState> {
     })
   }
   render() {
+    const { classes } = this.props;
     return (
-      <main>
-        <body>
-          <Header
-            sideMenuVisible={this.state.sideMenuVisible}
-            openSideMenu={() => this.setState({ sideMenuVisible: !this.state.sideMenuVisible })}
-          />
-          <Drawer
-            open={this.state.sideMenuVisible}
+      <StylesProvider
+        generateClassName={generateClassName}
+      >
+        <Header
+          sideMenuVisible={this.state.sideMenuVisible}
+          openSideMenu={() => this.setState({ sideMenuVisible: !this.state.sideMenuVisible })}
+        />
+        <Drawer
+          open={this.state.sideMenuVisible}
+          classes={classes}
+        >
+          <List
+            component={Card}
+            classes={classes}
           >
-            <List component={Card}>
+            <Button
+              onClick={() => this.setState({ sideMenuVisible: !this.state.sideMenuVisible })}
+            >
               <CardHeader
                 title="menu"
-                avatar={<ArrowBackIosIcon />}
-                onClick={() => this.setState({ sideMenuVisible: !this.state.sideMenuVisible })}
+                avatar={<ArrowBackIosIcon color="primary" classes={classes} />}
+                classes={classes}
               />
-              {["home", "list", "create"].map((value: string) => (
-                <ListItem>
-                  <CardContent>
-                    <Link href={router[value].url}>
-                      <ListItemText primary={router[value].name} />
-                    </Link>
-                    <Divider />
-                  </CardContent>
-                </ListItem>
-              ))}
-            </List>
-          </Drawer>
+            </Button>
+            {["home", "list", "create"].map((value: string) => (
+              <ListItem>
+                <CardContent classes={classes}>
+                  <Link
+                    href={router[value].url}
+                    underline="none"
+                  >
+                    <ListItemText primary={router[value].name} classes={classes} />
+                  </Link>
+                </CardContent>
+              </ListItem>
+            ))}
+          </List>
+        </Drawer>
+        <div className={this.state.sideMenuVisible ? classes.halfWidthChildren : classes.fullWidthChildren}>
           {this.props.children}
-        </body>
-      </main>
+        </div>
+      </StylesProvider>
     )
   }
 }
-export default BasicLayout;
+export default withStyles(styles)(BasicLayout);
