@@ -65,7 +65,7 @@ interface PayPageState extends PayStateType {
   authcated: boolean
 }
 
-const DEBUG = true;
+const DEBUG = false;
 class PayPage extends React.Component<PayProps, PayPageState> {
   static navigationOptions = ({ navigation }: any) => {
     return {

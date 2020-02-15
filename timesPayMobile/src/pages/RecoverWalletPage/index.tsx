@@ -47,15 +47,15 @@ export default class RecoverWalletPage extends Component
       let recoverWallet = getWalletByMnemonic({mnemonic: this.state.mnemonic})
       // do not modify it !!
       this.onLoad()
-      // setTimeout(() => {
-      //   const resetAction = StackActions.reset({
-      //     index: 0,
-      //     actions: [
-      //       NavigationActions.navigate({ routeName: 'WalletPassword', params: {wallet: recoverWallet} })
-      //     ]
-      //   })
-      //   this.props.navigation.dispatch(resetAction)
-      // }, 300)
+      setTimeout(() => {
+        const resetAction = StackActions.reset({
+          index: 0,
+          actions: [
+            NavigationActions.navigate({ routeName: 'WalletPassword', params: {wallet: recoverWallet} })
+          ]
+        })
+        this.props.navigation.dispatch(resetAction)
+      }, 300)
     }catch {
       Alert.alert("Error", "Invalid mnemonic phrase")
     }

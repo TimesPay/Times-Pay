@@ -48,7 +48,10 @@ export default function initReducer(state = initState, action) {
       }
       break;
     case RESET_STORE:
-      return initState
+      return {
+        ...initState,
+        wallet: state.wallet,
+      }
     default:
       return state;
   }

@@ -58,7 +58,7 @@ class UnlockWalletPage extends Component {
 
   componentWillUnmount() {
     if(this.timer != null)clearTimeout(this.timer)
-    // this.props.reset()
+    this.props.reset()
   }
 
   handleUnlock = () => {
