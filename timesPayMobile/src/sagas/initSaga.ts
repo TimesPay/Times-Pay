@@ -27,6 +27,7 @@ import {
   hash
 } from '../api/wallet';
 import errCode from '../utils/errCode';
+import { getApproval } from '../api/dex';
 
 export function* watchLoadWallet() {
   yield takeEvery(LOAD_WALLET_INIT, loadWalletFlow);

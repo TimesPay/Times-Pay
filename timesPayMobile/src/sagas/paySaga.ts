@@ -14,11 +14,13 @@ import {
 import {
   transfer,
   estimateTransfer,
-  getContractInterface
+  getContractInterface,
+  getAllowance,
+  getApproval
 } from '../api/contract'
 
 import { translate } from '../utils/I18N';
-import { ethers } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { getGasBalance } from '../api/wallet';
 import { getBalance } from '../api/contract';
 import { swap, getDEXInterface } from '../api/dex';
@@ -107,23 +109,31 @@ function* payEstimateFlow(action) {
         estimatedCost: parseInt(response._hex.slice(2), 16)
       }));
     } else {
-      let dex = yield call(getDEXInterface,{
-        wallet:wallet
-      })
-      let swapRes = yield call(swap, {
-        DEXInterface: dex,
-        amount: parseInt(response._hex.slice(2), 16)*1.01
-      });
-      if(swapRes) {
-        yield put(
-          payEstimateSuccess({
-            estimatedCost: parseInt(response._hex.slice(2), 16),
-            status: "gas_insufficient_refill"
-          })
-        )
+      try {
+        let allowance = yield call(getAllowance, {
+          contract: action.payload.contract
+        })
+        console.log("allowance", allowance);
+        if (!allowance.gt(utils.bigNumberify("100000000000000000000"))) {
+          let approved = yield call(getApproval, {
+            contract: action.payload.contract,
+            amount: utils.bigNumberify("100000000000000000000")
+          });
+          console.log("approved", approved);
+        }
+        let dex = yield call(getDEXInterface, {
+          wallet: action.payload.wallet
+        });
+        console.log("dex", dex);
+        let swapRes = yield call(swap, {
+          DEXInterface: dex,
+          amount: parseInt(response._hex.slice(2), 16)
+        });
+        console.log("swapRes", swapRes);
+      } catch (e) {
+        console.log("dex error", e);
       }
-    };
-
+    }
   } catch (e) {
     console.log(e);
     yield put(payFailed({

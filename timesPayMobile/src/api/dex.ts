@@ -1,5 +1,7 @@
 import { ethers } from "ethers";
 import { DEX } from "../utils/dex";
+import { contractAddr } from "../config";
+
 
 export const getDEXInterface = (payload: { wallet: ethers.Wallet }) => {
   const { wallet } = payload;

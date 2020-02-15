@@ -1,5 +1,5 @@
-import { network, dexAddress } from '../config';
-import { ethers } from 'ethers';
+import { network, dexAddress, contractAddr, dexProxyAddress } from '../config';
+import { ethers, utils } from 'ethers';
 import { get } from './apiHelper';
 
 export abstract class DEXType {
@@ -13,18 +13,19 @@ export class DEX extends DEXType {
     super();
     let provider = ethers.getDefaultProvider(network);
     this.wallet = wallet;
-    this.address = "";
+    this.address = wallet.signingKey.address;
     this.initializer();
   }
   private initializer = async () => {
     this.address = await this.wallet!.getAddress();
   }
   public async swap(amount:number) {
+    const { wallet } = this;
     const params = {
       fromTokenSymbol: "USDC",
       toTokenSymbol: "ETH",
       amount: amount,
-      slippage: 5,
+      slippage: 1,
       disableEstimate: "false",
       fromAddress: this.address
     }
@@ -36,14 +37,14 @@ export class DEX extends DEXType {
       from: string,
       gas: string,
       gasPrice: string
-    } = await response.json()
+    } = await response.json();
     let tx = {
-        to: dexAddress,
-        value: ethers.utils.parseEther(amount.toString()),
+        to: dexProxyAddress,
+        value: utils.parseEther(swapData.value),
         data: swapData.data,
-        gasPrice: swapData.gasPrice
     };
-    return this.wallet!.sendTransaction(tx);
+    console.log("tx", tx);
+    return wallet!.sendTransaction(tx);
     // return fetch()
   }
 }
