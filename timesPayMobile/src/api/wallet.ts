@@ -61,3 +61,7 @@ export const getGasBalance = (payload:any) => {
   const { wallet } = payload;
   return wallet.getBalance();
 }
+export const getEthToUSD = (payload: any) => {
+  let etherscanProvider = new ethers.providers.EtherscanProvider(network);
+  return etherscanProvider.getEtherPrice();
+}

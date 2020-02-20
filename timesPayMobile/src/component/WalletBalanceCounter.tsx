@@ -198,6 +198,7 @@ export default class WalletBalanceCounter extends Component
   }
 
   printValue(val: number) {
+    console.log("printValue", val)
     let result = this.formattingFn(val)
     this.setState({
       printVal: result

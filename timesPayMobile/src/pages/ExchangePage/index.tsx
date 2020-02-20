@@ -26,6 +26,7 @@ import constants from '../../utils/constants';
 import BasicLayout from '../../component/BasicLayout';
 import walletIcon from '../../assets/wallet.png';
 import { Dispatch } from 'redux';
+import WalletBox from '../InitPage/walletBox';
 
 interface ExchangeProps {
   exchangeReducer: ExchangeStateType,
@@ -116,7 +117,6 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
   }
 
   render() {
-    console.log("exchange page state", this.state);
     return (
       <>
         <ScrollView
@@ -137,20 +137,43 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
                 {translate("exchange_dataHeader")}
               </Text>
             </CardItem>
-            <CardItem
-              cardBody
-              bordered
-            >
-              <Image source={walletIcon} style={{ width: "20%", height: 50, marginLeft: "10%" }} />
-              <Text
-                style={{  marginRight: "20%" }}
-                >
-                {`${
-                  this.state.data.balance != null
-                    ? (this.state.data.balance / 1000000) * (this.state.TD2USD) * (this.state.USD2HKD)
-                    : 0
-                  } HKD`}</Text>
+            <CardItem style={{flex: 2}}>
+              {
+                this.state.data.balance &&
+                <WalletBox
+                  balance={(this.state.data.balance / 1000000) * (this.state.TD2USD) * (this.state.USD2HKD)}
+                  decimalPlaces={4}
+                  prefix={' ≈ '}
+                  suffix={' HKD'}
+                />}
             </CardItem>
+            <CardItem style={{flex: 2}}>
+              {
+                this.state.data.gasBalance &&
+                <WalletBox balance={
+                  (this.state.data.gasBalance / 1000000000000000000)}
+                  decimalPlaces={4}
+                  prefix={' ≈ '}
+                  suffix={' ETH'}
+                />}
+            </CardItem>
+            {
+              // <CardItem
+              //   cardBody
+              //   bordered
+              // >
+              //   <Image source={walletIcon} style={{ width: "20%", height: 50, marginLeft: "10%" }} />
+              //   <Text
+              //     style={{  marginRight: "20%" }}
+              //     >
+              //     {`${
+              //       this.state.data.balance != null
+              //         ? (this.state.data.balance / 1000000) * (this.state.TD2USD) * (this.state.USD2HKD)
+              //         : 0
+              //       } HKD`}
+              //     </Text>
+              // </CardItem>
+            }
             <CardItem
               footer
               bordered

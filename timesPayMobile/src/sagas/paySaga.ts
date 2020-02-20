@@ -80,7 +80,7 @@ function* payEstimateFlow(action) {
     if (contract == null) {
       console.log("payEstimationFlow", action.payload);
       yield put(payStart({
-        destAddress: newDestAddress,
+        destAddress: destAddress,
         info: "estimateCost"
       }));
       contract = yield call(getContractInterface, {

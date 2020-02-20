@@ -1,3 +1,5 @@
 export default {
-  balance: "balance"
+  balance: "balance",
+  gasBalance: "gasBalance",
+  ethToUSD: "ethToUSD"
 }

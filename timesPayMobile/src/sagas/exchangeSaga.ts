@@ -39,13 +39,11 @@ function* loadContractFlow(action:any) {
   try {
     yield put(fetchStart());
     let newContract = yield call(getContractInterface, action.payload);
-    console.log("loadContractFlow contract", newContract);
     if (newContract != null) {
       let gasBalance = yield call(getGasBalance, {
         wallet: action.payload.wallet
       });
-      console.log("gas balance", gasBalance);
-      if(!gasBalance.gt(utils.bigNumberify("100000000000000000"))) {
+      if(!gasBalance.gt(utils.bigNumberify("10000000000000000"))) {
         try{
           let allowance = yield call(getAllowance,{
             contract: newContract
@@ -56,23 +54,19 @@ function* loadContractFlow(action:any) {
               contract: newContract,
               amount: utils.bigNumberify("100000000000000000000")
             });
-            console.log("approved", approved);
           }
 
           let dex = yield call(getDEXInterface,{
             wallet: action.payload.wallet
           });
-          console.log("dex", dex);
           let swapRes = yield call(swap,{
             DEXInterface: dex,
-            amount: 100000
+            amount: 1000000
           });
-          console.log("swapRes", swapRes);
         } catch (e) {
           console.log("dex error", e);
         }
       }
-      console.log("load success");
       yield put(
         loadContractSuccess({
           contract: newContract
@@ -102,8 +96,7 @@ function* getExchangeDataFlow(action:any) {
       let gasBalance = yield call(getGasBalance, {
         wallet: action.payload.wallet
       });
-      console.log("gas balance", gasBalance);
-      if(!gasBalance.gt(utils.bigNumberify("100000000000000000"))) {
+      if(!gasBalance.gt(utils.bigNumberify("10000000000000000"))) {
         try{
           let allowance = yield call(getAllowance,{
             contract: action.payload.contract
@@ -119,12 +112,10 @@ function* getExchangeDataFlow(action:any) {
           let dex = yield call(getDEXInterface,{
             wallet: action.payload.wallet
           });
-          console.log("dex", dex);
           let swapRes = yield call(swap,{
             DEXInterface: dex,
-            amount: 100000
+            amount: 1000000
           });
-          console.log("swapRes", swapRes);
         } catch (e) {
           console.log("dex error", e);
         }
@@ -133,6 +124,12 @@ function* getExchangeDataFlow(action:any) {
         getExchangeDataSuccess({
           type: constants["balance"],
           value: parseInt(balance._hex.slice(2), 16)
+        })
+      );
+      yield put(
+        getExchangeDataSuccess({
+          type: constants["gasBalance"],
+          value: parseInt(gasBalance._hex.slice(2), 16)
         })
       );
       break;

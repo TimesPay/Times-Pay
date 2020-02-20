@@ -11,23 +11,36 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 
 import WalletBalanceCounter from '../../component/WalletBalanceCounter'
 import { translate } from '../../utils/I18N'
+import { stateUpdater } from '../../utils/stateUpdater'
 
+interface WalletBoxProps {
+	balance: number;
+	decimalPlaces: number;
+	prefix: string;
+	suffix: string;
+}
 
-export default class WalletBox extends Component
+export default class WalletBox extends Component<WalletBoxProps, WalletBoxProps>
 {
-	constructor(props){
-		super(props)
+	constructor(props: WalletBoxProps){
+		super(props);
+		this.state = {
+			balance: this.props.balance,
+			decimalPlaces: this.props.decimalPlaces,
+			prefix: this.props.prefix,
+			suffix: this.props.suffix,
+		}
 	}
 
 	render() {
+		const { balance, decimalPlaces, prefix, suffix} = this.props;
 		return(
 			<View style={styles.boxContainer}>
 			    <AntDesignIcon name="wallet" size={wp('20%')} style={styles.walletImage}/>
-
 			    <View style={styles.walletDetail}>
 			        <Text style={styles.walletName}>Your wallet name</Text>
 							<View style={{flex: 1}}>
-			          <WalletBalanceCounter endVal={123456.12345} decimalPlaces={2} prefix={' ≈ '} suffix={' HKD'}></WalletBalanceCounter>
+			          <WalletBalanceCounter endVal={balance} decimalPlaces={decimalPlaces} prefix={prefix} suffix={suffix}></WalletBalanceCounter>
 							</View>
 							<View style={styles.btnGroup}>
 			            <TouchableOpacity style={styles.btn}>
