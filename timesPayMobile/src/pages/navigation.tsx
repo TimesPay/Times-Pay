@@ -3,7 +3,9 @@ import { createStackNavigator } from 'react-navigation-stack'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import createAnimatedSwitchNavigator from 'react-navigation-animated-switch'
 import { Transition } from 'react-native-reanimated'
-
+import { View } from 'react-native'
+import MaterialCommunityIconsIcon from 'react-native-vector-icons/MaterialCommunityIcons'
+import MaterialIconsIcon from 'react-native-vector-icons/MaterialIcons';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs'
 
 import RegisterPage from './RegisterPage'
@@ -13,10 +15,13 @@ import RecoveryPhrasePage from './RecoveryPhrasePage'
 import UnlockWalletPage from './UnlockWalletPage'
 import LoadingPage from './LoadingPage'
 
-import InitPage from './InitPage'
+// import InitPage from './InitPage'
 import ExchangePage from './ExchangePage'
 import DepositPage from './DepositPage'
 import PayPage from './PayPage'
+import SettingPage from './SettingPage'
+
+
 
 const AuthStack = createStackNavigator(
   {
@@ -37,24 +42,66 @@ const AuthStack = createStackNavigator(
 
 const MaterialBottomTabNavigator = createMaterialBottomTabNavigator(
   {
-    Initial: {
-      screen: InitPage,
-    },
+    // Initial: {
+    //   screen: InitPage,
+    // },
     Exchange: {
       screen: ExchangePage,
+      navigationOptions:{
+        tabBarLabel:'Exchange',
+        tabBarIcon: ({ tintColor }) => (
+            <View>
+              <MaterialCommunityIconsIcon
+                name="swap-horizontal"
+                size={24}
+                color={"white"}
+              />
+            </View>),
+        }
     },
     Deposit: {
       screen: DepositPage,
+      navigationOptions:{
+        tabBarLabel:'Deposit',
+        tabBarIcon: ({ tintColor }) => (
+            <View>
+              <MaterialIconsIcon
+                name="input"
+                size={24}
+                color={"white"}
+              />
+            </View>),
+        }
     },
     Pay: {
-      screen: PayPage
+      screen: PayPage,
+      navigationOptions:{
+        tabBarLabel:'Pay',
+        tabBarIcon: ({ tintColor }) => (
+            <View>
+              <MaterialIconsIcon
+                name="payment"
+                size={24}
+                color={"white"}
+              />
+            </View>),
+        }
+    },
+    Setting: {
+      screen: SettingPage,
+      navigationOptions:{
+        tabBarLabel:'Setting',
+        tabBarIcon: ({ tintColor }) => (
+            <View>
+            </View>),
+        }
     }
   },
   {
-    initialRouteName: 'Initial',
-    activeColor: '#F0EDF6',
-    inactiveColor: 'white',
-    barStyle: { backgroundColor: '#694FAD' },
+    initialRouteName: 'Exchange',
+    activeTintColor: '#FFFFFF',
+    inactiveTintColor: '#27E01B',
+    barStyle: { backgroundColor: '#000000' },
   }
 )
 

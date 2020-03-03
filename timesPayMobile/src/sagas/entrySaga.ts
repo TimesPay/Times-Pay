@@ -6,6 +6,7 @@ import {
   watchContractIntereaction
 } from './exchangeSaga';
 import { watchPay, watchEstimate } from './paySaga';
+import { watchSave, watchRestore } from './globalSettingSaga';
 export default function* rootSaga() {
   yield all([
     watchLoadWallet(),
@@ -14,6 +15,8 @@ export default function* rootSaga() {
     watchPay(),
     watchLoadContract(),
     watchContractIntereaction(),
-    watchEstimate()
+    watchEstimate(),
+    watchSave(),
+    watchRestore(),
   ])
 }

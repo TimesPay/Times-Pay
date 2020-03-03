@@ -7,7 +7,7 @@ import QRCode from 'qrcode.react';
 import globalStyle from '../styles/globalStyle';
 import BasicLayout from '../components/BasicLayout';
 import { fetcher } from '../utils/fetcher';
-import { Grid, Card, CardMedia, CardContent, Button, Typography } from '@material-ui/core';
+import { Grid, Card, CardContent, Button, Typography } from '@material-ui/core';
 import { useState } from 'react';
 
 interface DetailProps {
@@ -15,9 +15,9 @@ interface DetailProps {
   err?: string
 }
 
-const Page: NextPage<DetailProps> = ({ userAgent, err }) => {
+const Page: NextPage<DetailProps> = () => {
   const router = useRouter();
-  const { data, error } = useSWR(`/api/project/${router.query.id}`, fetcher);
+  const { data } = useSWR(`/api/project/${router.query.id}`, fetcher);
   const [fundCardVisible, setFundCardVisible] = useState(false);
   console.log("data", data);
   let projectData = {

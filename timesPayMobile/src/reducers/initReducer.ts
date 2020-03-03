@@ -6,9 +6,10 @@ import {
   RESET_STORE
 } from '../actions/actionTypes';
 import { commonStateType } from '../utils/commonStateType';
+import { ethers } from 'ethers';
 
 export interface InitStateType extends commonStateType {
-  wallet: string | null,
+  wallet: ethers.Wallet | null,
 }
 const initState: InitStateType = {
   loading: false,

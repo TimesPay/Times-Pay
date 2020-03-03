@@ -86,6 +86,13 @@ export default class WalletBalanceCounter extends Component
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if(prevProps.endVal != this.props.endVal) {
+      if(this.props.endVal) {
+        this.refresh();
+      }
+    }
+  }
   private resetDuration() {
     this.startTime = null;
     this.duration = Number(this.options.duration) * 1000;

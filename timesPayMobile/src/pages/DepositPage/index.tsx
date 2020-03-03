@@ -13,35 +13,25 @@ import { COLOR, withTheme } from 'react-native-material-ui';
 import { connect } from 'react-redux';
 import QRCode from 'react-native-qrcode-svg';
 
-import { getDepositState } from '../../reducers/selectors';
-import { DepositStateType } from '/src/reducers/depositReducer';
+import { getDepositState, getInitState } from '../../reducers/selectors';
+import { DepositStateType } from '../../reducers/depositReducer';
+import { InitStateType } from '../../reducers/initReducer';
+import BasicLayout from '../../component/BasicLayout';
+
 interface DepositProps {
-  depositReducer: DepositStateType
+  depositReducer: DepositStateType,
+  initReducer: InitStateType
 };
 interface DepositState extends  DepositStateType {
 };
 
 class DepositPage extends React.Component<DepositProps, DepositState> {
-  static navigationOptions = (props) => {
-    return {
-      headTitle: () => <Text>Deposit</Text>,
-      headerRight: () => (
-        <Button
-          onPress={() => {
-            props.navigation.navigate('Initial');
-          }}
-          title="Info"
-          color="#000"
-        />
-      ),
-    }
-  };
   constructor(props) {
     super(props);
     console.log(this.props);
     this.state = {
       loading: this.props.depositReducer.loading,
-      address: this.props.depositReducer.address
+      address: this.props.initReducer.wallet!.signingKey.address
     }
   }
   componentDidUpdate() {
@@ -56,34 +46,37 @@ class DepositPage extends React.Component<DepositProps, DepositState> {
     console.log("props", this.props);
     console.log("state", this.state);
     return (
-      <>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <View
-            style={styles.QRCodeContainer}
-            >
-            <QRCode
-              value={this.state.address || "N/A"}
-            />
-          </View>
-          <View>
-            <Text
-              style={styles.addressText}
-              ellipsizeMode="tail"
-            >
-              {this.state.address || "N/A"}
-            </Text>
-          </View>
-        </ScrollView>
-      </>
+        <BasicLayout
+          containerStyle={styles.scrollView}
+          title="Deposit"
+          children={
+            <>
+              <View
+                style={styles.QRCodeContainer}
+                >
+                <QRCode
+                  value={this.state.address || "N/A"}
+                />
+              </View>
+              <View>
+                <Text
+                  style={styles.addressText}
+                  ellipsizeMode="tail"
+                >
+                  {this.state.address || "N/A"}
+                </Text>
+              </View>
+            </>
+          }
+        />
     );
   }
 }
 const mapStateToProps = (state) => {
-  const depositReducer = getDepositState(state)
+  const depositReducer = getDepositState(state);
+  const initReducer = getInitState(state);
   console.log("deposit", depositReducer);
-  return { depositReducer };
+  return { depositReducer, initReducer };
 }
 const mapDispatchToProps = dispatch => {
   return {
@@ -95,11 +88,13 @@ export default connect(mapStateToProps, mapDispatchToProps)(DepositPage);
 
 const styles = StyleSheet.create({
   scrollView: {
-    backgroundColor: COLOR.yellow50,
-    color: COLOR.blue50
+    display: "flex",
+    width: "100%",
+    height: "100%",
+    alignContent: "center"
   },
   QRCodeContainer: {
-    marginTop: 30,
+    marginTop: "30%",
     marginLeft: "35%",
     marginRight: "35%",
     width: "30%"

@@ -17,3 +17,7 @@ export const getPayState = store => {
   console.log("getPayState", store);
   return store.payReducer;
 };
+
+export const getGlobalSettingState = store => {
+  return store.globalSettingReducer;
+}

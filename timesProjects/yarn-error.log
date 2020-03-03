@@ -1,5 +1,5 @@
 Arguments: 
-  /home/maou2765/.nvm/versions/node/v10.16.2/bin/node /usr/share/yarn/bin/yarn.js dev
+  /home/maou2765/.nvm/versions/node/v10.16.2/bin/node /usr/share/yarn/bin/yarn.js add etherscab-api
 
 PATH: 
   /home/maou2765/.cargo/bin:/home/maou2765/bin:/home/maou2765/.local/bin:/home/maou2765/.rbenv/shims:/home/maou2765/.rbenv/bin:/home/maou2765/.rbenv/shims:/home/maou2765/.nvm/versions/node/v10.16.2/bin:/home/maou2765/anaconda3/bin:/home/maou2765/anaconda3/condabin:/home/maou2765/google-cloud-sdk/bin:/home/maou2765/.buildozer/android/tools:/home/maou2765/.buildozer/android/platform/android-ndk-r13b:/home/maou2765/.buildozer/android: /home/maou2765/.buildozer/android/platform:opt/Qt/5.7/gcc_64/bin:/home/maou2765/.cargo/bin:/home/maou2765/bin:/home/maou2765/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin:LLVM+Clang/build/bin:/usr/local/cuda-9.1/bin:/home/maou2765/.buildozer/android/tools:/home/maou2765/.buildozer/android/platform/android-ndk-r13b:/home/maou2765/.buildozer/android: /home/maou2765/.buildozer/android/platform:opt/Qt/5.7/gcc_64/bin:/home/maou2765/.cargo/bin:/home/maou2765/bin:/home/maou2765/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin:LLVM+Clang/build/bin:/home/maou2765/.cargo/bin:/home/maou2765/anaconda3/bin
@@ -14,12 +14,17 @@ Platform:
   linux x64
 
 Trace: 
-  SyntaxError: /home/maou2765/Times-Pay/timesProjects/package.json: Unexpected token } in JSON at position 1869
-      at JSON.parse (<anonymous>)
-      at /usr/share/yarn/lib/cli.js:1625:59
-      at Generator.next (<anonymous>)
-      at step (/usr/share/yarn/lib/cli.js:304:30)
-      at /usr/share/yarn/lib/cli.js:315:13
+  Error: https://registry.npmjs.org/etherscab-api: Not found
+      at Request.params.callback [as _callback] (/usr/share/yarn/lib/cli.js:66918:18)
+      at Request.self.callback (/usr/share/yarn/lib/cli.js:140539:22)
+      at Request.emit (events.js:198:13)
+      at Request.<anonymous> (/usr/share/yarn/lib/cli.js:141511:10)
+      at Request.emit (events.js:198:13)
+      at IncomingMessage.<anonymous> (/usr/share/yarn/lib/cli.js:141433:12)
+      at Object.onceWrapper (events.js:286:20)
+      at IncomingMessage.emit (events.js:203:15)
+      at endReadableNT (_stream_readable.js:1145:12)
+      at process._tickCallback (internal/process/next_tick.js:63:19)
 
 npm manifest: 
   {
@@ -54,7 +59,7 @@ npm manifest:
       "moment": "^2.24.0",
       "mongoose": "^5.8.9",
       "next": "^9.2.1",
-      "next-i18next": "^4.1.0",
+      "next-i18next": "^4.2.0",
       "now": "^16.7.3",
       "qrcode.react": "^1.0.0",
       "react": "^16.12.0",
@@ -78,10 +83,10 @@ npm manifest:
       "typescript": "^3.7.5"
     },
     "scripts": {
-      "dev": "nodemon --exec ts-node --project tsconfig.server.json server",
+      "dev": "nodemon --exec ts-node --project tsconfig.server.json src/server",
       "build": "next build && tsc --project tsconfig.server.json",
       "start": "NODE_ENV=production node .build/server",
-      "type-check": "tsc",
+      "type-check": "tsc"
     }
   }
 
@@ -4619,10 +4624,10 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.1.tgz#ac27ada66167fa8849a6addd837f6b189ad2081c"
     integrity sha512-iyam8fBuCUpWeKPGpaNMetEocMt364qkCsfL9JuhjXX6dRnguRVOfk2GZaDpPjcOKiiXCPINZC1GczQ7iTq3Zw==
   
-  next-i18next@^4.1.0:
-    version "4.1.0"
-    resolved "https://registry.yarnpkg.com/next-i18next/-/next-i18next-4.1.0.tgz#dcb5afba1254551b5ced34ef2e40b38203babdb6"
-    integrity sha512-i02CxQdLzUg1ny3FNFZ0QXoBu8Yn5SkNt1lctcUYUQNWw/xBGfN+WhuDAM8Vcifhb5bAcJeo3nX7ELMG2PyhBw==
+  next-i18next@^4.2.0:
+    version "4.2.0"
+    resolved "https://registry.yarnpkg.com/next-i18next/-/next-i18next-4.2.0.tgz#d8205bcfc527d0b877acbc36d484adee487147e3"
+    integrity sha512-AkDHe7OWa2PcaG3i5zW718AARynyKJQuCW4kzMBvdKcD5WYiVT+KhXdD1qDesIMDZ/zX3D3VH0i4G0GRAlPj8w==
     dependencies:
       core-js "^2"
       detect-node "^2.0.4"

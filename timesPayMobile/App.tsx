@@ -15,6 +15,7 @@ import initReducer from './src/reducers/initReducer'
 import exchangeReducer from './src/reducers/exchangeReducer'
 import depositReducer from './src/reducers/depositReducer'
 import payReducer from './src/reducers/payReducer'
+import globalSettingReducer from './src/reducers/globalSettingReducer'
 
 import rootSaga from './src/sagas/entrySaga'
 
@@ -23,7 +24,8 @@ let store = createStore(combineReducers({
   initReducer,
   exchangeReducer,
   depositReducer,
-  payReducer
+  payReducer,
+  globalSettingReducer
 }), applyMiddleware(sagaMiddleware));
 sagaMiddleware.run(rootSaga);
 

@@ -15,6 +15,7 @@
     "@types/yup": "^0.26.29",
     "@zeit/next-typescript": "^1.1.1",
     "esm": "^3.2.25",
+    "etherscan-api": "^10.0.5",
     "express": "^4.17.1",
     "filepond": "^4.9.5",
     "filepond-plugin-file-encode": "^2.1.4",

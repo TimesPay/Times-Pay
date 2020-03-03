@@ -9,24 +9,26 @@ import {
 } from '../actions/actionTypes';
 import { TimesCoinType } from 'src/utils/timesCoinContract';
 export interface DataType {
-  balance: number
+  balance: number,
+  gasBalance: number,
+  USDToHKD: number
 }
 export interface ExchangeStateType extends commonStateType {
   ratio: number;
   contract: TimesCoinType | null;
-  data: DataType,
-  TD2USD:number,
-  USD2HKD: number
+  data: DataType
 }
 const initState: ExchangeStateType = {
   loading: false,
   status: null,
   ratio: 0,
-  errMsg: null | undefined,
+  errMsg: null,
   contract: null,
-  data: {},
-  TD2USD: 1,
-  USD2HKD: 7.85
+  data: {
+    balance: 0,
+    gasBalance: 0,
+    USDToHKD: 7.85
+  },
 }
 
 export default function exchangeReducer(state = initState, action) {

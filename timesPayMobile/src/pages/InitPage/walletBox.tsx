@@ -18,6 +18,7 @@ interface WalletBoxProps {
 	decimalPlaces: number;
 	prefix: string;
 	suffix: string;
+	walletName: string;
 }
 
 export default class WalletBox extends Component<WalletBoxProps, WalletBoxProps>
@@ -29,6 +30,7 @@ export default class WalletBox extends Component<WalletBoxProps, WalletBoxProps>
 			decimalPlaces: this.props.decimalPlaces,
 			prefix: this.props.prefix,
 			suffix: this.props.suffix,
+			walletName: this.props.walletName
 		}
 	}
 
@@ -38,7 +40,7 @@ export default class WalletBox extends Component<WalletBoxProps, WalletBoxProps>
 			<View style={styles.boxContainer}>
 			    <AntDesignIcon name="wallet" size={wp('20%')} style={styles.walletImage}/>
 			    <View style={styles.walletDetail}>
-			        <Text style={styles.walletName}>Your wallet name</Text>
+			        <Text style={styles.walletName}>{this.state.walletName}</Text>
 							<View style={{flex: 1}}>
 			          <WalletBalanceCounter endVal={balance} decimalPlaces={decimalPlaces} prefix={prefix} suffix={suffix}></WalletBalanceCounter>
 							</View>

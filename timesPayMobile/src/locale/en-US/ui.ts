@@ -16,6 +16,7 @@ export default {
   "init_passwordTitle": "Please input password to unlock the wallet",
   "exchange_refresh": "Refresh",
   "exchange_dataHeader": "Exchange Data",
+  "useful_dataHeader": "Useful Data",
   "exchange_balance": "Balance",
   "pay_confirm": "Confirm?",
   "pay_paymentModalHeader": "How to pay?",
@@ -28,5 +29,6 @@ export default {
   "modal_recoverWallet": "Please input the 12 word secret obtained from BACKUP WALLET function to recover the wallet",
 
   "str_pay": "Pay",
-  "str_receive": "Receive"
+  "str_receive": "Receive",
+  "globalSetting_title": "Setting"
 }

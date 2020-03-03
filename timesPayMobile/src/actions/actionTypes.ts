@@ -22,7 +22,13 @@ export const PAY_START = "pay/payStart";
 export const PAY_SUCCESS = "pay/paySuccess";
 export const PAY_FAILED = "pay/payFailed";
 export const PAY_START_REQUEST = "pay/payStartRequest";
-export const PAY_ESTIMATE = "payload/payEstimate";
-export const PAY_ESTIMATE_SUCCESS = "payload/payEstimateSuccess";
+export const PAY_ESTIMATE = "pay/payEstimate";
+export const PAY_ESTIMATE_SUCCESS = "pay/payEstimateSuccess";
 
-export const RESET_STORE="reset_store"
+export const RESET_STORE = "reset_store";
+
+export const SETTING_INIT = "globalSetting/initialize";
+export const SETTING_UPDATE = "globalSetting/update";
+export const SETTING_UPDATE_FAILED = "globalSetting/updateFailed";
+export const SETTING_SAVE = "globalSetting/save";
+export const SETTING_RESTORE = "globalSetting/restore";
