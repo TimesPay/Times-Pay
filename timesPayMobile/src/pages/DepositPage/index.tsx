@@ -6,7 +6,8 @@ import {
   Text,
   StatusBar,
   Image,
-  Button
+  Button,
+  Dimensions
 } from 'react-native';
 import React from 'react';
 import { COLOR, withTheme } from 'react-native-material-ui';
@@ -22,7 +23,7 @@ interface DepositProps {
   depositReducer: DepositStateType,
   initReducer: InitStateType
 };
-interface DepositState extends  DepositStateType {
+interface DepositState extends DepositStateType {
 };
 
 class DepositPage extends React.Component<DepositProps, DepositState> {
@@ -43,17 +44,21 @@ class DepositPage extends React.Component<DepositProps, DepositState> {
     }
   }
   render() {
-    console.log("props", this.props);
-    console.log("state", this.state);
+    console.log("DepositPage");
     return (
-        <BasicLayout
-          containerStyle={styles.scrollView}
-          title="Deposit"
-          children={
-            <>
+      <BasicLayout
+        containerStyle={styles.scrollView}
+        title="Deposit"
+        children={
+          <>
+            <View
+              style={{
+                minHeight: Dimensions.get("window").height,
+              }}
+            >
               <View
                 style={styles.QRCodeContainer}
-                >
+              >
                 <QRCode
                   value={this.state.address || "N/A"}
                 />
@@ -66,9 +71,10 @@ class DepositPage extends React.Component<DepositProps, DepositState> {
                   {this.state.address || "N/A"}
                 </Text>
               </View>
-            </>
-          }
-        />
+            </View>
+          </>
+        }
+      />
     );
   }
 }
@@ -89,15 +95,19 @@ export default connect(mapStateToProps, mapDispatchToProps)(DepositPage);
 const styles = StyleSheet.create({
   scrollView: {
     display: "flex",
-    width: "100%",
-    height: "100%",
-    alignContent: "center"
+    alignContent: "center",
+    minHeight: Dimensions.get("window").height,
+    minWidth: Dimensions.get("window").width * 0.8,
+    elevation: 1
   },
   QRCodeContainer: {
     marginTop: "30%",
     marginLeft: "35%",
     marginRight: "35%",
-    width: "30%"
+    width: "30%",
+    position: "relative",
+    zIndex: 5,
+    elevation: 4,
   },
   addressText: {
     marginTop: 20,

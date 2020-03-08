@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
-import { SafeAreaView, View, Text, ScrollView } from 'react-native';
+import { SafeAreaView, View, Text, ScrollView, StyleSheet } from 'react-native';
 import { Container, Header, Content, Body, Left, Button, Icon, Title, Right, Drawer, Card, CardItem } from 'native-base';
-
+import globalStyle from "../utils/globalStyle";
+import { Dimensions } from 'react-native';
+import SettingPage from "../pages/SettingPage";
 
 interface BasicLayoutProps {
   children: React.ReactNode | React.ReactChild | Element;
@@ -10,17 +12,24 @@ interface BasicLayoutProps {
 }
 const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
   const { children, containerStyle, title } = props;
-  console.log("BasicLayout", children);
-  let drawer:any;
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  console.log("BasicLayout", drawerVisible);
   return (
     <ScrollView
-      style={containerStyle}
+      style={{
+        ...containerStyle,
+        minHeight: Dimensions.get("window").height,
+        minWidth: Dimensions.get("window").width * 0.8,
+      }}
     >
       <Header>
         <Left>
           <Button
             transparent
-            onPress={()=>drawer._root.open() }
+            onPress={() => {
+              console.log("clicked");
+              setDrawerVisible(!drawerVisible);
+            }}
           >
             <Icon name='menu' />
           </Button>
@@ -30,21 +39,45 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
         </Body>
       </Header>
       <Drawer
-        ref={(ref) => { drawer = ref;}}
-        onClose={()=>drawer._root.close()}
-        tapToClose
+        open={drawerVisible}
         content={
-          <Card>
-            <CardItem>
-              <Text>Hi</Text>
-            </CardItem>
-          </Card>
-        }
+          <SettingPage
+              containerStyle={styles.drawerContainer}
+          />}
+        styles={styles.drawerCard}
       >
       </Drawer>
-      {children}
+        <View
+          style={{
+            elevation: -1,
+            position: "relative",
+            zIndex: -1,
+          }}
+        >
+          {children}
+        </View>
     </ScrollView>
   )
 }
+
+const styles = StyleSheet.create({
+  ...globalStyle,
+  drawerCard: {
+    minHeight: Dimensions.get("window").height,
+    minWidth: Dimensions.get("window").width * 0.8,
+    elevation: 5,
+    position: "relative",
+    zIndex: 2,
+  },
+  drawerContainer: {
+    minHeight: Dimensions.get("window").height,
+    minWidth: Dimensions.get("window").width * 0.8,
+    backgroundColor: "rgba(176, 224, 246, 1)",
+    display: "flex",
+    flexDirection: "column",
+    marginLeft: 0,
+    marginTop: 0
+  }
+})
 
 export default BasicLayout;

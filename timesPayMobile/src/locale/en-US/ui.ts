@@ -1,4 +1,6 @@
 export default {
+  "en-US": "English",
+  "zh-HK": "Chinese",
   "init_menu": "MENU",
   "init_registered": "Do you have a wallet?",
   "init_backupWallet": "BACKUP WALLET",
@@ -30,5 +32,9 @@ export default {
 
   "str_pay": "Pay",
   "str_receive": "Receive",
-  "globalSetting_title": "Setting"
+
+  "globalSetting_title": "Setting",
+  "globalSetting_selectLanguage": "Language",
+
+
 }

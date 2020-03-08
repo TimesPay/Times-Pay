@@ -6,7 +6,8 @@ import {
   Text,
   StatusBar,
   Image,
-  Button
+  Button,
+  Dimensions
 } from 'react-native';
 import React from 'react';
 import { COLOR } from 'react-native-material-ui';
@@ -108,15 +109,30 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
         <BasicLayout
           title="Exchange"
           children={
-            <View>
+            <View
+              style={{
+                minHeight: Dimensions.get("window").height,
+              }}
+            >
               <Spinner
                 visible={this.state.loading}
                 textContent={'Loading...'}
               />
-              <Card>
+              <Card
+                style={{
+                  position: "relative",
+                  zIndex: -1,
+                  elevation: -1
+                }}
+              >
                 <CardItem
                   header
                   bordered
+                  style={{
+                    position: "relative",
+                    zIndex: -1,
+                    elevation: -1
+                  }}
                 >
                   <Text
                     style={styles.menuHeader}
@@ -124,7 +140,12 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
                     {translate("exchange_dataHeader")}
                   </Text>
                 </CardItem>
-                <CardItem style={{ flex: 2 }}>
+                <CardItem style={{
+                  flex: 2,
+                  position: "relative",
+                  zIndex: -1,
+                  elevation: -1
+                }}>
                   {
                     this.state.data.balance &&
                       this.state.data.USDToHKD
@@ -137,7 +158,12 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
                       />
                       : <View></View>}
                 </CardItem>
-                <CardItem style={{ flex: 2 }}>
+                <CardItem style={{
+                  flex: 2,
+                  position: "relative",
+                  zIndex: -1,
+                  elevation: -1
+                }}>
                   {
                     this.state.data.gasBalance
                       ? <WalletBox
@@ -149,14 +175,24 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
                       />
                       : <View></View>}
                 </CardItem>
-                <CardItem style={{ flex: 2 }}>
+                <CardItem style={{
+                  flex: 2,
+                  position: "relative",
+                  zIndex: -1,
+                  elevation: -1
+                }}>
                   <Text
                     style={styles.menuHeader}
                   >
                     {translate("useful_dataHeader")}
                   </Text>
                 </CardItem>
-                <CardItem style={{ flex: 2 }}>
+                <CardItem style={{
+                  flex: 2,
+                  position: "relative",
+                  zIndex: -1,
+                  elevation: -1
+                }}>
                   <Text
                     style={styles.balanceText}
                   >
@@ -214,9 +250,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(ExchangePage);
 const styles = StyleSheet.create({
   scrollView: {
     display: "flex",
-    width: "100%",
-    height: "100%",
-    alignContent: "center"
+    minHeight: Dimensions.get("window").height,
+    minWidth: Dimensions.get("window").width * 0.8,
+    alignContent: "center",
+    elevation: 1
   },
   menuHeader: {
     fontSize: 36,

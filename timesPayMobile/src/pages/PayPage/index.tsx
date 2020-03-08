@@ -8,7 +8,8 @@ import {
   TextInput,
   Modal,
   Platform,
-  Image
+  Image,
+  Dimensions
 } from 'react-native';
 import {
   Card,
@@ -190,6 +191,11 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           title="Pay"
           children={
             <>
+            <View
+              style={{
+                minHeight: Dimensions.get("window").height,
+              }}
+            >
               <Spinner
                 visible={this.state.loading}
                 textContent={'Pending'}
@@ -331,6 +337,7 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                   </CardItem>
                 </Card>
               </Modal>
+              </View>
             </>
           }
         />

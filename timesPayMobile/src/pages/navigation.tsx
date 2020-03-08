@@ -87,15 +87,15 @@ const MaterialBottomTabNavigator = createMaterialBottomTabNavigator(
             </View>),
         }
     },
-    Setting: {
-      screen: SettingPage,
-      navigationOptions:{
-        tabBarLabel:'Setting',
-        tabBarIcon: ({ tintColor }) => (
-            <View>
-            </View>),
-        }
-    }
+    // Setting: {
+    //   screen: SettingPage,
+    //   navigationOptions:{
+    //     tabBarLabel:'Setting',
+    //     tabBarIcon: ({ tintColor }) => (
+    //         <View>
+    //         </View>),
+    //     }
+    // }
   },
   {
     initialRouteName: 'Exchange',
