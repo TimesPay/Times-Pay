@@ -20,6 +20,8 @@ export default {
   "exchange_dataHeader": "Exchange Data",
   "useful_dataHeader": "Useful Data",
   "exchange_balance": "Balance",
+  "deposit_addressCopied": "Address Copied",
+  "deposit_amount": "How much you want to pay?",
   "pay_confirm": "Confirm?",
   "pay_paymentModalHeader": "How to pay?",
   "pay_QRCode": "QR Code",
@@ -35,6 +37,4 @@ export default {
 
   "globalSetting_title": "Setting",
   "globalSetting_selectLanguage": "Language",
-
-
 }

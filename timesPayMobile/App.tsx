@@ -48,7 +48,7 @@ const uiTheme = {
 class App extends React.Component<{}, AppState> {
   constructor(props: any) {
     super(props);
-    setI18nConfig();
+    setI18nConfig("en-US");
   }
 
   componentDidMount() {
@@ -60,7 +60,7 @@ class App extends React.Component<{}, AppState> {
   }
 
   handleLocalizationChange = () => {
-    setI18nConfig();
+    setI18nConfig("en-US");
     this.forceUpdate();
   };
 

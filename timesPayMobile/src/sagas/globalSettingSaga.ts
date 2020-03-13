@@ -22,6 +22,7 @@ export function* watchRestore() {
 
 function* saveFlow(action:any) {
   try {
+    console.log("saveFlow", action);
     const settingObj = yield select(getGlobalSettingState);
     console.log("settingObj", settingObj);
     settingObj[action.payload.type] = action.payload.value;

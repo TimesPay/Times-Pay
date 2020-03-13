@@ -32,7 +32,7 @@ class WalletPasswordPage extends Component {
       loading: false
     }
     this.wallet = this.props.navigation.getParam('wallet', {})
-    setI18nConfig()
+    setI18nConfig("en-US")
     this.props.reset()
     this.timer = null
   }

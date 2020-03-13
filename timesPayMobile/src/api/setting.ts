@@ -2,7 +2,8 @@ import { AsyncStorage } from "react-native"
 
 export const saveSetting = (payload: any) => {
   try {
-    return AsyncStorage.setItem("globalSetting", payload.settingObj);
+    AsyncStorage.setItem("globalSetting", payload.settingObj);
+    return true;
   } catch (e) {
     return false;
   }

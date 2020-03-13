@@ -1,14 +1,22 @@
 import React from "react";
-import { Text, Dimensions } from "react-native";
-import { ListItem, Left, Right, Radio, List } from "native-base"
+import { Text, Dimensions, TouchableOpacity } from "react-native";
+import { ListItem, Left, Right, Radio, List, Button } from "native-base"
 import { translate } from '../utils/I18N';
 
 export const LanguageMenuItem = (props: any) => {
   return (
-    <ListItem selected={props.selected}>
+    <ListItem
+      selected={props.selected}
+      onPress={(e) => {
+        console.log("pressed");
+        props.handleSelect(props.languageCode);
+      }}
+    >
       <Left>
-        <Text>
-          {translate(props.languageCode, {})}
+        <Text
+          style={{color: "white"}}
+        >
+          {translate(props.languageCode, {locale: props.langCode})}
         </Text>
       </Left>
       <Right>
@@ -16,8 +24,9 @@ export const LanguageMenuItem = (props: any) => {
           color={"#f0ad4e"}
           selectedColor={"#5cb85c"}
           selected={props.selected}
-          onPress={() => {
-            props.handleSelect(props.languageCode)
+          onPress={(e) => {
+            console.log("pressed radio");
+            props.handleSelect(props.languageCode);
           }}
         />
       </Right>
@@ -33,8 +42,6 @@ export default function LanguageMenu(props: any) {
         minWidth: Dimensions.get("window").width * 0.8,
         marginTop: 20,
         elevation: 10,
-        position: "relative",
-        zIndex: 10
       }}
     >
       {props.languageList.map((value: {

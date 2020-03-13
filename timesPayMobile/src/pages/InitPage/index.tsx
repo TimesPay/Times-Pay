@@ -34,7 +34,7 @@ class InitPage extends Component {
   }
 
   componentDidMount() {
-    setI18nConfig()
+    setI18nConfig("en-US")
   }
 
   componentDidUpdate() {

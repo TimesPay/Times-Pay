@@ -15,19 +15,24 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
   console.log("BasicLayout", drawerVisible);
   return (
-    <ScrollView
+    <SafeAreaView
       style={{
-        ...containerStyle,
+        position: "relative",
+        zIndex: 10,
+        elevation: 10,
         minHeight: Dimensions.get("window").height,
         minWidth: Dimensions.get("window").width * 0.8,
       }}
     >
-      <Header>
+      <Header
+        style={{
+          backgroundColor: "rgba(0, 0, 0, 1)",
+        }}
+      >
         <Left>
           <Button
             transparent
             onPress={() => {
-              console.log("clicked");
               setDrawerVisible(!drawerVisible);
             }}
           >
@@ -38,25 +43,36 @@ const BasicLayout: React.FC<BasicLayoutProps> = (props) => {
           <Title>{title}</Title>
         </Body>
       </Header>
-      <Drawer
-        open={drawerVisible}
-        content={
-          <SettingPage
-              containerStyle={styles.drawerContainer}
-          />}
-        styles={styles.drawerCard}
+      <SafeAreaView
+        style={{
+          ...containerStyle,
+          minHeight: Dimensions.get("window").height,
+          minWidth: Dimensions.get("window").width * 0.8,
+          backgroundColor: "rgba(255, 255, 255, 1)"
+        }}
       >
-      </Drawer>
-        <View
-          style={{
-            elevation: -1,
-            position: "relative",
-            zIndex: -1,
-          }}
+        <Drawer
+          open={drawerVisible}
+          content={
+            <SettingPage
+              containerStyle={styles.drawerContainer}
+            />}
+          tapToClose
+          onClose={()=>setDrawerVisible(false)}
+          styles={styles.drawerCard}
         >
-          {children}
-        </View>
-    </ScrollView>
+          <View
+            style={{
+              elevation: 0,
+              position: "relative",
+              zIndex: 0,
+            }}
+          >
+            {children}
+          </View>
+        </Drawer>
+      </SafeAreaView>
+    </SafeAreaView>
   )
 }
 
@@ -76,7 +92,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     marginLeft: 0,
-    marginTop: 0
+    marginTop: 0,
+    backgroundColor: "rgba(0, 0, 0, 1)"
   }
 })
 

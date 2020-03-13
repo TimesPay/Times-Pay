@@ -29,7 +29,7 @@ class UnlockWalletPage extends Component {
       isPasswordInputBoxFocus: false,
       loading: false
     }
-    setI18nConfig()
+    setI18nConfig("en-US");
     this.timer = null
   }
 

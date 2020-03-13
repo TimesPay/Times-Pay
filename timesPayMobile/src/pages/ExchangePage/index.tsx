@@ -18,8 +18,8 @@ import SVGImage from 'react-native-svg-image';
 
 import { connect } from 'react-redux';
 
-import { getExchangeState, getInitState } from '../../reducers/selectors';
-import { ExchangeStateType } from '/src/reducers/exchangeReducer';
+import { getExchangeState, getInitState, getGlobalSettingState } from '../../reducers/selectors';
+import { ExchangeStateType } from '../../reducers/exchangeReducer';
 import { InitStateType } from '../../reducers/initReducer'
 import { loadContract, getExchangeData } from '../../actions/exchangeAction'
 import { deepCompare } from '../../utils/deepCompare';
@@ -29,12 +29,14 @@ import BasicLayout from '../../component/BasicLayout';
 import walletIcon from '../../assets/wallet.png';
 import { Dispatch } from 'redux';
 import WalletBox from '../InitPage/walletBox';
+import { getSetting } from '../../actions/globalSettingAction';
 
 interface ExchangeProps {
   exchangeReducer: ExchangeStateType,
   initReducer: InitStateType,
   getExchangeData: (payload: any) => void,
-  loadContract: (payload: any) => void
+  loadContract: (payload: any) => void,
+  getSetting: ()=> void,
 };
 
 interface ExchangeState extends ExchangeStateType {
@@ -109,7 +111,7 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
         <BasicLayout
           title="Exchange"
           children={
-            <View
+            <ScrollView
               style={{
                 minHeight: Dimensions.get("window").height,
               }}
@@ -220,7 +222,7 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
                   </Text>
                 </CardItem>
               </Card>
-            </View>
+            </ScrollView>
           }
           containerStyle={styles.scrollView}
         />
@@ -236,13 +238,15 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
 const mapStateToProps = (state: any) => {
   const exchangeReducer = getExchangeState(state);
   const initReducer = getInitState(state);
+  const globalSettingReducer = getGlobalSettingState(state);
   console.log("exchange", exchangeReducer, initReducer);
-  return { exchangeReducer, initReducer };
+  return { exchangeReducer, initReducer, globalSettingReducer };
 }
 const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
     loadContract: (payload: any) => dispatch(loadContract(payload)),
     getExchangeData: (payload: any) => dispatch(getExchangeData(payload)),
+    getSetting: () => dispatch(getSetting()),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(ExchangePage);

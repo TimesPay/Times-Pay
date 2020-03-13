@@ -26,9 +26,9 @@ import SettingPage from './SettingPage'
 const AuthStack = createStackNavigator(
   {
     Register: { screen: RegisterPage },
-    WalletPassword: {screen: WalletPasswordPage},
-    RecoverWallet: {screen: RecoverWalletPage},
-    UnlockWallet: {screen: UnlockWalletPage}
+    WalletPassword: { screen: WalletPasswordPage },
+    RecoverWallet: { screen: RecoverWalletPage },
+    UnlockWallet: { screen: UnlockWalletPage }
   },
   {
     initialRouteName: 'Register',
@@ -47,45 +47,48 @@ const MaterialBottomTabNavigator = createMaterialBottomTabNavigator(
     // },
     Exchange: {
       screen: ExchangePage,
-      navigationOptions:{
-        tabBarLabel:'Exchange',
+      navigationOptions: {
+        tabBarLabel: 'Exchange',
         tabBarIcon: ({ tintColor }) => (
-            <View>
-              <MaterialCommunityIconsIcon
-                name="swap-horizontal"
-                size={24}
-                color={"white"}
-              />
-            </View>),
-        }
+          <View>
+            <MaterialCommunityIconsIcon
+              name="swap-horizontal"
+              size={24}
+              color={"white"}
+            />
+          </View>),
+        tabBarColor: "#000000"
+      }
     },
     Deposit: {
       screen: DepositPage,
-      navigationOptions:{
-        tabBarLabel:'Deposit',
+      navigationOptions: {
+        tabBarLabel: 'Deposit',
         tabBarIcon: ({ tintColor }) => (
-            <View>
-              <MaterialIconsIcon
-                name="input"
-                size={24}
-                color={"white"}
-              />
-            </View>),
-        }
+          <View>
+            <MaterialIconsIcon
+              name="input"
+              size={24}
+              color={"white"}
+            />
+          </View>),
+        tabBarColor: "#000000"
+      }
     },
     Pay: {
       screen: PayPage,
-      navigationOptions:{
-        tabBarLabel:'Pay',
+      navigationOptions: {
+        tabBarLabel: 'Pay',
         tabBarIcon: ({ tintColor }) => (
-            <View>
-              <MaterialIconsIcon
-                name="payment"
-                size={24}
-                color={"white"}
-              />
-            </View>),
-        }
+          <View>
+            <MaterialIconsIcon
+              name="payment"
+              size={24}
+              color={"white"}
+            />
+          </View>),
+        tabBarColor: "#000000"
+      }
     },
     // Setting: {
     //   screen: SettingPage,
@@ -107,10 +110,10 @@ const MaterialBottomTabNavigator = createMaterialBottomTabNavigator(
 
 const AppNavigator = createAnimatedSwitchNavigator(
   {
-    Loading: {screen: LoadingPage},
-    Auth: {screen: AuthStack},
-    RecoveryPhrase: {screen: RecoveryPhrasePage},
-    App: {screen: MaterialBottomTabNavigator}
+    Loading: { screen: LoadingPage },
+    Auth: { screen: AuthStack },
+    RecoveryPhrase: { screen: RecoveryPhrasePage },
+    App: { screen: MaterialBottomTabNavigator }
   },
   {
     initialRouteName: 'Loading',

@@ -36,7 +36,8 @@ import {
   getDepositState,
   getInitState,
   getPayState,
-  getExchangeState
+  getExchangeState,
+  getGlobalSettingState
 } from '../../reducers/selectors';
 import { InitStateType } from '../../reducers/initReducer';
 import { DepositStateType } from '../../reducers/depositReducer';
@@ -47,13 +48,17 @@ import { stateUpdater } from '../../utils/stateUpdater';
 import globalStyle from '../../utils/globalStyle';
 import fingerPrint from '../../assets/fingerPrint.png'
 import BasicLayout from '../../component/BasicLayout';
+import { getSetting } from '../../actions/globalSettingAction';
+import { Dispatch } from 'redux';
+import { globalSettingStateType } from '../../reducers/globalSettingReducer';
 
 interface PayProps {
   depositReducer: DepositStateType,
   initReducer: InitStateType,
   payReducer: PayStateType,
   exchangeReducer: ExchangeStateType,
-  payEstimate: (payload: any) => void
+  payEstimate: (payload: any) => void,
+  globalSettingReducer: globalSettingStateType,
 }
 
 interface PayPageState extends PayStateType {
@@ -69,11 +74,6 @@ interface PayPageState extends PayStateType {
 
 const DEBUG = true;
 class PayPage extends React.Component<PayProps, PayPageState> {
-  static navigationOptions = ({ navigation }: any) => {
-    return {
-      title: "Pay",
-    };
-  };
   scanner: QRCodeScanner | null = null;
   NfcManager: any;
   constructor(props: any) {
@@ -191,153 +191,153 @@ class PayPage extends React.Component<PayProps, PayPageState> {
           title="Pay"
           children={
             <>
-            <View
-              style={{
-                minHeight: Dimensions.get("window").height,
-              }}
-            >
-              <Spinner
-                visible={this.state.loading}
-                textContent={'Pending'}
-              />
-              <Card>
-                <CardItem cardBody bordered>
-
-                </CardItem>
-                <CardItem
-                  cardBody
-                  bordered
-                  style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                  }}>
-                  {
-                    (this.state.hasPermission || DEBUG)
-                      && !this.state.scanned
-                      ? <QRCodeScanner
-                        onRead={this.state.scanned
-                          ? undefined
-                          : (e) => this.handleOnRead(e)
-                        }
-                        topContent={
-                          <Text style={styles.centerText}>
-                            Please scan QR-Code to Pay
-                      </Text>
-                        }
-                        bottomContent={
-                          <TouchableOpacity style={styles.buttonTouchable}>
-                            <Text style={styles.buttonText}>OK. Got it!</Text>
-                          </TouchableOpacity>
-                        }
-                        ref={(node) => { this.scanner = node }}
-                        reactivate={false}
-                        cameraProps={{
-                          ratio: "1:1"
-                        }}
-                      />
-                      : this.state.paymentMethod == "NFC"
-                        ? <Text>{translate("pay_NFCDetail")}</Text>
-                        : <View></View>
-                  }
-                </CardItem>
-                <CardItem
-                  style={styles.payAmountInput}
-                >
-                  <Text>
-                    {`amount to pay: ${this.state.amount}`}
-                  </Text>
-                </CardItem>
-                {this.state.estimatedCost == 0 &&
-                  <CardItem cardBody bordered>
-                    <TextInput
-                      style={{ height: 40, borderColor: 'black', borderWidth: 1 }}
-                      onChangeText={text => this.onChangeText(text)}
-                      value={this.state.amount}
-                      keyboardType={"decimal-pad"}
-                      placeholder="amount"
-                    />
-                  </CardItem>}
-                {
-                  this.state.estimatedCost == 0
-                    ? <View></View>
-                    : <CardItem
-                      cardBody
-                      bordered
-                    >
-                      <Text>
-                        {`estimated cost: ${parseFloat(this.state.estimatedCost) / 1000000} USD`}
-                      </Text>
-                    </CardItem>
-                }
-                {
-                  this.state.destAddress == null
-                    ? <View></View>
-                    : <Text>Pay to :{this.state.destAddress}</Text>
-                }
-                {
-                  this.state.estimatedCost == 0
-                    ? <View></View>
-                    : <CardItem
-                      cardBody
-                      bordered
-                      button
-                      disabled={this.state.estimatedCost == 0}
-                      onPress={() => {
-                        this.props.pay({
-                          destAddress: this.state.destAddress,
-                          contract: this.props.exchangeReducer.contract,
-                          amount: (parseFloat(this.state.amount) * 1000000).toString(),
-                          wallet: this.props.initReducer.wallet
-                        })
-                      }}
-                      style={styles.confirmButton}
-                    >
-                      <Text
-                        style={styles.buttonText}
-                      >
-                        {translate("pay_confirm")}
-                      </Text>
-                    </CardItem>
-                }
-                <CardItem cardBody bordered>
-                  {this.state.scanned && <Button
-                    title={'Tap to Scan Again'}
-                    onPress={() => {
-                      this.setState({ scanned: false })
-                    }} />
-                  }
-                </CardItem>
-                <CardItem
-                  footer
-                >
-                  {
-                    this.state.info != "" &&
-                    <Text>{translate(this.state.info)}</Text>
-                  }
-                </CardItem>
-              </Card>
-              <Modal
-                visible={!this.state.authcated && !DEBUG}
+              <ScrollView
+                style={{
+                  minHeight: Dimensions.get("window").height,
+                }}
               >
-                <Card
-                  style={styles.newWalletConfirmModal}
-                >
-                  <CardItem cardBody>
-                    <Image
-                      source={fingerPrint}
-                      style={{
-                        minWidth: "100%",
-                        minHeight: "50%"
-                      }}
-                    />
+                <Spinner
+                  visible={this.state.loading}
+                  textContent={'Pending'}
+                />
+                <Card>
+                  <CardItem cardBody bordered>
+
                   </CardItem>
-                  <CardItem>
-                    <Text>{translate("pay_auth")}</Text>
+                  <CardItem
+                    cardBody
+                    bordered
+                    style={{
+                      flex: 1,
+                      flexDirection: 'column',
+                      justifyContent: 'flex-end',
+                    }}>
+                    {
+                      (this.state.hasPermission || DEBUG)
+                        && !this.state.scanned
+                        ? <QRCodeScanner
+                          onRead={this.state.scanned
+                            ? undefined
+                            : (e) => this.handleOnRead(e)
+                          }
+                          topContent={
+                            <Text style={styles.centerText}>
+                              Please scan QR-Code to Pay
+                      </Text>
+                          }
+                          bottomContent={
+                            <TouchableOpacity style={styles.buttonTouchable}>
+                              <Text style={styles.buttonText}>OK. Got it!</Text>
+                            </TouchableOpacity>
+                          }
+                          ref={(node) => { this.scanner = node }}
+                          reactivate={false}
+                          cameraProps={{
+                            ratio: "1:1"
+                          }}
+                        />
+                        : this.state.paymentMethod == "NFC"
+                          ? <Text>{translate("pay_NFCDetail")}</Text>
+                          : <View></View>
+                    }
+                  </CardItem>
+                  <CardItem
+                    style={styles.payAmountInput}
+                  >
+                    <Text>
+                      {`amount to pay: ${this.state.amount}`}
+                    </Text>
+                  </CardItem>
+                  {this.state.estimatedCost == 0 &&
+                    <CardItem cardBody bordered>
+                      <TextInput
+                        style={{ height: 40, borderColor: 'black', borderWidth: 1 }}
+                        onChangeText={text => this.onChangeText(text)}
+                        value={this.state.amount}
+                        keyboardType={"decimal-pad"}
+                        placeholder="amount"
+                      />
+                    </CardItem>}
+                  {
+                    this.state.estimatedCost == 0
+                      ? <View></View>
+                      : <CardItem
+                        cardBody
+                        bordered
+                      >
+                        <Text>
+                          {`estimated cost: ${parseFloat(this.state.estimatedCost) / 1000000} USD`}
+                        </Text>
+                      </CardItem>
+                  }
+                  {
+                    this.state.destAddress == null
+                      ? <View></View>
+                      : <Text>Pay to :{this.state.destAddress}</Text>
+                  }
+                  {
+                    this.state.estimatedCost == 0
+                      ? <View></View>
+                      : <CardItem
+                        cardBody
+                        bordered
+                        button
+                        disabled={this.state.estimatedCost == 0}
+                        onPress={() => {
+                          this.props.pay({
+                            destAddress: this.state.destAddress,
+                            contract: this.props.exchangeReducer.contract,
+                            amount: (parseFloat(this.state.amount) * 1000000).toString(),
+                            wallet: this.props.initReducer.wallet
+                          })
+                        }}
+                        style={styles.confirmButton}
+                      >
+                        <Text
+                          style={styles.buttonText}
+                        >
+                          {translate("pay_confirm")}
+                        </Text>
+                      </CardItem>
+                  }
+                  <CardItem cardBody bordered>
+                    {this.state.scanned && <Button
+                      title={'Tap to Scan Again'}
+                      onPress={() => {
+                        this.setState({ scanned: false })
+                      }} />
+                    }
+                  </CardItem>
+                  <CardItem
+                    footer
+                  >
+                    {
+                      this.state.info != "" &&
+                      <Text>{translate(this.state.info)}</Text>
+                    }
                   </CardItem>
                 </Card>
-              </Modal>
-              </View>
+                <Modal
+                  visible={!this.state.authcated && !DEBUG}
+                >
+                  <Card
+                    style={styles.newWalletConfirmModal}
+                  >
+                    <CardItem cardBody>
+                      <Image
+                        source={fingerPrint}
+                        style={{
+                          minWidth: "100%",
+                          minHeight: "50%"
+                        }}
+                      />
+                    </CardItem>
+                    <CardItem>
+                      <Text>{translate("pay_auth")}</Text>
+                    </CardItem>
+                  </Card>
+                </Modal>
+              </ScrollView>
             </>
           }
         />
@@ -370,14 +370,16 @@ const mapStateToProps = (state: any) => {
   const initReducer = getInitState(state);
   const payReducer = getPayState(state);
   const exchangeReducer = getExchangeState(state);
-  return { depositReducer, initReducer, payReducer, exchangeReducer };
+  const globalSettingReducer = getGlobalSettingState(state);
+  return { depositReducer, initReducer, payReducer, exchangeReducer, globalSettingReducer };
 }
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-    pay: (payload) => dispatch(payStartRequest(payload)),
-    paySuccess: (payload) => dispatch(paySuccess(payload)),
-    payFailed: (payload) => dispatch(payFailed(payload)),
-    payEstimate: (payload) => dispatch(payEstimate(payload)),
+    pay: (payload:any) => dispatch(payStartRequest(payload)),
+    paySuccess: (payload:any) => dispatch(paySuccess(payload)),
+    payFailed: (payload:any) => dispatch(payFailed(payload)),
+    payEstimate: (payload:any) => dispatch(payEstimate(payload)),
+    getSetting: () => dispatch(getSetting()),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(PayPage);
