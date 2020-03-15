@@ -22,8 +22,9 @@ import { InitStateType } from 'src/reducers/initReducer';
 
 interface GlobalSettingProps {
   containerStyle: any,
-  saveSetting: (payload:any) => void,
-  getSetting: ()=> void,
+  saveSetting: (payload: any) => void,
+  getSetting: () => void,
+  handleClose: () => void,
   globalSettingReducer: globalSettingStateType,
   initialReducer: InitStateType
 }
@@ -49,100 +50,122 @@ class SettingPage extends Component<GlobalSettingProps> {
       <Card
         style={this.props.containerStyle}
       >
-        <CardItem
-          header
+        <View
           style={{
-            display: "flex",
-            alignContent: "flex-start",
+            minHeight: Dimensions.get("window").height * 0.721,
+            width: Dimensions.get("window").width * 0.8,
             backgroundColor: "rgba(0, 0, 0, 1)",
-          }}
-          button
-        >
-          <Text
-            style={{
-              color: "rgba(255, 255, 255, 1)",
-              position: "relative",
-              alignSelf: "center",
-              fontSize: 24,
-              marginTop: 30
-            }}
-          >
-            {translate("globalSetting_title", {})}
-          </Text>
-        </CardItem>
-        <CardItem
-          cardBody
-          style={{
-            color: "rgba(255, 255, 255, 1)",
-            minWidth: Dimensions.get("window").width * 0.8,
-            backgroundColor: "rgba(0, 0, 0, 1))",
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "column",
           }}
         >
           <View>
-            <Text
+            <CardItem
+              header
               style={{
-                color: "rgba(255, 255, 255, 1)",
-                position: "relative",
-                alignSelf: "center",
-                fontSize: 18,
-                marginTop: 30
+                display: "flex",
+                alignContent: "flex-start",
+                backgroundColor: "rgba(0, 0, 0, 1)",
+              }}
+              button
+              onPress={()=>this.props.handleClose()}
+            >
+              <Icon
+                name="arrow-back"
+                style={{
+                  color: "rgba(255, 255, 255, 1)",
+                  marginTop: 40
+                }}
+              />
+              <Text
+                style={{
+                  color: "rgba(255, 255, 255, 1)",
+                  position: "relative",
+                  alignSelf: "center",
+                  fontSize: 24,
+                  marginTop: 30
+                }}
+              >
+                {translate("globalSetting_title", {})}
+              </Text>
+            </CardItem>
+            <CardItem
+              cardBody
+              style={{
+                minWidth: Dimensions.get("window").width * 0.8,
+                backgroundColor: "rgba(0, 0, 0, 1))",
               }}
             >
-              {translate("globalSetting_selectLanguage", {})}
-            </Text>
-            <LanguageMenu
-              languageList={[
-                {
-                  languageCode: "en-US",
-                  selected: this.props.globalSettingReducer.language == "en-US"
-                }, {
-                  languageCode: "zh-HK",
-                  selected: this.props.globalSettingReducer.language == "zh-HK"
-                }]}
-                changeLanguage={(languageCode:string)=>{
-                  console.log("changeLanguage", languageCode);
-                  setI18nConfig(languageCode || "en-US");
-                  this.props.saveSetting({
-                    type: "language",
-                    value: languageCode
-                  })
-                }}
-                langCode={this.props.globalSettingReducer.language || "en-US"}
-            />
+              <View>
+                <Text
+                  style={{
+                    color: "rgba(255, 255, 255, 1)",
+                    position: "relative",
+                    alignSelf: "center",
+                    fontSize: 18,
+                    marginTop: 30
+                  }}
+                >
+                  {translate("globalSetting_selectLanguage", {})}
+                </Text>
+                <LanguageMenu
+                  languageList={[
+                    {
+                      languageCode: "en-US",
+                      selected: this.props.globalSettingReducer.language == "en-US"
+                    }, {
+                      languageCode: "zh-HK",
+                      selected: this.props.globalSettingReducer.language == "zh-HK"
+                    }]}
+                  changeLanguage={(languageCode: string) => {
+                    console.log("changeLanguage", languageCode);
+                    setI18nConfig(languageCode || "en-US");
+                    this.props.saveSetting({
+                      type: "language",
+                      value: languageCode
+                    })
+                  }}
+                  langCode={this.props.globalSettingReducer.language || "en-US"}
+                />
+              </View>
+            </CardItem>
           </View>
-        </CardItem>
-        <CardItem
-          cardBody
-          style={{
-            color: "rgba(255, 255, 255, 1)",
-            minWidth: Dimensions.get("window").width * 0.8,
-            backgroundColor: "rgba(0, 0, 0, 1))",
-          }}
-          button
-          onPress={()=>{
-            Clipboard.setString(this.props.initialReducer.wallet.signingKey.mnemonic);
-            ToastAndroid.showWithGravity(translate("init_backuped", {}), ToastAndroid.SHORT, ToastAndroid.CENTER);
-          }}
-        >
-          <View
-            style={{
-              color: "rgba(255, 255, 255, 1)"
-            }}
-          >
-            <Text
+          <CardItem
+            footer
             style={{
               color: "rgba(255, 255, 255, 1)",
+              minWidth: Dimensions.get("window").width * 0.8,
+              backgroundColor: "rgba(0, 0, 0, 1))",
               position: "relative",
-              alignSelf: "center",
-              fontSize: 24,
-              marginTop: 30,
-              marginLeft: 10
+              alignContent: "center",
+              marginBottom: 10
             }}
+            button
+            onPress={() => {
+              Clipboard.setString(this.props.initialReducer.wallet.signingKey.mnemonic);
+              ToastAndroid.showWithGravity(translate("init_backuped", {}), ToastAndroid.SHORT, ToastAndroid.CENTER);
+            }}
+          >
+            <View
+              style={{
+                position: "relative",
+                alignContent: "center",
+              }}
             >
-              {translate("init_backupWallet",{})}
-            </Text>
-          </View>
-        </CardItem>
+              <Text
+                style={{
+                  color: "rgba(255, 255, 255, 1)",
+                  fontSize: 24,
+                  marginTop: 30,
+                  marginLeft: 10
+                }}
+              >
+                {translate("init_backupWallet", {})}
+              </Text>
+            </View>
+          </CardItem>
+        </View>
       </Card>
     )
   }

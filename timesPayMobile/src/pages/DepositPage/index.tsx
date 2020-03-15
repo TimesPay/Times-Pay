@@ -73,7 +73,7 @@ class DepositPage extends React.Component<DepositProps, DepositState> {
                 style={styles.QRCodeContainer}
               >
                 <QRCode
-                  value={this.state.address || "N/A"}
+                  value={`${this.state.address}|${this.state.amount}` || "N/A"}
                 />
               </View>
               <Modal

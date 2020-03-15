@@ -72,7 +72,7 @@ interface PayPageState extends PayStateType {
   authcated: boolean
 }
 
-const DEBUG = true;
+const DEBUG = false;
 class PayPage extends React.Component<PayProps, PayPageState> {
   scanner: QRCodeScanner | null = null;
   NfcManager: any;
@@ -175,10 +175,17 @@ class PayPage extends React.Component<PayProps, PayPageState> {
         scanned: true,
         loading: true
       });
+      const dataArray = e.data.split("|");
+      console.log("dataArray", dataArray);
+      if(dataArray.length > 1) {
+        this.setState({
+          amount: dataArray[1]
+        })
+      }
       this.props.payEstimate({
-        destAddress: e.data,
+        destAddress: dataArray[0],
         contract: this.props.exchangeReducer.contract,
-        amount: (parseFloat(this.state.amount) * 1000000).toString(),
+        amount: (parseFloat(dataArray.length > 1 ? dataArray[1] : this.state.amount) * 1000000).toString(),
         wallet: this.props.initReducer.wallet
       });
     }
@@ -249,15 +256,18 @@ class PayPage extends React.Component<PayProps, PayPageState> {
                     </Text>
                   </CardItem>
                   {this.state.estimatedCost == 0 &&
-                    <CardItem cardBody bordered>
-                      <TextInput
-                        style={{ height: 40, borderColor: 'black', borderWidth: 1 }}
-                        onChangeText={text => this.onChangeText(text)}
-                        value={this.state.amount}
-                        keyboardType={"decimal-pad"}
-                        placeholder="amount"
-                      />
-                    </CardItem>}
+                    !this.state.scanned
+                    ? <CardItem cardBody bordered>
+                        <TextInput
+                          style={{ height: 40, borderColor: 'black', borderWidth: 1 }}
+                          onChangeText={text => this.onChangeText(text)}
+                          value={this.state.amount}
+                          keyboardType={"decimal-pad"}
+                          placeholder="amount"
+                        />
+                      </CardItem>
+                    : <View></View>
+                  }
                   {
                     this.state.estimatedCost == 0
                       ? <View></View>
