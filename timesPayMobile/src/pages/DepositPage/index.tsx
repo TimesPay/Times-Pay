@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     marginTop: "10%"
   },
   amountModal: {
-    height: Dimensions.get("screen").height * 0.33,
+    height: Dimensions.get("screen").height * 0.36,
     marginTop: "37%",
     backgroundColor: "rgba(0, 0, 0, 1)",
     color: "white",
