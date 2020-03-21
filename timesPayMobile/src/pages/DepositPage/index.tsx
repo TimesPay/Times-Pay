@@ -94,12 +94,12 @@ class DepositPage extends React.Component<DepositProps, DepositState> {
                         marginTop: 30
                       }}
                     >
-                      {translate("deposit_amount",{})}
+                      {translate("deposit_amount", {})}
                     </Text>
                   </View>
                   <View>
                     <TextInput
-                      onChangeText={text=>this.setState({
+                      onChangeText={text => this.setState({
                         amount: text
                       })}
                       onEndEditing={e => this.setState({
@@ -123,7 +123,7 @@ class DepositPage extends React.Component<DepositProps, DepositState> {
                         fontSize: 24,
                         marginTop: 30
                       }}
-                      onPress={()=>this.setState({
+                      onPress={() => this.setState({
                         modalVisible: false
                       })}
                     >
@@ -147,6 +147,26 @@ class DepositPage extends React.Component<DepositProps, DepositState> {
                     </Text>
                     : <View></View>
                 }
+              </View>
+              <View
+                style={styles.otherPaymentButton}
+              >
+                <Button onPress={() => {
+                  this.setState({
+                    amount: 0,
+                    modalVisible: true
+                  })
+                }}
+                  title={translate("deposit_otherPayment", {})}
+                >
+                  <Text>{translate("deposit_otherPayment", {})}</Text>
+                </Button>
+              </View>
+              <View
+                style={styles.otherPaymentButton}
+              >
+              <Text>{translate("deposit_instructionOne", {})}</Text>
+              <Text>{translate("deposit_instructionTwo", {})}</Text>
               </View>
             </View>
           </>
@@ -193,6 +213,9 @@ const styles = StyleSheet.create({
     marginLeft: "10%",
     marginRight: "10%",
     width: "80%"
+  },
+  otherPaymentButton: {
+    marginTop: "10%"
   },
   amountModal: {
     height: Dimensions.get("screen").height * 0.33,

@@ -1,6 +1,7 @@
 export default {
   "en-US": "英文",
   "zh-HK": "中文",
+
   "init_menu": "MENU",
   "init_registered": "已有銀包?",
   "init_backupWallet": "備份銀包",
@@ -16,12 +17,18 @@ export default {
   "init_yes": "係",
   "init_no": "唔係",
   "init_passwordTitle": "唔該輸入密碼嚟解鎖銀包",
+
   "exchange_refresh": "更新資料",
   "exchange_dataHeader": "銀包結餘",
   "useful_dataHeader": "有用資料",
   "exchange_balance": "結餘",
+
   "deposit_addressCopied": "已複製地址",
   "deposit_amount": "想畀幾多錢？",
+  "deposit_otherPayment": "收另一筆錢",
+  "deposit_instructionOne": "一scan個qr code就畀到錢",
+  "deposit_instructionTwo": "通常一分鐘以內就畀到錢",
+
   "pay_confirm": "當真?",
   "pay_paymentModalHeader": "如何付款?",
   "pay_QRCode": "QR Code",

@@ -1,6 +1,7 @@
 export default {
   "en-US": "English",
   "zh-HK": "Chinese",
+
   "init_menu": "MENU",
   "init_registered": "Do you have a wallet?",
   "init_backupWallet": "BACKUP WALLET",
@@ -16,12 +17,18 @@ export default {
   "init_yes": "YES",
   "init_no": "NO",
   "init_passwordTitle": "Please input password to unlock the wallet",
+
   "exchange_refresh": "Refresh",
   "exchange_dataHeader": "Exchange Data",
   "useful_dataHeader": "Useful Data",
   "exchange_balance": "Balance",
+
   "deposit_addressCopied": "Address Copied",
   "deposit_amount": "How much you want to pay?",
+  "deposit_otherPayment": "Receive another payment",
+  "deposit_instructionOne": "Please scan the QR code to pay",
+  "deposit_instructionTwo": "Normally, your payment will be done within 1 minute",
+
   "pay_confirm": "Confirm?",
   "pay_paymentModalHeader": "How to pay?",
   "pay_QRCode": "QR Code",
