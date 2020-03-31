@@ -4,7 +4,8 @@ import {
   PAY_FAILED,
   PAY_START_REQUEST,
   PAY_ESTIMATE,
-  PAY_ESTIMATE_SUCCESS
+  PAY_ESTIMATE_SUCCESS,
+  PAY_RESET
 } from '../actions/actionTypes';
 
 export const payStartRequest = (payload:any) => {
@@ -66,5 +67,11 @@ export const payEstimateSuccess = (payload:any) => {
       estimatedCost: payload.estimatedCost,
       status: payload.status || "success"
     }
+  }
+}
+
+export const payReset = () => {
+  return {
+    type: PAY_RESET
   }
 }

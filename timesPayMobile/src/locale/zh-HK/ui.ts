@@ -25,6 +25,8 @@ export default {
 
   "deposit_addressCopied": "已複製地址",
   "deposit_amount": "想畀幾多錢？",
+  "deposit_amountConfirm": "確認",
+  "deposit_amountUnknown": "費事入幾錢",
   "deposit_otherPayment": "收另一筆錢",
   "deposit_instructionOne": "一scan個qr code就畀到錢",
   "deposit_instructionTwo": "通常一分鐘以內就畀到錢",

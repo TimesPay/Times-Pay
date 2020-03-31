@@ -24,6 +24,7 @@ export const PAY_FAILED = "pay/payFailed";
 export const PAY_START_REQUEST = "pay/payStartRequest";
 export const PAY_ESTIMATE = "pay/payEstimate";
 export const PAY_ESTIMATE_SUCCESS = "pay/payEstimateSuccess";
+export const PAY_RESET = "pay/payReset"
 
 export const RESET_STORE = "reset_store";
 

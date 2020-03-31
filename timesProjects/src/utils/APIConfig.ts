@@ -10,3 +10,5 @@ export default {
   DBName: DBName,
   DBConnectionString: `${DB}://${DBAddress}:${DBPort}/${DBName}`,
 }
+const mode = "DEV";
+export const BaseURL = mode == "DEV" ? "http://localhost:3000/api" : ""

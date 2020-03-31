@@ -11,10 +11,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
-    "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "allowSyntheticDefaultImports": true,
     "noEmit": true,
     "noUnusedLocals": true,
     "preserveConstEnums": true,
@@ -23,15 +21,12 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "removeComments": false,
-    "sourceMap": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "skipLibCheck": true,
-    "baseUrl": ".",
     "typeRoots": [
       "./node_modules/@types"
     ],
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": [
     "node_modules"

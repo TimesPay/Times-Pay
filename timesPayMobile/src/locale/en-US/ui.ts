@@ -24,7 +24,9 @@ export default {
   "exchange_balance": "Balance",
 
   "deposit_addressCopied": "Address Copied",
-  "deposit_amount": "How much you want to pay?",
+  "deposit_amount": "How much you want to receive?",
+  "deposit_amountConfirm": "Confirm",
+  "deposit_amountUnknown": "unknown amount",
   "deposit_otherPayment": "Receive another payment",
   "deposit_instructionOne": "Please scan the QR code to pay",
   "deposit_instructionTwo": "Normally, your payment will be done within 1 minute",

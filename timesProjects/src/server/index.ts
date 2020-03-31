@@ -1,5 +1,5 @@
-import nextI18next from '../i18n';
-import nextI18NextMiddleware from 'next-i18next/middleware';
+// import nextI18next from '../i18n';
+// import nextI18NextMiddleware from 'next-i18next/middleware';
 const express = require('express')
 const next = require('next')
 
@@ -13,8 +13,8 @@ export default (async () => {
   const server = express()
 
   console.log("start loading I18n");
-  await nextI18next.initPromise
-  server.use(nextI18NextMiddleware(nextI18next))
+  // await nextI18next.initPromise
+  // server.use(nextI18NextMiddleware(nextI18next))
   console.log("I18n loaded");
 
   server.get('*', (req, res) => handle(req, res))

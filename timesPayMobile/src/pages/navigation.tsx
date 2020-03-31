@@ -42,9 +42,6 @@ const AuthStack = createStackNavigator(
 
 const MaterialBottomTabNavigator = createMaterialBottomTabNavigator(
   {
-    // Initial: {
-    //   screen: InitPage,
-    // },
     Exchange: {
       screen: ExchangePage,
       navigationOptions: {
@@ -90,15 +87,6 @@ const MaterialBottomTabNavigator = createMaterialBottomTabNavigator(
         tabBarColor: "#000000"
       }
     },
-    // Setting: {
-    //   screen: SettingPage,
-    //   navigationOptions:{
-    //     tabBarLabel:'Setting',
-    //     tabBarIcon: ({ tintColor }) => (
-    //         <View>
-    //         </View>),
-    //     }
-    // }
   },
   {
     initialRouteName: 'Exchange',

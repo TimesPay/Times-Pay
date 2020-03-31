@@ -1,4 +1,4 @@
 .next/
-initDBCommand/
 data/
 node_modules/
+public/

@@ -1,42 +1,38 @@
-/*
-  Do not copy/paste this file. It is used internally
-  to manage end-to-end test suites.
-*/
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
-import NextI18Next from 'next-i18next';
-import getConfig from "next/config";
-
-const getLocaleSubpath = () => {
-  const config = getConfig();
-  if(config){
-    return config.publicRuntimeConfig.localeSubpaths;
-  } else {
-    return "all";
+const i18nLoader = (locale: "en"|"zh", resources: any, ns:string) => {
+  if(resources) {
+    if(resources.hasOwnProperty('content')) {
+      resources = resources["content"];
+    }
   }
-}
-const localeSubpathVariations = {
-  none: {},
-  foreign: {
-    zh: "zh"
-  },
-  all: {
-    en: "en",
-    zh: "zh"
-  },
+  return i18n
+  .use(initReactI18next)
+  .use(LanguageDetector)
+  .init({
+    fallbackLng: 'en',
+    debug: true,
+    interpolation: {
+      escapeValue: false
+    },
+    ns:ns,
+    defaultNS: ns,
+    resources: resources,
+    lng: locale,
+  });
+
 }
 
-const NextI18NextInstance = new NextI18Next({
-  otherLanguages: ["zh"],
-  localeSubpaths: localeSubpathVariations[getLocaleSubpath()],
-  defaultLanguage: "en",
-  localePath: "public/static/locales",
-  serverLanguageDetection: false,
-  ns: ["common"],
-  defaultNS: "common",
-})
-export default NextI18NextInstance
+export default i18nLoader;
 
-export const {
-  appWithTranslation,
-  withTranslation,
-} = NextI18NextInstance
+export const serverResponseToResourcesBundle = (response:any, locale: string, ns: string) => {
+  let bundle = {};
+  if(response) {
+    if (response["content"]) {
+      bundle = response["content"][locale][ns];
+    }
+  }
+  return bundle;
+}

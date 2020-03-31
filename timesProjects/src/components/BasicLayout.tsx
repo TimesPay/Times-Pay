@@ -45,6 +45,9 @@ interface BasicLayoutState {
   sideMenuVisible: boolean
 }
 class BasicLayout extends React.Component<BasicLayoutProps, BasicLayoutState> {
+  // static async getInitialProps(props:any) {
+  //
+  // }
   constructor(props: BasicLayoutProps) {
     super(props);
     this.state = {
@@ -88,7 +91,7 @@ class BasicLayout extends React.Component<BasicLayoutProps, BasicLayoutState> {
               <ListItem>
                 <CardContent classes={classes}>
                   <Link
-                    href={router[value].url}
+                    href={`${router[value].url}?language=${typeof(localStorage) != "undefined" ? localStorage.getItem("language") || "en" : "en"}`}
                     underline="none"
                   >
                     <ListItemText primary={router[value].name} classes={classes} />

@@ -37,6 +37,7 @@ interface ExchangeProps {
   getExchangeData: (payload: any) => void,
   loadContract: (payload: any) => void,
   getSetting: ()=> void,
+  navigation: any,
 };
 
 interface ExchangeState extends ExchangeStateType {
@@ -72,10 +73,14 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
     this.props.loadContract({
       wallet: this.props.initReducer.wallet
     });
+    this.props.navigation.addListener("didBlur", (e:any) => {
+      this.props.loadContract({
+        wallet: this.props.initReducer.wallet
+      });
+    });
   }
 
   componentDidUpdate() {
-    console.log("componentDidUpdate");
     if (this.state.ratio != this.props.exchangeReducer.ratio) {
       this.setState({ ratio: this.props.exchangeReducer.ratio });
     }
@@ -100,12 +105,6 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
   }
 
   render() {
-    console.log("Exchange",
-      this.state.data.balance,
-      this.state.data.USDToHKD,
-      this.state.data.gasBalance,
-      this.state.data.balance &&
-      this.state.data.USDToHKD)
     return (
       <>
         <BasicLayout
@@ -149,14 +148,21 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
                   elevation: -1
                 }}>
                   {
-                    this.state.data.balance &&
-                      this.state.data.USDToHKD
+                    (
+                      this.state.data.balance !== null &&
+                      this.state.data.balance !== undefined
+                    ) &&
+                    (
+                      this.state.data.USDToHKD !== null &&
+                      this.state.data.USDToHKD !== undefined
+                    )
                       ? <WalletBox
                         balance={(this.state.data.balance / 1000000) * (this.state.data.USDToHKD)}
                         decimalPlaces={4}
                         prefix={' ≈ '}
                         suffix={' HKD'}
                         walletName="USDC"
+                        navigation={this.props.navigation}
                       />
                       : <View></View>}
                 </CardItem>
@@ -167,13 +173,14 @@ class ExchangePage extends React.Component<ExchangeProps, ExchangeState> {
                   elevation: -1
                 }}>
                   {
-                    this.state.data.gasBalance
+                    !(this.state.data.gasBalance == null || this.state.data.gasBalance == undefined)
                       ? <WalletBox
                         balance={(this.state.data.gasBalance / 1000000000000000000)}
                         decimalPlaces={4}
                         prefix={' ≈ '}
                         suffix={' ETH'}
                         walletName="Gas"
+                        navigation={this.props.navigation}
                       />
                       : <View></View>}
                 </CardItem>

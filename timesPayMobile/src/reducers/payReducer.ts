@@ -2,7 +2,8 @@ import {
   PAY_START,
   PAY_SUCCESS,
   PAY_FAILED,
-  PAY_ESTIMATE_SUCCESS
+  PAY_ESTIMATE_SUCCESS,
+  PAY_RESET
 } from '../actions/actionTypes';
 import { commonStateType } from '../utils/commonStateType';
 
@@ -65,6 +66,10 @@ export default function payReducer(state = initState, action:any) {
       errCode: state.errCode,
       info: state.info,
       estimatedCost: action.payload.estimatedCost
+    }
+    case PAY_RESET:
+    return {
+      ...initState
     }
     default:
       return state;

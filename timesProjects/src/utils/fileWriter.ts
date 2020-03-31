@@ -1,6 +1,16 @@
 import fs from 'fs';
-export const readFile = (path, opts = 'binary') => {
+
+export const readDir = (path:string, opts:any) => {
   return new Promise((resolve, reject) => {
+    fs.readdir(path, opts, (err, data) => {
+      if (err) reject(err)
+      else resolve(data)
+    })
+  })
+};
+
+export function readFile<T>(path, opts = 'binary'):Promise<T> {
+  return new Promise<T>((resolve, reject) => {
     fs.readFile(path, opts, (err, data) => {
       if (err) reject(err)
       else resolve(data)
