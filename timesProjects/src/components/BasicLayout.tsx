@@ -8,7 +8,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import Header from './Header';
 import globalStyle from '../styles/globalStyle';
 import router from '../utils/router';
-import { Card, CardContent, CardHeader, Drawer, Button, StylesProvider, createGenerateClassName, createStyles, withStyles } from '@material-ui/core';
+import { Card, CardContent, CardHeader, Drawer, Button, StylesProvider, Typography, createGenerateClassName, createStyles, withStyles } from '@material-ui/core';
 
 const generateClassName = createGenerateClassName();
 const styles = createStyles({
@@ -33,16 +33,21 @@ const styles = createStyles({
   halfWidthChildren: {
     width: "75%",
     marginLeft: "25%"
+  },
+  alignCenter: {
+    marginBottom: 6,
+    textAlign: "center"
   }
 })
 interface BasicLayoutProps {
   key: string;
   children: any;
-  classes: any
+  classes: any;
+  i18nInstance: any;
 }
 interface BasicLayoutState {
   loading: boolean;
-  sideMenuVisible: boolean
+  sideMenuVisible: boolean,
 }
 class BasicLayout extends React.Component<BasicLayoutProps, BasicLayoutState> {
   // static async getInitialProps(props:any) {
@@ -69,6 +74,7 @@ class BasicLayout extends React.Component<BasicLayoutProps, BasicLayoutState> {
         <Header
           sideMenuVisible={this.state.sideMenuVisible}
           openSideMenu={() => this.setState({ sideMenuVisible: !this.state.sideMenuVisible })}
+          i18nInstance={this.props.i18nInstance}
         />
         <Drawer
           open={this.state.sideMenuVisible}
@@ -82,7 +88,12 @@ class BasicLayout extends React.Component<BasicLayoutProps, BasicLayoutState> {
               onClick={() => this.setState({ sideMenuVisible: !this.state.sideMenuVisible })}
             >
               <CardHeader
-                title="menu"
+                title={
+                  <Typography align="center" classes={{
+                    alignCenter: classes.alignCenter
+                  }}>
+                    {this.props.i18nInstance.t("menu")}
+                  </Typography>}
                 avatar={<ArrowBackIosIcon color="primary" classes={classes} />}
                 classes={classes}
               />
@@ -94,7 +105,7 @@ class BasicLayout extends React.Component<BasicLayoutProps, BasicLayoutState> {
                     href={`${router[value].url}?language=${typeof(localStorage) != "undefined" ? localStorage.getItem("language") || "en" : "en"}`}
                     underline="none"
                   >
-                    <ListItemText primary={router[value].name} classes={classes} />
+                    <ListItemText primary={this.props.i18nInstance.t(router[value].name)} classes={classes} />
                   </Link>
                 </CardContent>
               </ListItem>

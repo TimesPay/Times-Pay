@@ -16,7 +16,7 @@
     "noEmit": true,
     "noUnusedLocals": true,
     "preserveConstEnums": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",

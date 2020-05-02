@@ -14,7 +14,7 @@ export default {
   },
   centerContent: {
     maxWidth: "30%",
-    marginRight: "35%",
-    marginLeft: "35%"
+    // marginRight: "35%",
+    // marginLeft: "35%"
   }
 }

@@ -21,6 +21,7 @@ const useStyles = makeStyles({
 interface HeaderProps {
   sideMenuVisible: boolean,
   openSideMenu: () => void,
+  i18nInstance: any,
 }
 const Header = (props: HeaderProps) => {
   const classes = useStyles();
@@ -38,8 +39,8 @@ const Header = (props: HeaderProps) => {
           <Grid container>
             <Grid item>
               <Link href="/" underline="none">
-                <Typography color="primary" className={classes.headerText} >
-                  Let's Get Funds
+                <Typography color="primary" className={classes.headerText}>
+                {props.i18nInstance.t("letGetFunds")}
               </Typography>
               </Link>
             </Grid>
@@ -59,13 +60,17 @@ const Header = (props: HeaderProps) => {
             onChange={(e:any)=>{
               if(typeof(localStorage) !== "undefined"){
                  localStorage.setItem("language", e.target.value);
-                 location.href = location.href.replace(/language=[a-z]{2}/g, `language=${e.target.value}`);
+                 if(!location.href.includes("language=")) {
+                   location.href = location.href + `?language=${e.target.value}`;
+                 } else {
+                   location.href = location.href.replace(/language=[a-z]{2}/g, `language=${e.target.value}`);
+                 }
               }
             }}
             defaultValue={ typeof(localStorage) !== "undefined" ? localStorage.getItem("language") || "en" : "en"}
           >
-            <MenuItem value={"en"}>English</MenuItem>
-            <MenuItem value={"zh"}>Chinese</MenuItem>
+            <MenuItem value={"en"}>{props.i18nInstance.t("en")}</MenuItem>
+            <MenuItem value={"zh"}>{props.i18nInstance.t("zh")}</MenuItem>
           </Select>
         </Grid>
       </Grid>

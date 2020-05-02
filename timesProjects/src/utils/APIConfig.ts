@@ -9,6 +9,8 @@ export default {
   DBPort: DBPort,
   DBName: DBName,
   DBConnectionString: `${DB}://${DBAddress}:${DBPort}/${DBName}`,
+  password: "pwd123",
+  user: "timesAdmin"
 }
 const mode = "DEV";
 export const BaseURL = mode == "DEV" ? "http://localhost:3000/api" : ""

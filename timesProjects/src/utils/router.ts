@@ -15,7 +15,7 @@ let routes:RoutesType = {
   },
   "create": {
     url: "/new",
-    name: "new Project"
+    name: "create"
   }
 };
 export default routes

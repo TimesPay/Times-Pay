@@ -1,5 +1,5 @@
 export default {
   defaultLanguage: 'en',
-  otherLanguages: ['hi'],
+  otherLanguages: ['zh'],
   localeSubpaths: 'foreign', // locale subpaths for url could be none, foreign or all
 }

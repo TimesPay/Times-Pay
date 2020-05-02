@@ -7,7 +7,9 @@ class WalletRepository {
   getWalletByAddress = async (address: string) => {
     return await mongoose.connect(config.DBConnectionString, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      user: config.user,
+      pass: config.password
     }).then(() => {
       let walletCol = getModelForClass(Wallet);
       let wallets = walletCol.find({
@@ -19,7 +21,9 @@ class WalletRepository {
   getAllWallets = () => {
     return mongoose.connect(config.DBConnectionString, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      user: config.user,
+      pass: config.password
     }).then(() => {
       let walletCol = getModelForClass(Wallet);
       return walletCol.find().exec();
@@ -30,7 +34,9 @@ class WalletRepository {
     const walletContent: Wallet = wallet;
     return mongoose.connect(config.DBConnectionString, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      user: config.user,
+      pass: config.password
     }).then(() => {
       let walletCol = getModelForClass(Wallet);
       let doc = walletCol.create({
@@ -48,7 +54,9 @@ class WalletRepository {
     console.log("walletContent", { ...walletContent });
     mongoose.connect(config.DBConnectionString, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      user: config.user,
+      pass: config.password
     }).then(() => {
       let walletCol = getModelForClass(Wallet);
       let doc = walletCol.findOneAndUpdate(

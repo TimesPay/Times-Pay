@@ -7,15 +7,21 @@ import QRCode from 'qrcode.react';
 import globalStyle from '../styles/globalStyle';
 import BasicLayout from '../components/BasicLayout';
 import { fetcher } from '../utils/fetcher';
+import { languageFetcher } from '../utils/languageFetcher';
+import { useTranslation } from 'react-i18next';
+import i18nLoader, { serverResponseToResourcesBundle } from '../i18n';
 import { Grid, Card, CardContent, Button, Typography } from '@material-ui/core';
 import { useState } from 'react';
 
 interface DetailProps {
   userAgent?: string;
-  err?: string
+  err?: string,
+  language?: string,
+  translationData?: any,
 }
+i18nLoader("en", {}, "common");
 
-const Page: NextPage<DetailProps> = () => {
+const Page: NextPage<DetailProps> = (props: DetailProps) => {
   const router = useRouter();
   const { data } = useSWR(`/api/project/${router.query.id}`, fetcher);
   const [fundCardVisible, setFundCardVisible] = useState(false);
@@ -41,8 +47,31 @@ const Page: NextPage<DetailProps> = () => {
       projectData = Object.assign({}, data.content[0]);
     }
   }
+
+  const { t, i18n } = useTranslation();
+  for(let lang in props.translationData.languages) {
+    if (!i18n.hasResourceBundle(props.translationData.languages[lang], "common")) {
+    console.log(props.translationData.languages[lang]);
+    i18n.addResourceBundle(props.translationData.languages[lang], "common", serverResponseToResourcesBundle(props.translationData, props.translationData.languages[lang],"common")|| {}, true, true);
+    }
+  }
+  if (i18n.language != props.language) {
+    if(props.language) {
+      i18n.changeLanguage(props.language);
+    }
+  }
+
+  let raisedRatio = projectData.raisedAmount/projectData.targetAmount * 100;
+  let formatedRaisedRatio = raisedRatio.toLocaleString(
+    undefined, // leave undefined to use the browser's locale,
+    // or use a string like 'en-US' to override it.
+    { minimumFractionDigits: 2 }
+  );
   return (
-    <BasicLayout key="detail">
+    <BasicLayout
+      key="detail"
+      i18nInstance={i18n}
+    >
       <Grid container>
         {!fundCardVisible && (
           <Card style={{ ...globalStyle.centerContent, marginTop: 40 }}>
@@ -54,7 +83,7 @@ const Page: NextPage<DetailProps> = () => {
                   </Grid>
                   <Grid item>
                     <Button onClick={() => setFundCardVisible(!fundCardVisible)}>
-                      Fund their project
+                      {t("fundTheirProj")}
                     </Button>
                   </Grid>
                 </Grid>
@@ -65,28 +94,23 @@ const Page: NextPage<DetailProps> = () => {
             </Grid>
             <Grid item xs={12}>
               <CardContent>
-                {projectData.receiverName}
+                {`${t("receiver")}: ${projectData.receiverName}`}
               </CardContent>
             </Grid>
             <Grid item xs={12}>
               <CardContent>
-                {projectData.projectDescciption}
+                {`${t("projDesc")}: ${projectData.projectDescciption}`}
               </CardContent>
             </Grid>
             <Grid item xs={12}>
               <CardContent>
-                {projectData.targetAmount}
-              </CardContent>
-            </Grid>
-            <Grid item xs={12}>
-              <CardContent>
-                {projectData.raisedAmount}
+                {`${t("progress")}: ${formatedRaisedRatio}%`}
               </CardContent>
             </Grid>
             <Grid item xs={12}>
               <CardContent>
                 <Link href={projectData.projectWhitePaperURL}>
-                  Click here to download white paper
+                {t("downloadWhitePaper")}
                 </Link>
               </CardContent>
             </Grid>
@@ -145,9 +169,12 @@ const Page: NextPage<DetailProps> = () => {
 
 Page.getInitialProps = async ({ req }) => {
   const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
+  const { translationData, language } = await languageFetcher(req);
   return {
     userAgent,
-    namespacesRequired: ['common']
+    namespacesRequired: ['common'],
+    translationData,
+    language
   }
 }
 

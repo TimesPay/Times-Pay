@@ -1,4 +1,7 @@
 .next/
 data/
 node_modules/
-public/
+public/*.jpg
+public/*.png
+public/*.pdf
+public/*.jpeg

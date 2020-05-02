@@ -27,6 +27,9 @@ class Project extends Typegoose {
   public raisedAmount?: number;
 
   @prop()
+  public progress?: number;
+
+  @prop()
   public createdAt?: Date;
 
   @prop()
