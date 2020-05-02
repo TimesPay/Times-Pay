@@ -1,5 +1,6 @@
 .next/
-data/
+data/db/
+data/log/
 node_modules/
 public/*.jpg
 public/*.png
