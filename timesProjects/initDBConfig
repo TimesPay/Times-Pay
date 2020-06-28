@@ -1,2 +1,0 @@
-db.createRole({role: "timesAdminRole", privileges:[{resource: { db: "TimesPayDB", collection: ""}, actions: ["find", "update", "insert"]}], roles:[]});
-db.createUser({user: "timesAdmin", pwd: "pwd123", roles:[{role: "timesAdminRole", db: "TimesPayDB"}]});

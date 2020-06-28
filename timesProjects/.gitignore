@@ -1,8 +1,0 @@
-.next/
-data/db/
-data/log/
-node_modules/
-public/*.jpg
-public/*.png
-public/*.pdf
-public/*.jpeg
