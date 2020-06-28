@@ -1,16 +1,14 @@
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import React, {Component} from 'react';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity
-} from 'react-native';
-import React, {Component} from 'react'
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen'
-import { COLOR } from 'react-native-material-ui';
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import {COLOR} from 'react-native-material-ui';
 
-
-export interface CountUpOptions { // (default)
+export interface CountUpOptions {
+  // (default)
   startVal?: number; // number to start at (0)
   decimalPlaces?: number; // number of decimal places (0)
   duration?: number; // animation duration in seconds (2)
@@ -28,8 +26,7 @@ export interface CountUpOptions { // (default)
   numerals?: string[]; // numeral glyph substitution
 }
 
-export default class WalletBalanceCounter extends Component
-{
+export default class WalletBalanceCounter extends Component {
   private defaults: CountUpOptions = {
     startVal: 0,
     endVal: 0,
@@ -59,12 +56,12 @@ export default class WalletBalanceCounter extends Component
   enableRefresh = true;
   frameVal: number;
 
-  constructor(props){
-    super(props)
+  constructor(props) {
+    super(props);
     this.options = {
       ...this.defaults,
-      ...this.props
-    }
+      ...this.props,
+    };
 
     this.formattingFn = this.formatNumber;
     this.easingFn = this.easeOutExpo;
@@ -83,12 +80,13 @@ export default class WalletBalanceCounter extends Component
 
     this.state = {
       printVal: this.formattingFn(this.startVal),
-    }
+    };
   }
 
   componentDidUpdate(prevProps) {
-    if(prevProps.endVal != this.props.endVal) {
-      if(this.props.endVal) {
+    if (prevProps.endVal != this.props.endVal) {
+      console.log('componentDidUpdate counter', this.props.endVal);
+      if (this.props.endVal) {
         this.refresh();
       }
     }
@@ -101,13 +99,13 @@ export default class WalletBalanceCounter extends Component
 
   // determines where easing starts and whether to count down or up
   private determineDirectionAndSmartEasing() {
-    const end = (this.finalEndVal) ? this.finalEndVal : this.endVal;
-    this.countDown = (this.startVal > end);
+    const end = this.finalEndVal ? this.finalEndVal : this.endVal;
+    this.countDown = this.startVal > end;
     const animateAmount = end - this.startVal;
     if (Math.abs(animateAmount) > this.options.smartEasingThreshold) {
       this.finalEndVal = end;
-      const up = (this.countDown) ? 1 : -1;
-      this.endVal = end + (up * this.options.smartEasingAmount);
+      const up = this.countDown ? 1 : -1;
+      this.endVal = end + up * this.options.smartEasingAmount;
       this.duration = this.duration / 2;
     } else {
       this.endVal = end;
@@ -128,17 +126,18 @@ export default class WalletBalanceCounter extends Component
     } else {
       this.printValue(this.endVal);
     }
-  }
+  };
 
   refresh = () => {
-    console.log("refresh")
+    console.log('refresh');
     cancelAnimationFrame(this.rAF);
     this.enableRefresh = true;
     this.resetDuration();
+    this.endVal = this.validateValue(this.props.endVal);
     this.startVal = this.validateValue(this.options.startVal);
     this.frameVal = this.startVal;
-    this.start()
-  }
+    this.start();
+  };
 
   // pass a new endVal and start animation
   update(newEndVal: string | number) {
@@ -158,7 +157,9 @@ export default class WalletBalanceCounter extends Component
   }
 
   count = (timestamp: number) => {
-    if (!this.startTime) { this.startTime = timestamp; }
+    if (!this.startTime) {
+      this.startTime = timestamp;
+    }
 
     const progress = timestamp - this.startTime;
     this.remaining = this.duration - progress;
@@ -166,27 +167,44 @@ export default class WalletBalanceCounter extends Component
     // to ease or not to ease
     if (this.useEasing) {
       if (this.countDown) {
-        this.frameVal = this.startVal - this.easingFn(progress, 0, this.startVal - this.endVal, this.duration);
+        this.frameVal =
+          this.startVal -
+          this.easingFn(
+            progress,
+            0,
+            this.startVal - this.endVal,
+            this.duration,
+          );
       } else {
-        this.frameVal = this.easingFn(progress, this.startVal, this.endVal - this.startVal, this.duration);
+        this.frameVal = this.easingFn(
+          progress,
+          this.startVal,
+          this.endVal - this.startVal,
+          this.duration,
+        );
       }
     } else {
       if (this.countDown) {
-        this.frameVal = this.startVal - ((this.startVal - this.endVal) * (progress / this.duration));
+        this.frameVal =
+          this.startVal -
+          (this.startVal - this.endVal) * (progress / this.duration);
       } else {
-        this.frameVal = this.startVal + (this.endVal - this.startVal) * (progress / this.duration);
+        this.frameVal =
+          this.startVal +
+          (this.endVal - this.startVal) * (progress / this.duration);
       }
     }
 
     // don't go past endVal since progress can exceed duration in the last frame
     if (this.countDown) {
-      this.frameVal = (this.frameVal < this.endVal) ? this.endVal : this.frameVal;
+      this.frameVal = this.frameVal < this.endVal ? this.endVal : this.frameVal;
     } else {
-      this.frameVal = (this.frameVal > this.endVal) ? this.endVal : this.frameVal;
+      this.frameVal = this.frameVal > this.endVal ? this.endVal : this.frameVal;
     }
 
     // decimal
-    this.frameVal = Math.round(this.frameVal * this.decimalMult) / this.decimalMult;
+    this.frameVal =
+      Math.round(this.frameVal * this.decimalMult) / this.decimalMult;
 
     // format and print value
     this.printValue(this.frameVal);
@@ -199,26 +217,22 @@ export default class WalletBalanceCounter extends Component
       this.update(this.finalEndVal);
     }
 
-    if(this.finalEndVal == null){
-      this.enableRefresh = true
+    if (this.finalEndVal == null) {
+      this.enableRefresh = true;
     }
-  }
+  };
 
   printValue(val: number) {
-    console.log("printValue", val)
-    let result = this.formattingFn(val)
+    console.log('printValue', val);
+    let result = this.formattingFn(val);
     this.setState({
-      printVal: result
-    })
+      printVal: result,
+    });
   }
 
   formatNumber = (num: number): string => {
-    const neg = (num < 0) ? '-' : '';
-    let result: string,
-    x: string[],
-    x1: string,
-    x2: string,
-    x3: string;
+    const neg = num < 0 ? '-' : '';
+    let result: string, x: string[], x1: string, x2: string, x3: string;
     result = Math.abs(num).toFixed(this.options.decimalPlaces);
     result += '';
     x = result.split('.');
@@ -227,7 +241,7 @@ export default class WalletBalanceCounter extends Component
     if (this.options.useGrouping) {
       x3 = '';
       for (let i = 0, len = x1.length; i < len; ++i) {
-        if (i !== 0 && (i % 3) === 0) {
+        if (i !== 0 && i % 3 === 0) {
           x3 = this.options.separator + x3;
         }
         x3 = x1[len - i - 1] + x3;
@@ -236,15 +250,15 @@ export default class WalletBalanceCounter extends Component
     }
     // optional numeral substitution
     if (this.options.numerals && this.options.numerals.length) {
-      x1 = x1.replace(/[0-9]/g, (w) => this.options.numerals[+w]);
-      x2 = x2.replace(/[0-9]/g, (w) => this.options.numerals[+w]);
+      x1 = x1.replace(/[0-9]/g, w => this.options.numerals[+w]);
+      x2 = x2.replace(/[0-9]/g, w => this.options.numerals[+w]);
     }
     return neg + this.options.prefix + x1 + x2 + this.options.suffix;
-  }
+  };
 
   easeOutExpo = (t: number, b: number, c: number, d: number): number => {
-   return c * (-Math.pow(2, -10 * t / d) + 1) * 1024 / 1023 + b
-  }
+    return (c * (-Math.pow(2, (-10 * t) / d) + 1) * 1024) / 1023 + b;
+  };
 
   validateValue(value: string | number): number {
     const newValue = Number(value);
@@ -256,39 +270,47 @@ export default class WalletBalanceCounter extends Component
   }
 
   ensureNumber(n: any) {
-    return (typeof n === 'number' && !isNaN(n));
+    return typeof n === 'number' && !isNaN(n);
   }
 
   render() {
-    return(
+    return (
       <View style={styles.balanceCounter}>
         <Text style={styles.balanceText}>{this.state.printVal}</Text>
-        <TouchableOpacity onPress={this.refresh} style={styles.refreshBtn} disabled={!this.enableRefresh}>
-          <FontAwesomeIcon name="refresh" size={wp('3%')} color="black" style={{alignSelf: "center"}}/>
+        <TouchableOpacity
+          onPress={this.refresh}
+          style={styles.refreshBtn}
+          disabled={!this.enableRefresh}>
+          <FontAwesomeIcon
+            name="refresh"
+            size={wp('3%')}
+            color="black"
+            style={{alignSelf: 'center'}}
+          />
         </TouchableOpacity>
       </View>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   balanceCounter: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 
   balanceText: {
     flex: 12,
-    fontWeight: "bold",
-    fontSize: wp("4.5%"),
-    color: "black",
-    fontFamily: "Feather",
-    alignSelf: "center"
+    fontWeight: 'bold',
+    fontSize: wp('4.5%'),
+    color: 'black',
+    fontFamily: 'Feather',
+    alignSelf: 'center',
   },
 
   refreshBtn: {
     flex: 1,
-    padding: wp('1.2%')
-  }
-})
+    padding: wp('1.2%'),
+  },
+});

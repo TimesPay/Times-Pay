@@ -1,24 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import commonConfig from "../../utils/commonConfig";
-import allInOneMiddleware from "../../utils/middleware/allInOneMiddleware";
-import ProjectRepository from "../../repository/projectRepository";
+import commonConfig from "../../../utils/commonConfig";
+import allInOneMiddleware from "../../../utils/middleware/allInOneMiddleware";
+import ReceiverRepository from "../../../repository/receiverRepository";
 
 const handler = (req: NextApiRequest, res: NextApiResponse) => {
 	return new Promise((resolve) => {
-		let projRepo = new ProjectRepository();
-		if (req.method == "PUT") {
-			let payload = {
-				...req.body,
-			};
-			projRepo.createProject(payload).then((result) => {
-				res.status(200).json({
-					content: result,
-					status: "success",
-				});
-				res.end();
-				return resolve();
-			});
-		} else if (req.method == "GET") {
+		let receiverRepo = new ReceiverRepository();
+		if (req.method == "GET") {
 			let query = {};
 			if (req.query) {
 				console.log("getProjects req", req.query.pageSize, req.query.page);
@@ -38,13 +26,12 @@ const handler = (req: NextApiRequest, res: NextApiResponse) => {
 					query["limit"] = 4;
 					query["start"] = 0;
 				}
-				query["filters"] = JSON.parse(req.query.filterOn || "{}");
 				console.log("filters", query["filters"]);
 			}
-			projRepo.getProjects(query).then((project) => {
-				if (project) {
+			receiverRepo.getReceiverList(query).then((receivers) => {
+				if (receivers) {
 					res.status(200).json({
-						content: project,
+						content: receivers.map((value) => value.receiverWallet),
 						status: "success",
 					});
 				} else {
@@ -57,6 +44,7 @@ const handler = (req: NextApiRequest, res: NextApiResponse) => {
 		return resolve();
 	});
 };
+
 export default allInOneMiddleware(handler);
 
 export const config = {

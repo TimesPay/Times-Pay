@@ -37,6 +37,7 @@ class Project extends Typegoose {
 }
 
 export interface ProjectType {
+  _id: string;
   receiverWallet?: WalletType;
   receiverName?: string;
   projectName?: string;
